@@ -1,16 +1,20 @@
+#!/usr/bin/env python3
 """Console script for pycs."""
 import sys
 import click
+import pycs
+# from .pycs import start
 
 
+##############################################################################
 @click.command()
 def main(args=None):
     """Console script for pycs."""
-    click.echo("Replace this message by putting your code into "
-               "pycs.cli.main")
-    click.echo("See click documentation at https://click.palletsprojects.com/")
-    return 0
+    pycs.start()
 
 
+##############################################################################
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover
+
+# EOF

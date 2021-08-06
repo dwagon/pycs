@@ -7,8 +7,12 @@ class Character(Creature):
     """Base character class"""
 
     def __init__(self, **kwargs):
-        super().__init__(kwargs)
-        self.level = kwargs.get('level', 1)
+        super().__init__(**kwargs)
+        self.level = kwargs.get("level", 1)
+
+    ##########################################################################
+    def turn(self):
+        """Have a turn"""
 
 
 # EOF
