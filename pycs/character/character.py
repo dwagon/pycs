@@ -14,5 +14,9 @@ class Character(Creature):
     def turn(self):
         """Have a turn"""
 
+    ##########################################################################
+    def shortrepr(self):
+        """Arena repr """
+
 
 # EOF

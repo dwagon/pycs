@@ -4,13 +4,19 @@ from creature import Creature
 
 ##############################################################################
 class Monster(Creature):
-    """ Base monster class """
+    """Base monster class"""
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     ##########################################################################
     def turn(self):
-        """ Have a turn """
+        """Have a turn"""
+
+    ##########################################################################
+    def shortrepr(self):
+        """Arena repr"""
+        pass
 
 
 # EOF

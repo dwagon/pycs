@@ -8,10 +8,10 @@ from arena import Arena
 def start():
     """Main point"""
     arena = Arena(x=20, y=20)
-    goblin = Goblin(hp=5)
-    fighter = Fighter(hp=2)
-    arena.add_combatant(goblin, (0, 0), side='A')
-    arena.add_combatant(fighter, (19, 19), side='B')
+    goblin = Goblin(arena=arena, side='A')
+    fighter = Fighter(arena=arena, hp=2, side='B')
+    arena.add_combatant(goblin, (0, 0))
+    arena.add_combatant(fighter, (19, 19))
     while arena.still_going():
         goblin.turn()
         fighter.turn()
