@@ -101,13 +101,25 @@ class Arena:
     ##############################################################################
     def still_going(self):
         """Do we still have alive combatants on both sides"""
+        sides = self.remaining_participants()
+        if len([_ for _ in sides if _]) > 1:
+            return True
+        return False
+
+    ##############################################################################
+    def remaining_participants(self):
+        """ Who is still standing """
         sides = defaultdict(int)
         for participant in self.combatants:
             if participant.is_alive():
                 sides[participant.side] += 1
-        if len([_ for _ in sides if _]) > 1:
-            return True
-        return False
+        return sides
+
+    ##############################################################################
+    def winning_side(self):
+        """ Which side won? """
+        sides = self.remaining_participants()
+        return list(sides.keys())[0]
 
     ##############################################################################
     def __setitem__(self, key, val):
