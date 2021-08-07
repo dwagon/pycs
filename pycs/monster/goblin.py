@@ -1,4 +1,5 @@
 """ Gobline Monster Class """
+import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from .monster import Monster
@@ -32,7 +33,7 @@ class Goblin(Monster):
     ##########################################################################
     def shortrepr(self):
         """What a goblin looks like on the arena"""
-        return "G"
+        return colors.green("G")
 
 
 # EOF

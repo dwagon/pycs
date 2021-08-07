@@ -1,4 +1,5 @@
 """ Fighter """
+import colors
 from attacks import MeleeAttack
 from .character import Character
 
@@ -17,7 +18,7 @@ class Fighter(Character):
 
     def shortrepr(self):
         """What a fighter looks like in the arena"""
-        return "F"
+        return colors.red("F")
 
 
 # EOF
