@@ -33,7 +33,10 @@ class Goblin(Monster):
     ##########################################################################
     def shortrepr(self):
         """What a goblin looks like on the arena"""
-        return colors.green("G")
+        if self.is_alive():
+            return colors.green("G")
+        else:
+            return colors.green("G", bg='red')
 
 
 # EOF

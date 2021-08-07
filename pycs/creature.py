@@ -54,11 +54,16 @@ class Creature:
         """
         # Keep it simple and just go for the closest
         self.target = self.arena.pick_closest_enemy(self)
-        print(f"{self} picked {self.target} as target")
+        if self.target is None:
+            print(f"{self} No more enemies to fight")
+        else:
+            print(f"{self} picked {self.target} as target")
 
     ##########################################################################
     def move_to_target(self):
         """Move to the target"""
+        if not self.target:
+            return
         for _ in range(self.speed):
             rnge, _ = self.get_attack_range()
             if self.arena.distance(self, self.target) < rnge:
@@ -73,12 +78,10 @@ class Creature:
         attack = None
         rnge = 0
         for atk in self.actions:
-            print(f"{self} thinking about using {atk}")
             _, long = atk.range()
             if long > rnge:
                 rnge = long
                 attack = atk
-        print(f"{self} picking {attack} with range {rnge}")
         return rnge, attack
 
     ##########################################################################
@@ -97,7 +100,6 @@ class Creature:
             if mxd > maxdmg:
                 maxdmg = mxd
                 attck = atk
-        print(f"{self} picking {attck}")
         return attck
 
     ##########################################################################
@@ -113,6 +115,8 @@ class Creature:
     ##########################################################################
     def attack(self):
         """Attack the target"""
+        if self.target is None:
+            return
         print(f"{self} attacking {self.target}")
         attck = self.pick_best_attack()
         if attck is None:

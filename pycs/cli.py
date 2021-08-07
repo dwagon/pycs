@@ -9,9 +9,10 @@ import pycs
 
 ##############################################################################
 @click.command()
-def main(args=None):
+@click.option('--rounds', help="Number of rounds to run", default=100)
+def main(rounds):
     """Console script for pycs."""
-    pycs.start()
+    pycs.start(rounds)
 
 
 ##############################################################################
