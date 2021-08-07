@@ -1,3 +1,4 @@
 Click
 dice
 ansicolors
+prettytable
