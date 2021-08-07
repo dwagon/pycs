@@ -36,7 +36,7 @@ class Goblin(Monster):
         if self.is_alive():
             return colors.green("G")
         else:
-            return colors.green("G", bg='red')
+            return colors.green("G", bg="red")
 
 
 # EOF

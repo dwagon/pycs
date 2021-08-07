@@ -86,7 +86,7 @@ class Arena:
         if self[target] is None:
             self[creat.coords] = None
             self[target] = creat
-        else:       # Something is blocking - stay in place
+        else:  # Something is blocking - stay in place
             target = creat.coords
         return target
 
