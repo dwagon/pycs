@@ -10,9 +10,9 @@ class Creature:
     ##########################################################################
     def __init__(self, arena, **kwargs):
         self.arena = arena
-        self.name = kwargs.get("name", "No Name")
+        self.name = kwargs.get("name", self.__class__.__name__)
         self.ac = kwargs.get("ac", 10)
-        self.speed = kwargs.get("speed", 30)
+        self.speed = int(kwargs.get("speed", 30) / 5)
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {}
@@ -22,25 +22,95 @@ class Creature:
         self.stats["wis"] = kwargs.get("wis", 11)
         self.stats["con"] = kwargs.get("con", 11)
         self.stats["cha"] = kwargs.get("cha", 11)
+        self.state = "OK"
         if "hp" in kwargs:
             self.hp = kwargs["hp"]
         else:
             self.hp = self.roll_hp()
         self.actions = []
         self.target = None
+        self.coords = None
+
+    ##########################################################################
+    def __repr__(self):
+        return f"{self.name}"
 
     ##########################################################################
     def pick_target(self):
-        """Pick the target for the creature"""
-        self.arena.pick_closest_enemy(self)
+        """Pick the target for the creature
+        This should be overwritten for cleverness
+        """
+        # Keep it simple and just go for the closest
+        self.target = self.arena.pick_closest_enemy(self)
+        print(f"{self} picked {self.target} as target")
 
     ##########################################################################
     def move_to_target(self):
         """Move to the target"""
+        for _ in range(self.speed):
+            rnge, _ = self.get_attack_range()
+            if self.arena.distance(self, self.target) < rnge:
+                # Within range - don't move
+                return
+            dirn = self.arena.dir_to_move(self, self.target)
+            self.coords = self.arena.move(self, dirn)
+
+    ##########################################################################
+    def get_attack_range(self):
+        """Return the range and the attack with the longest range"""
+        attack = None
+        rnge = 0
+        for atk in self.actions:
+            print(f"{self} thinking about using {atk}")
+            _, long = atk.range()
+            if long > rnge:
+                rnge = long
+                attack = atk
+        print(f"{self} picking {attack} at range {rnge}")
+        return rnge, attack
+
+    ##########################################################################
+    def pick_best_attack(self):
+        """ Return the best (most damage) attack for this range """
+        rnge = self.arena.distance(self, self.target)
+        maxd = 0
+        attck = None
+        for atk in self.actions:
+            if atk.range()[1] < rnge:
+                continue
+            mxd = atk.max_dmg()
+            if mxd > maxd:
+                maxd = mxd
+                attck = atk
+        print(f"{self} picking {attck}")
+        return attck
 
     ##########################################################################
     def attack(self):
         """Attack the target"""
+        print(f"{self} attacking {self.target}")
+        attck = self.pick_best_attack()
+        if attck is None:
+            print(f"{self} has no attack")
+            return
+        to_hit = dice.roll(f"d20{attck.bonus}")
+        print(f"{self} rolled {to_hit}")
+        if to_hit > self.target.ac:
+            dmg = dice.roll(attck.dmg)
+            self.target.hit(dmg)
+            print(f"{self} hit {self.target} with {attck} for {dmg}")
+        else:
+            print(f"{self} missed {self.target} with {attck}")
+
+    ##########################################################################
+    def hit(self, dmg):
+        """ We've been hit - take damage """
+        print(f"{self} has taken {dmg} damage")
+        self.hp -= dmg
+        if self.hp < 0:
+            self.hp = 0
+            self.state = "UNCONSCIOUS"
+            print(f"{self} has fallen unconscious")
 
     ##########################################################################
     def add_action(self, action):
@@ -69,6 +139,10 @@ class Creature:
     ##########################################################################
     def turn(self):
         """Have a go"""
+        if self.state != "OK":
+            print(f"{self.name} {self.state}")
+            return
+        print(f"{self.name} having a turn")
         self.pick_target()
         self.move_to_target()
         self.attack()

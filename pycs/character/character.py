@@ -11,10 +11,6 @@ class Character(Creature):
         self.level = kwargs.get("level", 1)
 
     ##########################################################################
-    def turn(self):
-        """Have a turn"""
-
-    ##########################################################################
     def shortrepr(self):
         """Arena repr """
 
