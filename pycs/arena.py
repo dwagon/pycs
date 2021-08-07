@@ -13,16 +13,29 @@ class Arena:
         self.x = kwargs.get("x", 20)
         self.y = kwargs.get("y", 20)
         self.grid = {}
-        self.combatants = defaultdict(list)
+        self.combatants = []
         for j in range(self.y):
             for i in range(self.x):
                 self.grid[(i, j)] = None
 
     ##############################################################################
+    def do_initiative(self):
+        """Roll everyone's initiative and sort"""
+        tmp = [(_.roll_initiative(), _) for _ in self.combatants]
+        tmp.sort(reverse=True)
+        self.combatants = [_[1] for _ in tmp]
+        print(f"Initiative: {self.combatants}")
+
+    ##############################################################################
+    def turn(self):
+        """Give all the combatants a turn in initiative order"""
+        for comb in self.combatants:
+            comb.turn()
+
+    ##############################################################################
     def add_combatant(self, comb, coords):
         """Add a combatant"""
-        side = comb.side
-        self.combatants[side].append(comb)
+        self.combatants.append(comb)
         self[coords] = comb
         comb.coords = coords
 
@@ -30,7 +43,9 @@ class Arena:
     def distance(self, one, two):
         """Return the distance in moves between two protagonists"""
         if one.coords is None or two.coords is None:
-            print(f"Error: arena.distance(one={one}@{one.coords}, two={two}@{two.coords})")
+            print(
+                f"Error: arena.distance(one={one}@{one.coords}, two={two}@{two.coords})"
+            )
             return 999
         dist = math.sqrt(
             pow(one.coords[0] - two.coords[0], 2)
@@ -56,7 +71,6 @@ class Arena:
                 dirn = "N"
             if one.coords[1] < two.coords[1]:
                 dirn = "S"
-        print(f"dir_to_move({one}@{one.coords} -> {two}@{two.coords}) = {dirn}")
         return dirn
 
     ##############################################################################
@@ -73,10 +87,10 @@ class Arena:
     def pick_closest_enemy(self, me):
         """Pick the closest enemy to me"""
         myside = me.side
-        otherside = (set(self.combatants.keys()) - set(myside)).pop()
+        otherside = [_ for _ in self.combatants if _.side != myside]
         closest = None
         close_dist = 9999
-        for enemy in self.combatants[otherside]:
+        for enemy in otherside:
             print(f"Looking to move to {enemy}@{enemy.coords} from {me.coords}")
             dist = self.distance(me, enemy)
             if dist < close_dist:
@@ -87,12 +101,11 @@ class Arena:
     ##############################################################################
     def still_going(self):
         """Do we still have alive combatants on both sides"""
-        sides = set()
-        for side, participants in self.combatants.items():
-            for part in participants:
-                if part.is_alive():
-                    sides.add(side)
-        if len(sides) > 1:
+        sides = defaultdict(int)
+        for participant in self.combatants:
+            if participant.is_alive():
+                sides[participant.side] += 1
+        if len([_ for _ in sides if _]) > 1:
             return True
         return False
 

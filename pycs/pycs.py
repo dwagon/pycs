@@ -12,10 +12,10 @@ def start():
     fighter = Fighter(arena=arena, hp=2, side='B')
     arena.add_combatant(goblin, (0, 0))
     arena.add_combatant(fighter, (9, 9))
+    arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
-        goblin.turn()
-        fighter.turn()
+        arena.turn()
         print(f"{arena}")
 
 # EOF

@@ -36,6 +36,18 @@ class Creature:
         return f"{self.name}"
 
     ##########################################################################
+    def stat_bonus(self, stat):
+        """What's the stat bonus for the stat"""
+        return int((self.stats[stat] - 10) / 2)
+
+    ##########################################################################
+    def roll_initiative(self):
+        """Roll initiative"""
+        init = dice.roll(f"d20+{self.stat_bonus('dex')}")
+        print(f"{self} rolled {init} for initiative")
+        return init
+
+    ##########################################################################
     def pick_target(self):
         """Pick the target for the creature
         This should be overwritten for cleverness
@@ -110,8 +122,8 @@ class Creature:
         print(f"{self} rolled {to_hit}")
         if to_hit > self.target.ac:
             dmg = dice.roll(attck.dmg)
-            self.target.hit(dmg)
             print(f"{self} hit {self.target} with {attck} for {dmg}")
+            self.target.hit(dmg)
         else:
             print(f"{self} missed {self.target} with {attck}")
 
@@ -120,6 +132,7 @@ class Creature:
         """We've been hit - take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
+        print(f"{self} now has {self.hp} HP")
         if self.hp < 0:
             self.hp = 0
             self.state = "UNCONSCIOUS"
@@ -152,6 +165,7 @@ class Creature:
     ##########################################################################
     def turn(self):
         """Have a go"""
+        print()
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return
