@@ -108,7 +108,7 @@ class Arena:
 
     ##############################################################################
     def remaining_participants(self):
-        """ Who is still standing """
+        """Who is still standing"""
         sides = defaultdict(int)
         for participant in self.combatants:
             if participant.is_alive():
@@ -117,7 +117,7 @@ class Arena:
 
     ##############################################################################
     def winning_side(self):
-        """ Which side won? """
+        """Which side won?"""
         sides = self.remaining_participants()
         return list(sides.keys())[0]
 
