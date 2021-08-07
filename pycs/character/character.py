@@ -12,7 +12,7 @@ class Character(Creature):
 
     ##########################################################################
     def shortrepr(self):
-        """Arena repr """
+        """Arena repr"""
 
 
 # EOF

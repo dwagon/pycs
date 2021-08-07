@@ -29,7 +29,7 @@ class Attack:
         return f"{self.__class__.__name__} {self.name}"
 
     ########################################################################
-    def has_disadvantage(self, rnge):   # pylint: disable=unused-argument
+    def has_disadvantage(self, rnge):  # pylint: disable=unused-argument
         """Does this attack have disadvantage at this range"""
         return False
 
