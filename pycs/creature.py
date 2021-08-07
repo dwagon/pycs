@@ -28,6 +28,7 @@ class Creature:
         else:
             self.hp = self.roll_hp()
         self.actions = []
+        self.reactions = []
         self.target = None
         self.coords = None
 
@@ -152,11 +153,23 @@ class Creature:
             self.hp = 0
             self.state = "UNCONSCIOUS"
             print(f"{self} has fallen unconscious")
+        else:
+            if self.reactions:
+                self.react()
+
+    ##########################################################################
+    def react(self):
+        """React to an incoming attack with a reaction"""
 
     ##########################################################################
     def add_action(self, action):
         """Add an action to the creature"""
         self.actions.append(action)
+
+    ##########################################################################
+    def add_reaction(self, action):
+        """Add an reaction to the creature"""
+        self.reactions.append(action)
 
     ##########################################################################
     def roll_hp(self):
