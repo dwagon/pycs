@@ -147,7 +147,8 @@ class Arena:
         for j in range(self.y):
             lineout = []
             for i in range(self.x):
-                cell = f"{i},{j}="
+                cell = ""
+                # cell = f"{i},{j}="
                 if self.grid[(i, j)] is None:
                     cell += "."
                 else:
