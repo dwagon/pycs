@@ -3,6 +3,7 @@ from collections import defaultdict
 from prettytable import PrettyTable
 from monster.goblin import Goblin
 from character.fighter import Fighter
+from character.warlock import Warlock
 from arena import Arena
 
 
@@ -32,13 +33,15 @@ def win_report(stats, rounds):
 def combat_test():
     """Run through a combat"""
     print("#" * 80)
-    arena = Arena(x=10, y=10)
+    arena = Arena(x=40, y=20)
     goblin_a = Goblin(arena=arena, name="Goblin A", side="Goblins")
     goblin_b = Goblin(arena=arena, name="Goblin B", side="Goblins")
     fighter = Fighter(arena=arena, name="Frank", side="Fighters")
+    warlock = Warlock(arena=arena, name="Walter", side="Fighters")
     arena.add_combatant(goblin_a, (0, 0))
-    arena.add_combatant(goblin_b, (9, 0))
-    arena.add_combatant(fighter, (9, 9))
+    arena.add_combatant(goblin_b, (arena.x - 1, 0))
+    arena.add_combatant(fighter, (arena.x - 1, arena.y - 1))
+    arena.add_combatant(warlock, (0, arena.y - 1))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
