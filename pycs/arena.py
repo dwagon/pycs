@@ -25,7 +25,7 @@ class Arena:
             tmp = [(_.roll_initiative(), _) for _ in self.combatants]
             try:
                 tmp.sort(reverse=True)
-            except TypeError:   # Caused by two parties having same initiative
+            except TypeError:  # Caused by two parties having same initiative
                 continue
             break
         self.combatants = [_[1] for _ in tmp]
