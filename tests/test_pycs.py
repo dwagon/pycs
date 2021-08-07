@@ -6,7 +6,6 @@
 import unittest
 from click.testing import CliRunner
 
-from pycs import pycs
 from pycs import cli
 
 
