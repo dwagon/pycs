@@ -86,6 +86,8 @@ class Arena:
         if self[target] is None:
             self[creat.coords] = None
             self[target] = creat
+        else:  # Something is blocking - stay in place
+            target = creat.coords
         return target
 
     ##############################################################################
@@ -96,7 +98,9 @@ class Arena:
         closest = None
         close_dist = 9999
         for enemy in otherside:
-            print(f"Looking to move to {enemy}@{enemy.coords} from {me.coords}")
+            if not enemy.is_alive():
+                continue
+            print(f"Looking to attack {enemy}@{enemy.coords} from {me.coords}")
             dist = self.distance(me, enemy)
             if dist < close_dist:
                 dist = close_dist
