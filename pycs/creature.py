@@ -104,21 +104,6 @@ class Creature:
         return attck
 
     ##########################################################################
-    def roll_to_hit(self, attck):
-        """Roll to hit with the attack"""
-        crit = False
-        rnge = self.arena.distance(self, self.target)
-        if attck.has_disadvantage(rnge):
-            to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
-        else:
-            to_hit_roll = int(dice.roll("d20"))
-        if to_hit_roll == 20:
-            crit = True
-        to_hit = to_hit_roll + attck.bonus
-        print(f"{self} rolled {to_hit_roll} (critical: {crit}): {to_hit}")
-        return int(to_hit), crit
-
-    ##########################################################################
     def attack(self):
         """Attack the target"""
         if self.target is None:
@@ -132,8 +117,8 @@ class Creature:
         attck.perform_attack(self, self.target, rnge)
 
     ##########################################################################
-    def hit(self, dmg):
-        """We've been hit - take damage"""
+    def hit(self, dmg, source):
+        """We've been hit by source- take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
@@ -143,12 +128,15 @@ class Creature:
             print(f"{self} has fallen unconscious")
         else:
             if self.reactions:
-                self.react()
+                rnge = self.arena.distance(self, source)
+                self.react(source, rnge)
 
     ##########################################################################
-    def react(self):
+    def react(self, source, rnge):
         """React to an incoming attack with a reaction"""
-        print("React!")
+        for react in self.reactions:
+            print(f"{self} reacts against {source}")
+            react.perform_attack(self, source, rnge)
 
     ##########################################################################
     def add_action(self, action):

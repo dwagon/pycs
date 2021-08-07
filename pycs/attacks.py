@@ -21,11 +21,11 @@ class Attack:
 
     ##########################################################################
     def pre_attack_hook(self):
-        """ Pre attack hook """
+        """Pre attack hook"""
 
     ##########################################################################
     def post_attack_hook(self):
-        """ Post attack hook """
+        """Post attack hook"""
 
     ##########################################################################
     def roll_to_hit(self, rnge):
@@ -53,8 +53,8 @@ class Attack:
         to_hit, crit = self.roll_to_hit(rnge)
         if to_hit > target.ac:
             dmg = self.roll_dmg(crit)
-            print(f"{source} hit {target} with {self} for {dmg}")
-            target.hit(dmg)
+            print(f"{source} hit {target} with {self} for {dmg} hp damage")
+            target.hit(dmg, source)
         else:
             print(f"{source} missed {target} with {self}")
         self.post_attack_hook()
