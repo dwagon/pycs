@@ -133,7 +133,7 @@ class Creature:
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
-        if self.hp < 0:
+        if self.hp <= 0:
             self.hp = 0
             self.state = "UNCONSCIOUS"
             print(f"{self} has fallen unconscious")
