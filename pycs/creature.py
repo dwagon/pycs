@@ -128,20 +128,8 @@ class Creature:
         if attck is None:
             print(f"{self} has no attack")
             return
-        to_hit, crit = self.roll_to_hit(attck)
-        if to_hit > self.target.ac:
-            if crit:
-                dmg = (
-                    int(dice.roll_max(attck.dmg[0]))
-                    + int(dice.roll(attck.dmg[0]))
-                    + attck.dmg[1]
-                )
-            else:
-                dmg = int(dice.roll(attck.dmg[0])) + attck.dmg[1]
-            print(f"{self} hit {self.target} with {attck} for {dmg}")
-            self.target.hit(dmg)
-        else:
-            print(f"{self} missed {self.target} with {attck}")
+        rnge = self.arena.distance(self, self.target)
+        attck.perform_attack(self, self.target, rnge)
 
     ##########################################################################
     def hit(self, dmg):
@@ -160,6 +148,7 @@ class Creature:
     ##########################################################################
     def react(self):
         """React to an incoming attack with a reaction"""
+        print("React!")
 
     ##########################################################################
     def add_action(self, action):
