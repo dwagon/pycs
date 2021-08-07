@@ -66,24 +66,37 @@ class Creature:
             if long > rnge:
                 rnge = long
                 attack = atk
-        print(f"{self} picking {attack} at range {rnge}")
+        print(f"{self} picking {attack} with range {rnge}")
         return rnge, attack
 
     ##########################################################################
     def pick_best_attack(self):
-        """ Return the best (most damage) attack for this range """
+        """Return the best (most damage) attack for this range"""
+        # Treat disdvantage as having half damage - need to make this cleverer
         rnge = self.arena.distance(self, self.target)
-        maxd = 0
+        maxdmg = 0
         attck = None
         for atk in self.actions:
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg()
-            if mxd > maxd:
-                maxd = mxd
+            if atk.has_disadvantage(rnge):
+                mxd /= 2
+            if mxd > maxdmg:
+                maxdmg = mxd
                 attck = atk
         print(f"{self} picking {attck}")
         return attck
+
+    ##########################################################################
+    def roll_to_hit(self, attck):
+        """Roll to hit with the attack"""
+        rnge = self.arena.distance(self, self.target)
+        if attck.has_disadvantage(rnge):
+            to_hit = min(dice.roll(f"d20{attck.bonus}"), dice.roll(f"d20{attck.bonus}"))
+        else:
+            to_hit = dice.roll(f"d20{attck.bonus}")
+        return to_hit
 
     ##########################################################################
     def attack(self):
@@ -93,7 +106,7 @@ class Creature:
         if attck is None:
             print(f"{self} has no attack")
             return
-        to_hit = dice.roll(f"d20{attck.bonus}")
+        to_hit = self.roll_to_hit(attck)
         print(f"{self} rolled {to_hit}")
         if to_hit > self.target.ac:
             dmg = dice.roll(attck.dmg)
@@ -104,7 +117,7 @@ class Creature:
 
     ##########################################################################
     def hit(self, dmg):
-        """ We've been hit - take damage """
+        """We've been hit - take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
         if self.hp < 0:

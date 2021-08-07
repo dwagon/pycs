@@ -21,12 +21,17 @@ class Attack:
 
     ########################################################################
     def max_dmg(self):
-        """ What is the most damage this attack can do """
+        """What is the most damage this attack can do"""
         return dice.roll_max(self.dmg)
 
     ########################################################################
     def __repr__(self):
         return f"{self.__class__.__name__} {self.name}"
+
+    ########################################################################
+    def has_disadvantage(self, rnge):   # pylint: disable=unused-argument
+        """Does this attack have disadvantage at this range"""
+        return False
 
 
 ##############################################################################
@@ -62,6 +67,15 @@ class RangedAttack(Attack):
     def range(self):
         """Return the range of the attack"""
         return self.s_range, self.l_range
+
+    ########################################################################
+    def has_disadvantage(self, rnge):
+        """Does this attack have disadvantage at this range"""
+        if rnge == 1:
+            return True
+        if rnge > self.s_range:
+            return True
+        return False
 
 
 ##############################################################################
