@@ -105,12 +105,17 @@ class Creature:
     ##########################################################################
     def roll_to_hit(self, attck):
         """Roll to hit with the attack"""
+        crit = False
         rnge = self.arena.distance(self, self.target)
         if attck.has_disadvantage(rnge):
-            to_hit = min(dice.roll(f"d20{attck.bonus}"), dice.roll(f"d20{attck.bonus}"))
+            to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
         else:
-            to_hit = dice.roll(f"d20{attck.bonus}")
-        return to_hit
+            to_hit_roll = int(dice.roll("d20"))
+        if to_hit_roll == 20:
+            crit = True
+        to_hit = to_hit_roll + attck.bonus
+        print(f"{self} rolled {to_hit_roll} (critical: {crit}): {to_hit}")
+        return int(to_hit), crit
 
     ##########################################################################
     def attack(self):
@@ -122,10 +127,16 @@ class Creature:
         if attck is None:
             print(f"{self} has no attack")
             return
-        to_hit = self.roll_to_hit(attck)
-        print(f"{self} rolled {to_hit}")
+        to_hit, crit = self.roll_to_hit(attck)
         if to_hit > self.target.ac:
-            dmg = dice.roll(attck.dmg)
+            if crit:
+                dmg = (
+                    int(dice.roll_max(attck.dmg[0]))
+                    + int(dice.roll(attck.dmg[0]))
+                    + attck.dmg[1]
+                )
+            else:
+                dmg = int(dice.roll(attck.dmg[0])) + attck.dmg[1]
             print(f"{self} hit {self.target} with {attck} for {dmg}")
             self.target.hit(dmg)
         else:
