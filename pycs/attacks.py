@@ -22,7 +22,7 @@ class Attack:
     ########################################################################
     def max_dmg(self):
         """What is the most damage this attack can do"""
-        return dice.roll_max(self.dmg)
+        return int(dice.roll_max(self.dmg[0])) + self.dmg[1]
 
     ########################################################################
     def __repr__(self):

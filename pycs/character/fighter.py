@@ -22,7 +22,7 @@ class Fighter(Character):
             }
         )
         super().__init__(**kwargs)
-        self.add_action(MeleeAttack("longsword", reach=5, bonus="+5", dmg="1d8+3"))
+        self.add_action(MeleeAttack("longsword", reach=5, bonus=5, dmg=("1d8", 3)))
 
     def shortrepr(self):
         """What a fighter looks like in the arena"""
