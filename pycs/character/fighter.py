@@ -1,6 +1,7 @@
 """ Fighter """
 import colors
 from attacks import MeleeAttack
+from constants import DamageType
 from .character import Character
 
 
@@ -22,7 +23,15 @@ class Fighter(Character):
             }
         )
         super().__init__(**kwargs)
-        self.add_action(MeleeAttack("longsword", reach=5, bonus=5, dmg=("1d8", 3)))
+        self.add_action(
+            MeleeAttack(
+                "Longsword",
+                reach=5,
+                bonus=5,
+                dmg=("1d8", 3),
+                dmg_type=DamageType.PIERCING,
+            )
+        )
 
     def shortrepr(self):
         """What a fighter looks like in the arena"""
