@@ -86,7 +86,7 @@ class Cleric(Character):
 
     ##########################################################################
     def find_most_hurt(self):
-        """ Find who is the most hurt on our side """
+        """Find who is the most hurt on our side"""
         target = None
         pct_hurt = 0.0
         for person in self.arena.remaining_participants()[self.side]:
@@ -100,10 +100,10 @@ class Cleric(Character):
 
     ##########################################################################
     def pick_target(self):
-        """ See if anyone needs healing """
+        """See if anyone needs healing"""
         heal_spells = [_ for _ in self.actions if isinstance(_, SpellHealing)]
         for spell in heal_spells:
-            if self.spell_slots[spell.level] > 0:    # Spells healing available
+            if self.spell_slots[spell.level] > 0:  # Spells healing available
                 self.target = self.find_most_hurt()
                 if self.target:
                     return
@@ -111,7 +111,7 @@ class Cleric(Character):
 
     ##########################################################################
     def choose_action(self):
-        """ Try and heal first then attack """
+        """Try and heal first then attack"""
         if self.target and self.target.side == self.side:
             heals = []
             for actn in self.actions:
@@ -124,7 +124,7 @@ class Cleric(Character):
 
     ##########################################################################
     def cast(self, spell):
-        """ Cast a spell """
+        """Cast a spell"""
         if spell.level == 0:
             return
         self.spell_slots[spell.level] -= 1

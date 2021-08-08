@@ -49,7 +49,7 @@ def combat_test():
     arena.add_combatant(ghoul, (arena.x / 2, 0))
     arena.add_combatant(fighter, (arena.x - 1, arena.y - 1))
     arena.add_combatant(warlock, (0, arena.y - 1))
-    arena.add_combatant(cleric, (arena.x/2.0, arena.y - 1))
+    arena.add_combatant(cleric, (arena.x / 2.0, arena.y - 1))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():

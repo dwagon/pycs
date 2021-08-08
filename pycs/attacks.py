@@ -180,7 +180,7 @@ class SpellAttack(Attack):
 
     ########################################################################
     def is_available(self, owner):
-        """ Is this action available? """
+        """Is this action available?"""
         return owner.spell_available(self)
 
 
