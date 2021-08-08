@@ -52,7 +52,7 @@ class Attack:
         """Do the attack"""
         to_hit, crit = self.roll_to_hit(rnge)
         if to_hit > target.ac:
-            dmg = self.roll_dmg(crit)
+            dmg = self.roll_dmg(target, crit)
             print(f"{source} hit {target} with {self} for {dmg} hp damage")
             target.hit(dmg, source)
         else:
@@ -60,7 +60,7 @@ class Attack:
         self.post_attack_hook(source, target)
 
     ########################################################################
-    def roll_dmg(self, critical=False):
+    def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
         """Roll the damage of the attack"""
         if critical:
             dmg = (
@@ -137,6 +137,32 @@ class SpellAttack(Attack):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
         self.level = kwargs.get("level", 99)
+        # Style is tohit or save;
+        #   "tohit" you need to roll to hit,
+        #   "save" you hit automatically but save on damage
+        self.style = kwargs.get("style", "tohit")
+        self.save = kwargs.get("save", ("none", 999))
+
+    ########################################################################
+    def roll_dmg(self, victim, critical=False):
+        """Special spell damage"""
+        if self.style == "tohit":
+            return super().roll_dmg(victim, critical)
+        else:
+            saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
+            dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+            if saved:
+                dmg = int(dmg / 2)
+            return dmg
+
+    ########################################################################
+    def roll_to_hit(self, rnge):
+        """Special spell attack"""
+        assert self.style in ("tohit", "save")
+        if self.style == "tohit":
+            return super().roll_to_hit(rnge)
+        else:
+            return 999, False
 
     ########################################################################
     def range(self):
@@ -145,11 +171,12 @@ class SpellAttack(Attack):
 
     ########################################################################
     def post_attack_hook(self, source, target):
-        """ Tell the caster they have cast the spell """
+        """Tell the caster they have cast the spell"""
         source.cast(self)
 
     ########################################################################
     def is_available(self, owner):
         return owner.spell_available(self)
+
 
 # EOF

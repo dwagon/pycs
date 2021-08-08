@@ -42,6 +42,18 @@ class Creature:
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
+    def saving_throw(self, stat, dc):
+        """ Make a saving throw against a stat """
+        # Need to add stat proficiency
+        assert stat in ("str", "int", "dex", "wis", "con", "cha")
+        save = int(dice.roll("d20")) + self.stat_bonus(stat)
+        if save >= dc:
+            print(f"{self} made {stat} saving throw: {save} vs DC {dc}")
+            return True
+        print(f"{self} failed {stat} saving throw: {save} vs DC {dc}")
+        return False
+
+    ##########################################################################
     def roll_initiative(self):
         """Roll initiative"""
         init = dice.roll(f"d20+{self.stat_bonus('dex')}")
