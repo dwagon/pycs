@@ -20,11 +20,12 @@ class Attack:
         return 0, 0
 
     ##########################################################################
-    def pre_attack_hook(self):
-        """Pre attack hook"""
+    def is_available(self, owner):  # pylint: disable=unused-argument
+        """Is this attack currently available to the creature"""
+        return True
 
     ##########################################################################
-    def post_attack_hook(self):
+    def post_attack_hook(self, source, target):
         """Post attack hook"""
 
     ##########################################################################
@@ -49,7 +50,6 @@ class Attack:
     ########################################################################
     def perform_attack(self, source, target, rnge):
         """Do the attack"""
-        self.pre_attack_hook()
         to_hit, crit = self.roll_to_hit(rnge)
         if to_hit > target.ac:
             dmg = self.roll_dmg(crit)
@@ -57,7 +57,7 @@ class Attack:
             target.hit(dmg, source)
         else:
             print(f"{source} missed {target} with {self}")
-        self.post_attack_hook()
+        self.post_attack_hook(source, target)
 
     ########################################################################
     def roll_dmg(self, critical=False):
@@ -136,6 +136,7 @@ class SpellAttack(Attack):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
+        self.level = kwargs.get("level", 99)
 
     ########################################################################
     def range(self):
@@ -143,9 +144,12 @@ class SpellAttack(Attack):
         return self.reach, self.reach
 
     ########################################################################
-    def cast(self):
-        """Cast the spell"""
-        pass
+    def post_attack_hook(self, source, target):
+        """ Tell the caster they have cast the spell """
+        source.cast(self)
 
+    ########################################################################
+    def is_available(self, owner):
+        return owner.spell_available(self)
 
 # EOF

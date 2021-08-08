@@ -93,6 +93,28 @@ class Creature:
         maxdmg = 0
         attck = None
         for atk in self.actions:
+            if not atk.is_available(self):
+                continue
+            if atk.range()[1] < rnge:
+                continue
+            mxd = atk.max_dmg()
+            if atk.has_disadvantage(rnge):
+                mxd /= 2
+            if mxd > maxdmg:
+                maxdmg = mxd
+                attck = atk
+        return attck
+
+    ##########################################################################
+    def pick_best_reaction(self, source):
+        """Return the best (most damage) reaction for this range"""
+        # Treat disdvantage as having half damage - need to make this cleverer
+        rnge = self.arena.distance(self, source)
+        maxdmg = 0
+        attck = None
+        for atk in self.reactions:
+            if not atk.is_available(self):
+                continue
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg()
@@ -134,7 +156,8 @@ class Creature:
     ##########################################################################
     def react(self, source, rnge):
         """React to an incoming attack with a reaction"""
-        for react in self.reactions:
+        react = self.pick_best_reaction(source)
+        if react is not None:
             print(f"{self} reacts against {source}")
             react.perform_attack(self, source, rnge)
 
