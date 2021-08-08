@@ -1,31 +1,21 @@
 """ Handle Attacks """
 import dice
 from constants import DamageType
+from actions import Action
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Attack:
+class Attack(Action):
     """generic attack"""
 
     ########################################################################
     def __init__(self, name, **kwargs):
-        self.name = name
+        super().__init__(name, **kwargs)
         self.dmg = kwargs.get("dmg", "")
         self.bonus = kwargs.get("bonus", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
-        self.side_effect = kwargs.get("side_effect", None)
-
-    ########################################################################
-    def range(self):
-        """Return the range (good, max) of the attack"""
-        return 0, 0
-
-    ##########################################################################
-    def is_available(self, owner):  # pylint: disable=unused-argument
-        """Is this attack currently available to the creature"""
-        return True
 
     ##########################################################################
     def post_attack_hook(self, source, target):  # pylint: disable=unused-argument
@@ -58,7 +48,7 @@ class Attack:
         return dmg
 
     ########################################################################
-    def perform_attack(self, source, target, rnge):
+    def perform_action(self, source, target, rnge):
         """Do the attack"""
         to_hit, crit = self.roll_to_hit(rnge)
         if to_hit > target.ac:
@@ -89,10 +79,6 @@ class Attack:
             print(f"{self} is immune to {self.dmg_type.value}")
             dmg = 0
         return dmg
-
-    ########################################################################
-    def __repr__(self):
-        return f"{self.__class__.__name__} {self.name}"
 
     ########################################################################
     def has_disadvantage(self, rnge):  # pylint: disable=unused-argument
@@ -194,6 +180,7 @@ class SpellAttack(Attack):
 
     ########################################################################
     def is_available(self, owner):
+        """Is this action available?"""
         return owner.spell_available(self)
 
 

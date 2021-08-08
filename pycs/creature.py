@@ -1,5 +1,7 @@
 """ Parent class for all creatures """
+# pylint: disable=too-many-public-methods
 import dice
+from attacks import Attack
 from constants import Condition
 
 
@@ -30,6 +32,7 @@ class Creature:
             self.hp = kwargs["hp"]
         else:
             self.hp = self.roll_hp()
+        self.max_hp = self.hp
         self.actions = []
         self.reactions = []
         self.conditions = set()
@@ -81,6 +84,7 @@ class Creature:
         """Move to the target"""
         if not self.target:
             return
+        print(f"{self} moving to {self.target}")
         for _ in range(self.speed):
             rnge, _ = self.get_attack_range()
             if self.arena.distance(self, self.target) < rnge:
@@ -113,6 +117,8 @@ class Creature:
     def pick_best_attack(self):
         """Return the best (most damage) attack for this range"""
         # Treat disdvantage as having half damage - need to make this cleverer
+        if self.target is None:
+            return None
         rnge = self.arena.distance(self, self.target)
         maxdmg = 0
         attck = None
@@ -160,7 +166,7 @@ class Creature:
             print(f"{self} has no attack")
             return
         rnge = self.arena.distance(self, self.target)
-        attck.perform_attack(self, self.target, rnge)
+        attck.perform_action(self, self.target, rnge)
 
     ##########################################################################
     def hit(self, dmg, source):
@@ -183,7 +189,7 @@ class Creature:
         react = self.pick_best_reaction(source)
         if react is not None:
             print(f"{self} reacts against {source}")
-            react.perform_attack(self, source, rnge)
+            react.perform_action(self, source, rnge)
 
     ##########################################################################
     def has_condition(self, cond):
@@ -225,19 +231,35 @@ class Creature:
         )
 
     ##########################################################################
+    def choose_action(self):
+        """What action are we going to take"""
+        if self.target is None:
+            return None
+        attck = self.pick_best_attack()
+        return attck
+
+    ##########################################################################
     def turn(self):
         """Have a go"""
         print()
+        print(f"{self.name} having a turn")
         if self.has_condition(Condition.PARALYZED):
             print(f"{self} is paralyzed")
             return
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return
-        print(f"{self.name} having a turn")
         self.pick_target()
         self.move_to_target()
-        self.attack()
+        action = self.choose_action()
+        if action is None:
+            print(f"{self} dashing")
+            self.move_to_target()  # dash
+            return
+        if issubclass(action.__class__, Attack):
+            self.attack()
+        else:
+            action.perform_action(self, self.target, 0)
 
 
 # EOF

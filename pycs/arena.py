@@ -110,7 +110,7 @@ class Arena:
     ##############################################################################
     def still_going(self):
         """Do we still have alive combatants on both sides"""
-        sides = self.remaining_participants()
+        sides = self.remaining_participants_count()
         if len([_ for _ in sides if _]) > 1:
             return True
         return False
@@ -118,6 +118,15 @@ class Arena:
     ##############################################################################
     def remaining_participants(self):
         """Who is still standing"""
+        sides = defaultdict(list)
+        for participant in self.combatants:
+            if participant.is_alive():
+                sides[participant.side].append(participant)
+        return sides
+
+    ##############################################################################
+    def remaining_participants_count(self):
+        """How many are still standing"""
         sides = defaultdict(int)
         for participant in self.combatants:
             if participant.is_alive():
@@ -127,7 +136,7 @@ class Arena:
     ##############################################################################
     def winning_side(self):
         """Which side won?"""
-        sides = self.remaining_participants()
+        sides = self.remaining_participants_count()
         return list(sides.keys())[0]
 
     ##############################################################################
