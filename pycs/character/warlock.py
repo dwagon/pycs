@@ -3,6 +3,7 @@ import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from attacks import SpellAttack
+from constants import DamageType
 from .character import Character
 
 
@@ -25,14 +26,34 @@ class Warlock(Character):
         )
         self.spell_slots = 1
         super().__init__(**kwargs)
-        self.add_action(MeleeAttack("Mace", reach=5, bonus=1, dmg=("1d6", -1)))
         self.add_action(
-            RangedAttack(
-                "Light Crossbow", s_range=80, l_range=320, bonus=4, dmg=("1d8", 2)
+            MeleeAttack(
+                "Mace",
+                reach=5,
+                bonus=1,
+                dmg=("1d6", -1),
+                dmg_type=DamageType.BLUDGEONING,
             )
         )
         self.add_action(
-            SpellAttack("Eldritch Blast", reach=120, bonus=5, dmg=("1d10", 0), level=0)
+            RangedAttack(
+                "Light Crossbow",
+                s_range=80,
+                l_range=320,
+                bonus=4,
+                dmg=("1d8", 2),
+                dmg_type=DamageType.PIERCING,
+            )
+        )
+        self.add_action(
+            SpellAttack(
+                "Eldritch Blast",
+                reach=120,
+                bonus=5,
+                dmg=("1d10", 0),
+                level=0,
+                dmg_type=DamageType.FORCE,
+            )
         )
         self.add_action(
             SpellAttack(
@@ -42,6 +63,7 @@ class Warlock(Character):
                 save=("dex", 13),
                 dmg=("1d6", 0),
                 level=1,
+                dmg_type=DamageType.FIRE,
             )
         )
         self.add_reaction(
@@ -51,6 +73,7 @@ class Warlock(Character):
                 bonus=5,
                 dmg=("2d10", 0),
                 level=1,
+                dmg_type=DamageType.FIRE,
             )
         )
 

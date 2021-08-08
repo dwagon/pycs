@@ -1,5 +1,6 @@
 """ Handle Attacks """
 import dice
+from constants import DamageType
 
 
 ##############################################################################
@@ -13,6 +14,7 @@ class Attack:
         self.name = name
         self.dmg = kwargs.get("dmg", "")
         self.bonus = kwargs.get("bonus", "")
+        self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
     ########################################################################
     def range(self):
@@ -43,9 +45,12 @@ class Attack:
         return int(to_hit), crit
 
     ########################################################################
-    def max_dmg(self):
+    def max_dmg(self, victim):
         """What is the most damage this attack can do"""
-        return int(dice.roll_max(self.dmg[0])) + self.dmg[1]
+        dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
+        if self.dmg_type in victim.vulnerable:
+            dmg *= 2
+        return dmg
 
     ########################################################################
     def perform_attack(self, source, target, rnge):
@@ -53,7 +58,9 @@ class Attack:
         to_hit, crit = self.roll_to_hit(rnge)
         if to_hit > target.ac:
             dmg = self.roll_dmg(target, crit)
-            print(f"{source} hit {target} with {self} for {dmg} hp damage")
+            print(
+                f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
+            )
             target.hit(dmg, source)
         else:
             print(f"{source} missed {target} with {self}")
@@ -70,6 +77,9 @@ class Attack:
             )
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+        if self.dmg_type in victim.vulnerable:
+            print(f"{self} is vulnerable to {self.dmg_type}")
+            dmg *= 2
         return dmg
 
     ########################################################################

@@ -22,6 +22,7 @@ class Creature:
         self.stats["wis"] = kwargs.get("wis", 11)
         self.stats["con"] = kwargs.get("con", 11)
         self.stats["cha"] = kwargs.get("cha", 11)
+        self.vulnerable = kwargs.get("vulnerable", [])
         self.state = "OK"
         if "hp" in kwargs:
             self.hp = kwargs["hp"]
@@ -109,7 +110,7 @@ class Creature:
                 continue
             if atk.range()[1] < rnge:
                 continue
-            mxd = atk.max_dmg()
+            mxd = atk.max_dmg(self.target)
             if atk.has_disadvantage(rnge):
                 mxd /= 2
             if mxd > maxdmg:
@@ -129,7 +130,7 @@ class Creature:
                 continue
             if atk.range()[1] < rnge:
                 continue
-            mxd = atk.max_dmg()
+            mxd = atk.max_dmg(source)
             if atk.has_disadvantage(rnge):
                 mxd /= 2
             if mxd > maxdmg:

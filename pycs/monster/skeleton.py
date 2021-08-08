@@ -7,28 +7,29 @@ from .monster import Monster
 
 
 ##############################################################################
-class Goblin(Monster):
-    """Goblin"""
+class Skeleton(Monster):
+    """Skeleton - https://www.dndbeyond.com/monsters/skeleton"""
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d6"
+        self.hitdice = "2d8+4"
         kwargs.update(
             {
-                "ac": 15,
+                "ac": 13,
                 "speed": 30,
-                "str": 8,
+                "str": 10,
                 "dex": 14,
-                "con": 10,
-                "int": 10,
+                "con": 15,
+                "int": 6,
                 "wis": 8,
-                "cha": 8,
+                "cha": 5,
+                "vulnerable": [DamageType.BLUDGEONING],
             }
         )
         super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
-                "scimitar",
+                "Shortsword",
                 reach=5,
                 bonus=4,
                 dmg=("1d6", 2),
@@ -38,7 +39,7 @@ class Goblin(Monster):
 
         self.add_action(
             RangedAttack(
-                "shortbow",
+                "Shortbow",
                 bonus=4,
                 s_range=80,
                 l_range=320,
@@ -49,11 +50,11 @@ class Goblin(Monster):
 
     ##########################################################################
     def shortrepr(self):
-        """What a goblin looks like on the arena"""
+        """What a skeleton looks like on the arena"""
         if self.is_alive():
-            return colors.green("G")
+            return colors.green("S")
         else:
-            return colors.green("G", bg="red")
+            return colors.green("S", bg="red")
 
 
 # EOF
