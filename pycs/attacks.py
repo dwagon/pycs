@@ -15,6 +15,7 @@ class Attack:
         self.dmg = kwargs.get("dmg", "")
         self.bonus = kwargs.get("bonus", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
+        self.side_effect = kwargs.get("side_effect", None)
 
     ########################################################################
     def range(self):
@@ -27,8 +28,10 @@ class Attack:
         return True
 
     ##########################################################################
-    def post_attack_hook(self, source, target):
+    def post_attack_hook(self, source, target):  # pylint: disable=unused-argument
         """Post attack hook"""
+        if self.side_effect is not None:
+            self.side_effect(target)
 
     ##########################################################################
     def roll_to_hit(self, rnge):
@@ -50,6 +53,8 @@ class Attack:
         dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
         if self.dmg_type in victim.vulnerable:
             dmg *= 2
+        if self.dmg_type in victim.immunity:
+            dmg = 0
         return dmg
 
     ########################################################################
@@ -62,9 +67,9 @@ class Attack:
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
             target.hit(dmg, source)
+            self.post_attack_hook(source, target)
         else:
             print(f"{source} missed {target} with {self}")
-        self.post_attack_hook(source, target)
 
     ########################################################################
     def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
@@ -78,8 +83,11 @@ class Attack:
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         if self.dmg_type in victim.vulnerable:
-            print(f"{self} is vulnerable to {self.dmg_type}")
+            print(f"{self} is vulnerable to {self.dmg_type.value}")
             dmg *= 2
+        if self.dmg_type in victim.immunity:
+            print(f"{self} is immune to {self.dmg_type.value}")
+            dmg = 0
         return dmg
 
     ########################################################################

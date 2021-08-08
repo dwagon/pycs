@@ -2,6 +2,8 @@
 from collections import defaultdict
 from prettytable import PrettyTable
 from monster.skeleton import Skeleton
+from monster.goblin import Goblin
+from monster.ghoul import Ghoul
 from character.fighter import Fighter
 from character.warlock import Warlock
 from arena import Arena
@@ -34,14 +36,14 @@ def combat_test():
     """Run through a combat"""
     print("#" * 80)
     arena = Arena(x=40, y=20)
-    skeleton_a = Skeleton(arena=arena, name="Skeleton A", side="Monsters")
-    skeleton_b = Skeleton(arena=arena, name="Skeleton B", side="Monsters")
-    skeleton_c = Skeleton(arena=arena, name="Skeleton C", side="Monsters")
+    skeleton_a = Skeleton(arena=arena, name="Skeleton", side="Monsters")
+    goblin = Goblin(arena=arena, name="Goblin", side="Monsters")
+    ghoul = Ghoul(arena=arena, name="Ghoul", side="Monsters")
     fighter = Fighter(arena=arena, name="Frank", side="Humans")
     warlock = Warlock(arena=arena, name="Walter", side="Humans")
     arena.add_combatant(skeleton_a, (0, 0))
-    arena.add_combatant(skeleton_b, (arena.x - 1, 0))
-    arena.add_combatant(skeleton_c, (arena.x / 2, 0))
+    arena.add_combatant(goblin, (arena.x - 1, 0))
+    arena.add_combatant(ghoul, (arena.x / 2, 0))
     arena.add_combatant(fighter, (arena.x - 1, arena.y - 1))
     arena.add_combatant(warlock, (0, arena.y - 1))
     arena.do_initiative()
