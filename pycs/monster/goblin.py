@@ -26,6 +26,7 @@ class Goblin(Monster):
         )
         super().__init__(**kwargs)
         self.add_action(MeleeAttack("scimitar", reach=5, bonus=4, dmg=("1d6", 2)))
+
         self.add_action(
             RangedAttack("shortbow", bonus=4, s_range=80, l_range=320, dmg=("1d6", 2))
         )

@@ -28,6 +28,7 @@ class Creature:
         else:
             self.hp = self.roll_hp()
         self.actions = []
+        self.reactions = []
         self.target = None
         self.coords = None
 
@@ -39,6 +40,18 @@ class Creature:
     def stat_bonus(self, stat):
         """What's the stat bonus for the stat"""
         return int((self.stats[stat] - 10) / 2)
+
+    ##########################################################################
+    def saving_throw(self, stat, dc):
+        """Make a saving throw against a stat"""
+        # Need to add stat proficiency
+        assert stat in ("str", "int", "dex", "wis", "con", "cha")
+        save = int(dice.roll("d20")) + self.stat_bonus(stat)
+        if save >= dc:
+            print(f"{self} made {stat} saving throw: {save} vs DC {dc}")
+            return True
+        print(f"{self} failed {stat} saving throw: {save} vs DC {dc}")
+        return False
 
     ##########################################################################
     def roll_initiative(self):
@@ -92,6 +105,8 @@ class Creature:
         maxdmg = 0
         attck = None
         for atk in self.actions:
+            if not atk.is_available(self):
+                continue
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg()
@@ -103,19 +118,24 @@ class Creature:
         return attck
 
     ##########################################################################
-    def roll_to_hit(self, attck):
-        """Roll to hit with the attack"""
-        crit = False
-        rnge = self.arena.distance(self, self.target)
-        if attck.has_disadvantage(rnge):
-            to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
-        else:
-            to_hit_roll = int(dice.roll("d20"))
-        if to_hit_roll == 20:
-            crit = True
-        to_hit = to_hit_roll + attck.bonus
-        print(f"{self} rolled {to_hit_roll} (critical: {crit}): {to_hit}")
-        return int(to_hit), crit
+    def pick_best_reaction(self, source):
+        """Return the best (most damage) reaction for this range"""
+        # Treat disdvantage as having half damage - need to make this cleverer
+        rnge = self.arena.distance(self, source)
+        maxdmg = 0
+        attck = None
+        for atk in self.reactions:
+            if not atk.is_available(self):
+                continue
+            if atk.range()[1] < rnge:
+                continue
+            mxd = atk.max_dmg()
+            if atk.has_disadvantage(rnge):
+                mxd /= 2
+            if mxd > maxdmg:
+                maxdmg = mxd
+                attck = atk
+        return attck
 
     ##########################################################################
     def attack(self):
@@ -127,24 +147,12 @@ class Creature:
         if attck is None:
             print(f"{self} has no attack")
             return
-        to_hit, crit = self.roll_to_hit(attck)
-        if to_hit > self.target.ac:
-            if crit:
-                dmg = (
-                    int(dice.roll_max(attck.dmg[0]))
-                    + int(dice.roll(attck.dmg[0]))
-                    + attck.dmg[1]
-                )
-            else:
-                dmg = int(dice.roll(attck.dmg[0])) + attck.dmg[1]
-            print(f"{self} hit {self.target} with {attck} for {dmg}")
-            self.target.hit(dmg)
-        else:
-            print(f"{self} missed {self.target} with {attck}")
+        rnge = self.arena.distance(self, self.target)
+        attck.perform_attack(self, self.target, rnge)
 
     ##########################################################################
-    def hit(self, dmg):
-        """We've been hit - take damage"""
+    def hit(self, dmg, source):
+        """We've been hit by source- take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
@@ -152,11 +160,28 @@ class Creature:
             self.hp = 0
             self.state = "UNCONSCIOUS"
             print(f"{self} has fallen unconscious")
+        else:
+            if self.reactions:
+                rnge = self.arena.distance(self, source)
+                self.react(source, rnge)
+
+    ##########################################################################
+    def react(self, source, rnge):
+        """React to an incoming attack with a reaction"""
+        react = self.pick_best_reaction(source)
+        if react is not None:
+            print(f"{self} reacts against {source}")
+            react.perform_attack(self, source, rnge)
 
     ##########################################################################
     def add_action(self, action):
         """Add an action to the creature"""
         self.actions.append(action)
+
+    ##########################################################################
+    def add_reaction(self, action):
+        """Add an reaction to the creature"""
+        self.reactions.append(action)
 
     ##########################################################################
     def roll_hp(self):
