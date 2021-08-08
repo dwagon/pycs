@@ -25,30 +25,56 @@ class Warlock(Character):
         )
         self.spell_slots = 1
         super().__init__(**kwargs)
-        self.add_action(MeleeAttack("mace", reach=5, bonus=1, dmg=("1d6", -1)))
+        self.add_action(MeleeAttack("Mace", reach=5, bonus=1, dmg=("1d6", -1)))
         self.add_action(
             RangedAttack(
-                "light crossbow", s_range=80, l_range=320, bonus=4, dmg=("1d8", 2)
+                "Light Crossbow", s_range=80, l_range=320, bonus=4, dmg=("1d8", 2)
             )
         )
         self.add_action(
-            SpellAttack("eldritch blast", reach=120, bonus=5, dmg=("1d10", 0), level=0)
+            SpellAttack("Eldritch Blast", reach=120, bonus=5, dmg=("1d10", 0), level=0)
+        )
+        self.add_action(
+            SpellAttack(
+                "Burning Hands",
+                style="save",
+                reach=15,
+                save=("dex", 13),
+                dmg=("1d6", 0),
+                level=1,
+            )
         )
         self.add_reaction(
             SpellAttack(
-                "hellish rebuke",
+                "Hellish Rebuke",
                 reach=60,
                 bonus=5,
                 dmg=("2d10", 0),
-                reaction=True,
                 level=1,
             )
         )
 
+    ########################################################################
+    def spell_available(self, spell):
+        """Do we have enough slots to cast a spell"""
+        if spell.level == 0:
+            return True
+        if self.spell_slots > 0:
+            return True
+        return False
+
+    ########################################################################
+    def cast(self, spell):
+        """Cast a spell"""
+        if spell.level == 0:  # Cantrip
+            return
+        self.spell_slots -= 1
+
+    ########################################################################
     def shortrepr(self):
         """What a warlock looks like in the arena"""
         if self.is_alive():
-            return colors.blue("W")
+            return colors.blue("W", bg="green")
         else:
             return colors.blue("W", bg="red")
 
