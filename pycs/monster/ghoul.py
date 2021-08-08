@@ -27,15 +27,15 @@ class Ghoul(Monster):
             }
         )
         super().__init__(**kwargs)
-        #        self.add_action(
-        #            MeleeAttack(
-        #                "Bite",
-        #                reach=5,
-        #                bonus=2,
-        #                dmg=("2d6", 2),
-        #                dmg_type=DamageType.PIERCING,
-        #            )
-        #        )
+        self.add_action(
+            MeleeAttack(
+                "Bite",
+                reach=5,
+                bonus=2,
+                dmg=("2d6", 2),
+                dmg_type=DamageType.PIERCING,
+            )
+        )
         self.add_action(
             MeleeAttack(
                 "Claw",
@@ -46,6 +46,14 @@ class Ghoul(Monster):
                 side_effect=self.ghoul_claws,
             )
         )
+
+    ##########################################################################
+    def pick_best_attack(self):
+        """ Pick the claw attack more often than damage would indicate """
+        if self.target.has_condition(Condition.PARALYZED):
+            return self.pick_attack_by_name('Bite')
+        else:
+            return self.pick_attack_by_name('Claw')
 
     ##########################################################################
     def ghoul_claws(self, target):

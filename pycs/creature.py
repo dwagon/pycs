@@ -102,6 +102,14 @@ class Creature:
         return rnge, attack
 
     ##########################################################################
+    def pick_attack_by_name(self, name):
+        """Pick the attack by name"""
+        for atk in self.actions:
+            if atk.name == name:
+                return atk
+        return None
+
+    ##########################################################################
     def pick_best_attack(self):
         """Return the best (most damage) attack for this range"""
         # Treat disdvantage as having half damage - need to make this cleverer
