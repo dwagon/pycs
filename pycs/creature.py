@@ -43,7 +43,7 @@ class Creature:
 
     ##########################################################################
     def saving_throw(self, stat, dc):
-        """ Make a saving throw against a stat """
+        """Make a saving throw against a stat"""
         # Need to add stat proficiency
         assert stat in ("str", "int", "dex", "wis", "con", "cha")
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
