@@ -23,6 +23,7 @@ class Creature:
         self.stats["con"] = kwargs.get("con", 11)
         self.stats["cha"] = kwargs.get("cha", 11)
         self.vulnerable = kwargs.get("vulnerable", [])
+        self.immunity = kwargs.get("immunity", [])
         self.state = "OK"
         if "hp" in kwargs:
             self.hp = kwargs["hp"]

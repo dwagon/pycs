@@ -50,6 +50,8 @@ class Attack:
         dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
         if self.dmg_type in victim.vulnerable:
             dmg *= 2
+        if self.dmg_type in victim.immunity:
+            dmg = 0
         return dmg
 
     ########################################################################
@@ -78,8 +80,11 @@ class Attack:
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         if self.dmg_type in victim.vulnerable:
-            print(f"{self} is vulnerable to {self.dmg_type}")
+            print(f"{self} is vulnerable to {self.dmg_type.value}")
             dmg *= 2
+        if self.dmg_type in victim.immunity:
+            print(f"{self} is immune to {self.dmg_type.value}")
+            dmg = 0
         return dmg
 
     ########################################################################
