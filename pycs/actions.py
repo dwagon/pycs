@@ -42,13 +42,21 @@ class SpellHealing(Action):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.cure = kwargs.get("cure")
+        self.level = kwargs.get("level")
+
+    ########################################################################
+    def max_cure(self, source):
+        """What is the most effective cure"""
+        mhp = int(dice.roll_max(self.cure[0])) + self.cure[1] + source.spell_modifier
+        return mhp
 
     ########################################################################
     def perform_action(self, source, target, rnge):  # pylint: disable=unused-argument
-        """ Cure the target """
-        chp = int(dice.roll(self.cure[0])) + self.cure[1]
+        """Cure the target"""
+        chp = int(dice.roll(self.cure[0])) + self.cure[1] + source.spell_modifier
         target.hp += chp
         target.hp = min(target.max_hp, target.hp)
+        print(f"{source} cured {target} of {chp} hp")
 
 
 # EOF

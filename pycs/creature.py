@@ -117,6 +117,8 @@ class Creature:
     def pick_best_attack(self):
         """Return the best (most damage) attack for this range"""
         # Treat disdvantage as having half damage - need to make this cleverer
+        if self.target is None:
+            return None
         rnge = self.arena.distance(self, self.target)
         maxdmg = 0
         attck = None
@@ -230,7 +232,9 @@ class Creature:
 
     ##########################################################################
     def choose_action(self):
-        """ What action are we going to take """
+        """What action are we going to take"""
+        if self.target is None:
+            return None
         attck = self.pick_best_attack()
         return attck
 
@@ -245,15 +249,17 @@ class Creature:
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return
-        if self.target is None:
-            self.pick_target()
+        self.pick_target()
         self.move_to_target()
         action = self.choose_action()
-        if issubclass(action.__class__, Attack):
-            self.attack()
         if action is None:
             print(f"{self} dashing")
-            self.move_to_target()   # dash
+            self.move_to_target()  # dash
+            return
+        if issubclass(action.__class__, Attack):
+            self.attack()
+        else:
+            action.perform_action(self, self.target, 0)
 
 
 # EOF
