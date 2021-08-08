@@ -21,14 +21,10 @@ class Arena:
     ##############################################################################
     def do_initiative(self):
         """Roll everyone's initiative and sort"""
-        while True:
-            tmp = [(_.roll_initiative(), _) for _ in self.combatants]
-            try:
-                tmp.sort(reverse=True)
-            except TypeError:  # Caused by two parties having same initiative
-                continue
-            break
-        self.combatants = [_[1] for _ in tmp]
+        # ID is here as an ultimate tie breaker
+        tmp = [(_.roll_initiative(), _.stats["dex"], id(_), _) for _ in self.combatants]
+        tmp.sort(reverse=True)
+        self.combatants = [_[-1] for _ in tmp]
         print(f"Initiative: {self.combatants}")
 
     ##############################################################################
