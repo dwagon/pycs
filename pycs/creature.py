@@ -1,5 +1,6 @@
 """ Parent class for all creatures """
 import dice
+from constants import Condition
 
 
 ##############################################################################
@@ -31,6 +32,7 @@ class Creature:
             self.hp = self.roll_hp()
         self.actions = []
         self.reactions = []
+        self.conditions = set()
         self.target = None
         self.coords = None
 
@@ -176,6 +178,16 @@ class Creature:
             react.perform_attack(self, source, rnge)
 
     ##########################################################################
+    def has_condition(self, cond):
+        """Do we have a condition"""
+        return cond in self.conditions
+
+    ##########################################################################
+    def add_condition(self, cond):
+        """Add a condition"""
+        self.conditions.add(cond)
+
+    ##########################################################################
     def add_action(self, action):
         """Add an action to the creature"""
         self.actions.append(action)
@@ -208,6 +220,9 @@ class Creature:
     def turn(self):
         """Have a go"""
         print()
+        if self.has_condition(Condition.PARALYZED):
+            print(f"{self} is paralyzed")
+            return
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return

@@ -23,4 +23,27 @@ class DamageType(Enum):
     THUNDER = "thunder"
 
 
+##############################################################################
+##############################################################################
+##############################################################################
+class Condition(Enum):
+    """Conditions"""
+
+    BLINDED = "blinded"
+    CHARMED = "charmed"
+    DEAFENED = "deafened"
+    EXHAUSTION = "exhaustion"
+    FRIGHTENED = "frightened"
+    GRAPPLED = "grappled"
+    INCAPACITATED = "incapacitated"
+    INVISIBLE = "invisible"
+    PARALYZED = "paralyzed"
+    PETRIFIED = "petrified"
+    POISONED = "poisoned"
+    PRONE = "prone"
+    RESTRAINED = "restrained"
+    STUNNED = "stunned"
+    UNCONSCIOUS = "unconscious"
+
+
 # EOF
