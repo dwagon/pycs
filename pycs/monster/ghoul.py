@@ -49,11 +49,11 @@ class Ghoul(Monster):
 
     ##########################################################################
     def pick_best_attack(self):
-        """ Pick the claw attack more often than damage would indicate """
+        """Pick the claw attack more often than damage would indicate"""
         if self.target.has_condition(Condition.PARALYZED):
-            return self.pick_attack_by_name('Bite')
+            return self.pick_attack_by_name("Bite")
         else:
-            return self.pick_attack_by_name('Claw')
+            return self.pick_attack_by_name("Claw")
 
     ##########################################################################
     def ghoul_claws(self, target):
