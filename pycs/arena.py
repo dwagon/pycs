@@ -141,6 +141,13 @@ class Arena:
     ##############################################################################
     def __setitem__(self, key, val):
         """Change the grid"""
+        assert isinstance(key, tuple)
+        assert isinstance(key[0], int)
+        assert isinstance(key[1], int)
+        assert key[0] >= 0
+        assert key[0] < self.x
+        assert key[1] >= 0
+        assert key[1] < self.y
         self.grid[key] = val
 
     ##############################################################################
