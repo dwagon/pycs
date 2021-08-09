@@ -46,4 +46,18 @@ class Condition(Enum):
     UNCONSCIOUS = "unconscious"
 
 
+##############################################################################
+##############################################################################
+##############################################################################
+class Stat(Enum):
+    """Ability Scores"""
+
+    STR = "strength"
+    DEX = "dexterity"
+    CON = "constitution"
+    INT = "intelligence"
+    WIS = "wisdom"
+    CHA = "charisma"
+
+
 # EOF
