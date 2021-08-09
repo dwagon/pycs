@@ -19,15 +19,18 @@ class Creature:
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
-        self.stats = {}
-        self.stats[Stat.STR] = kwargs.get("str", 11)
-        self.stats[Stat.INT] = kwargs.get("int", 11)
-        self.stats[Stat.DEX] = kwargs.get("dex", 11)
-        self.stats[Stat.WIS] = kwargs.get("wis", 11)
-        self.stats[Stat.CON] = kwargs.get("con", 11)
-        self.stats[Stat.CHA] = kwargs.get("cha", 11)
+        self.stats = {
+            Stat.STR: kwargs["str"],
+            Stat.INT: kwargs["int"],
+            Stat.DEX: kwargs["dex"],
+            Stat.WIS: kwargs["wis"],
+            Stat.CON: kwargs["con"],
+            Stat.CHA: kwargs["cha"],
+        }
         self.vulnerable = kwargs.get("vulnerable", [])
+        self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])
+        self.cond_immunity = kwargs.get("cond_immunity", [])
         self.state = "OK"
         if "hp" in kwargs:
             self.hp = kwargs["hp"]
@@ -246,6 +249,14 @@ class Creature:
         print(f"{self} has fallen unconscious")
 
     ##########################################################################
+    def check_start_effects(self):
+        """Are there any effects for the start of the turn"""
+        for creat in self.arena.combatants:
+            if creat == self:
+                continue
+            creat.start_others_turn(self)
+
+    ##########################################################################
     def turn(self):
         """Have a go"""
         print()
@@ -256,6 +267,7 @@ class Creature:
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return
+        self.check_start_effects()
         self.pick_target()
         self.move_to_target()
         action = self.choose_action()
