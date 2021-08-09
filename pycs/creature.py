@@ -237,8 +237,10 @@ class Creature:
         return attck
 
     ##########################################################################
-    def fallen_unconscious(self, dmg, dmg_type, critical):  # pylint: disable=unused-argument
-        """ Creature has fallen unconscious """
+    def fallen_unconscious(
+        self, dmg, dmg_type, critical
+    ):  # pylint: disable=unused-argument
+        """Creature has fallen unconscious"""
         self.hp = 0
         self.state = "UNCONSCIOUS"
         print(f"{self} has fallen unconscious")
