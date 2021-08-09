@@ -3,6 +3,7 @@ import colors
 from attacks import MeleeAttack
 from constants import DamageType
 from constants import Condition
+from constants import Stat
 from .monster import Monster
 
 
@@ -58,7 +59,7 @@ class Ghoul(Monster):
     ##########################################################################
     def ghoul_claws(self, target):
         """Side effect of ghoul claws"""
-        svth = target.saving_throw("con", 10)
+        svth = target.saving_throw(Stat.CON, 10)
         if not svth:
             print(f"{target} got paralysed by {self}")
             target.add_condition(Condition.PARALYZED)

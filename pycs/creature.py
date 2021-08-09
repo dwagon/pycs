@@ -3,6 +3,7 @@
 import dice
 from attacks import Attack
 from constants import Condition
+from constants import Stat
 
 
 ##############################################################################
@@ -19,12 +20,12 @@ class Creature:
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {}
-        self.stats["str"] = kwargs.get("str", 11)
-        self.stats["int"] = kwargs.get("int", 11)
-        self.stats["dex"] = kwargs.get("dex", 11)
-        self.stats["wis"] = kwargs.get("wis", 11)
-        self.stats["con"] = kwargs.get("con", 11)
-        self.stats["cha"] = kwargs.get("cha", 11)
+        self.stats[Stat.STR] = kwargs.get("str", 11)
+        self.stats[Stat.INT] = kwargs.get("int", 11)
+        self.stats[Stat.DEX] = kwargs.get("dex", 11)
+        self.stats[Stat.WIS] = kwargs.get("wis", 11)
+        self.stats[Stat.CON] = kwargs.get("con", 11)
+        self.stats[Stat.CHA] = kwargs.get("cha", 11)
         self.vulnerable = kwargs.get("vulnerable", [])
         self.immunity = kwargs.get("immunity", [])
         self.state = "OK"
@@ -52,7 +53,6 @@ class Creature:
     def saving_throw(self, stat, dc):
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
-        assert stat in ("str", "int", "dex", "wis", "con", "cha")
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
         if save >= dc:
             print(f"{self} made {stat} saving throw: {save} vs DC {dc}")
@@ -63,7 +63,7 @@ class Creature:
     ##########################################################################
     def roll_initiative(self):
         """Roll initiative"""
-        init = dice.roll(f"d20+{self.stat_bonus('dex')}")
+        init = dice.roll(f"d20+{self.stat_bonus(Stat.DEX)}")
         print(f"{self} rolled {init} for initiative")
         return init
 

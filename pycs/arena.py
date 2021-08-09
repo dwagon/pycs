@@ -1,6 +1,7 @@
 """ Class defining the play area """
 import math
 from collections import defaultdict
+from constants import Stat
 
 
 ##############################################################################
@@ -22,7 +23,9 @@ class Arena:
     def do_initiative(self):
         """Roll everyone's initiative and sort"""
         # ID is here as an ultimate tie breaker
-        tmp = [(_.roll_initiative(), _.stats["dex"], id(_), _) for _ in self.combatants]
+        tmp = [
+            (_.roll_initiative(), _.stats[Stat.DEX], id(_), _) for _ in self.combatants
+        ]
         tmp.sort(reverse=True)
         self.combatants = [_[-1] for _ in tmp]
         print(f"Initiative: {self.combatants}")

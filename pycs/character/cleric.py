@@ -4,6 +4,7 @@ from attacks import MeleeAttack
 from attacks import SpellAttack
 from actions import SpellHealing
 from constants import DamageType
+from constants import Stat
 from .character import Character
 
 
@@ -42,7 +43,7 @@ class Cleric(Character):
                 "Sacred Flame",
                 reach=60,
                 style="save",
-                save=("dex", 13),
+                save=(Stat.DEX, 13),
                 dmg=("1d8", 0),
                 dmg_type=DamageType.RADIANT,
                 level=0,

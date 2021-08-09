@@ -4,6 +4,7 @@ from attacks import MeleeAttack
 from attacks import RangedAttack
 from attacks import SpellAttack
 from constants import DamageType
+from constants import Stat
 from .character import Character
 
 
@@ -60,7 +61,7 @@ class Warlock(Character):
                 "Burning Hands",
                 style="save",
                 reach=15,
-                save=("dex", 13),
+                save=(Stat.DEX, 13),
                 dmg=("1d6", 0),
                 level=1,
                 dmg_type=DamageType.FIRE,
