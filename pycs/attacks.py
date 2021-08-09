@@ -56,7 +56,7 @@ class Attack(Action):
             print(
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
-            target.hit(dmg, source)
+            target.hit(dmg, self.dmg_type, source, crit)
             self.post_attack_hook(source, target)
         else:
             print(f"{source} missed {target} with {self}")
