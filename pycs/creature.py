@@ -55,9 +55,9 @@ class Creature:
         # Need to add stat proficiency
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
         if save >= dc:
-            print(f"{self} made {stat} saving throw: {save} vs DC {dc}")
+            print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
             return True
-        print(f"{self} failed {stat} saving throw: {save} vs DC {dc}")
+        print(f"{self} failed {stat.value} saving throw: {save} vs DC {dc}")
         return False
 
     ##########################################################################
@@ -169,15 +169,13 @@ class Creature:
         attck.perform_action(self, self.target, rnge)
 
     ##########################################################################
-    def hit(self, dmg, source):
+    def hit(self, dmg, dmg_type, source, critical):
         """We've been hit by source- take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
         if self.hp <= 0:
-            self.hp = 0
-            self.state = "UNCONSCIOUS"
-            print(f"{self} has fallen unconscious")
+            self.fallen_unconscious(dmg, dmg_type, critical)
         else:
             if self.reactions:
                 rnge = self.arena.distance(self, source)
@@ -237,6 +235,15 @@ class Creature:
             return None
         attck = self.pick_best_attack()
         return attck
+
+    ##########################################################################
+    def fallen_unconscious(
+        self, dmg, dmg_type, critical
+    ):  # pylint: disable=unused-argument
+        """Creature has fallen unconscious"""
+        self.hp = 0
+        self.state = "UNCONSCIOUS"
+        print(f"{self} has fallen unconscious")
 
     ##########################################################################
     def turn(self):

@@ -1,4 +1,4 @@
-""" Gobline Monster Class """
+""" Skeleton Monster Class """
 import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
@@ -53,8 +53,7 @@ class Skeleton(Monster):
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("S")
-        else:
-            return colors.green("S", bg="red")
+        return colors.green("S", bg="red")
 
 
 # EOF
