@@ -137,7 +137,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg(self.target)
-            if atk.has_disadvantage(rnge):
+            if atk.has_disadvantage(self, self.target, rnge):
                 mxd /= 2
             if mxd > maxdmg:
                 maxdmg = mxd
@@ -157,7 +157,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg(source)
-            if atk.has_disadvantage(rnge):
+            if atk.has_disadvantage(self, self.target, rnge):
                 mxd /= 2
             if mxd > maxdmg:
                 maxdmg = mxd
@@ -204,9 +204,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return cond in self.conditions
 
     ##########################################################################
-    def add_condition(self, cond):
-        """Add a condition"""
-        self.conditions.add(cond)
+    def add_condition(self, cond, source=None):
+        """Add a condition - inflicted by source"""
+        if cond not in self.cond_immunity:
+            if source:
+                print(f"{self} got {cond.value} from {source}")
+            else:
+                print(f"{self} got {cond.value}")
+            self.conditions.add(cond)
 
     ##########################################################################
     def add_action(self, action):
@@ -277,6 +282,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 if crit:
                     tmp[name]["crits"] += 1
         return tmp
+
+    ##########################################################################
+    def start_others_turn(self, creat):
+        """Hook for anothing creature starting a turn near me"""
 
     ##########################################################################
     def turn(self):

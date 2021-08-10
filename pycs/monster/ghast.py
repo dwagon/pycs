@@ -55,6 +55,19 @@ class Ghast(Monster):
         )
 
     ##########################################################################
+    def start_others_turn(self, creat):
+        """Creature creat is starting a turn"""
+        # Stench. Any creature that starts its turn within 5 feet of the
+        # ghast must succeed on a DC 10 Constitution saving throw or be
+        # poisoned until the start of its next turn. On a successful saving
+        # throw, the creature is immune to the ghast's Stench for 24 hours."
+        dist = self.arena.distance(self, creat)
+        if dist <= 1:
+            svth = creat.saving_throw(Stat.CON, 10)
+            if not svth:
+                creat.add_condition(Condition.POISONED, self)
+
+    ##########################################################################
     def ghast_claws(self, target):
         """If the target is a creature other than an undead, it must
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
