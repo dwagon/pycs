@@ -37,6 +37,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         else:
             self.hp = self.roll_hp()
         self.max_hp = self.hp
+        self.has_grappled = None
         self.actions = []
         self.reactions = []
         self.conditions = set()
@@ -58,6 +59,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
+        if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
+            print(
+                f"{self} automatically failed {stat.value} saving throw as unconscious"
+            )
+            return False
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
         if save >= dc:
             print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
@@ -88,6 +94,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def move_to_target(self):
         """Move to the target"""
         if not self.target:
+            return
+        if self.has_condition(Condition.GRAPPLED):
+            print(f"{self} is grappled - not moving")
             return
         print(f"{self} moving to {self.target}")
         for _ in range(self.speed):
@@ -205,6 +214,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return cond in self.conditions
 
     ##########################################################################
+    def remove_condition(self, cond):
+        """Remove a condition"""
+        self.conditions.remove(cond)
+
+    ##########################################################################
     def add_condition(self, cond, source=None):
         """Add a condition - inflicted by source"""
         if cond not in self.cond_immunity:
@@ -258,6 +272,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Creature has fallen unconscious"""
         self.hp = 0
         self.state = "UNCONSCIOUS"
+        self.add_condition(Condition.UNCONSCIOUS)
+        if self.has_grappled:
+            self.has_grappled.remove_condition(Condition.GRAPPLED)
         print(f"{self} has fallen unconscious")
 
     ##########################################################################
@@ -283,6 +300,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Are there any effects for the start of the turn"""
         for creat in self.arena.combatants:
             if creat == self:
+                creat.start_turn()
                 continue
             creat.start_others_turn(self)
 
@@ -303,6 +321,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return tmp
 
     ##########################################################################
+    def start_turn(self):
+        """Start the turn"""
+
+    ##########################################################################
     def start_others_turn(self, creat):
         """Hook for anothing creature starting a turn near me"""
 
@@ -321,7 +343,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.pick_target()
         self.move_to_target()
         action = self.choose_action()
-        if action is None:
+        if action is None and self.target:
             print(f"{self} dashing")
             self.move_to_target()  # dash
             return
