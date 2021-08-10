@@ -96,7 +96,7 @@ class Arena(AStar):
         for delta_x in (-1, 0, 1):
             for delta_y in (-1, 0, 1):
                 dest = (target.coords[0] + delta_x, target.coords[1] + delta_y)
-                if dest not in self.grid:    # Not on map, don't bother trying
+                if dest not in self.grid:  # Not on map, don't bother trying
                     continue
                 route_iter = self.astar(creat.coords, dest)
                 if route_iter:
@@ -140,7 +140,9 @@ class Arena(AStar):
             if not enemy.is_alive():
                 continue
             dist = self.distance(creat, enemy)
-            print(f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance")
+            print(
+                f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance"
+            )
             if dist < close_dist:
                 dist = close_dist
                 closest = enemy
