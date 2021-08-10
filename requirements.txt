@@ -2,3 +2,4 @@ Click
 dice
 ansicolors
 prettytable
+astar
