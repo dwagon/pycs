@@ -40,6 +40,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.actions = []
         self.reactions = []
         self.conditions = set()
+        self.temp_effects = {}
         self.target = None
         self.coords = None
         self.statistics = []
@@ -260,6 +261,24 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"{self} has fallen unconscious")
 
     ##########################################################################
+    def check_end_effects(self):
+        """Are the any effects for the end of the turn"""
+        for effect, hook in self.temp_effects.copy().items():
+            remove = hook(self)
+            if remove:
+                self.remove_temp_effect(effect)
+
+    ##########################################################################
+    def remove_temp_effect(self, name):
+        """Remove a temporary effect"""
+        del self.temp_effects[name]
+
+    ##########################################################################
+    def add_temp_effect(self, name, hook):
+        """Add a temporary effect"""
+        self.temp_effects[name] = hook
+
+    ##########################################################################
     def check_start_effects(self):
         """Are there any effects for the start of the turn"""
         for creat in self.arena.combatants:
@@ -310,6 +329,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.attack()
         else:
             action.perform_action(self, self.target, 0)
+
+        self.check_end_effects()
 
 
 # EOF

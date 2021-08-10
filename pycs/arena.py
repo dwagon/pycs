@@ -88,8 +88,8 @@ class Arena(AStar):
 
     ##############################################################################
     def move_towards(self, creat, target):
-        """Move the creature creat towards target"""
-        print(f"{creat} @ {creat.coords} moving to {target} @ {target.coords}")
+        """Move the creature creat towards target one step"""
+        # print(f"{creat} @ {creat.coords} moving to {target} @ {target.coords}")
         # We can't move to the target square because it is occupied so no route
         # so try all the adjacent squares for the shortest route
         routes = {}
