@@ -82,11 +82,9 @@ class Arena(AStar):
                 f"Error: arena.distance(one={one}@{one.coords}, two={two}@{two.coords})"
             )
             return 999
-        dist = math.sqrt(
-            pow(one.coords[0] - two.coords[0], 2)
-            + pow(one.coords[1] - two.coords[1], 2)
-        )
-        return dist
+        dist = math.hypot(one.coords[0] - two.coords[0], one.coords[1] - two.coords[1])
+        # Use floor() so that a diagonal still counts as range 1
+        return math.floor(dist)
 
     ##############################################################################
     def move_towards(self, creat, target):
@@ -101,10 +99,8 @@ class Arena(AStar):
                 if dest not in self.grid:    # Not on map, don't bother trying
                     continue
                 route_iter = self.astar(creat.coords, dest)
-                print(f"{dest=} {route_iter=}")
                 if route_iter:
                     routes[dest] = list(route_iter)
-        print(f"{routes=}")
 
         if not routes:
             print("{creat} couldn't find path to {target}")
@@ -118,8 +114,6 @@ class Arena(AStar):
                 shortest = len(rout)
                 target_adj = dest
         route = routes[target_adj]
-
-        print(f"{route=}")
 
         # Are we adjacent - then don't bother moving
         if len(route) < 2:
