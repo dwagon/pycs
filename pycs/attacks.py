@@ -28,10 +28,19 @@ class Attack(Action):
     def roll_to_hit(self, source, target, rnge):
         """Roll to hit with the attack"""
         crit = False
+        balance = 0
         if self.has_disadvantage(source, target, rnge):
+            balance -= 1
+        elif self.has_advantage(source, target, rnge):
+            balance += 1
+
+        if balance < 0:
             to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
+        elif balance > 0:
+            to_hit_roll = max(int(dice.roll("d20")), int(dice.roll("d20")))
         else:
             to_hit_roll = int(dice.roll("d20"))
+
         if to_hit_roll == 20:
             crit = True
         to_hit = to_hit_roll + self.bonus
@@ -87,6 +96,13 @@ class Attack(Action):
     def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
+            return True
+        return False
+
+    ########################################################################
+    def has_advantage(self, source, target, rnge):  # pylint: disable=unused-argument
+        """Does this attack have advantage at this range"""
+        if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
         return False
 
