@@ -8,14 +8,14 @@ from constants import Stat
 
 ##############################################################################
 ##############################################################################
-class Creature:
+class Creature:  # pylint: disable=too-many-instance-attributes
     """Parent class for all creatures"""
 
     ##########################################################################
     def __init__(self, arena, **kwargs):
         self.arena = arena
         self.name = kwargs.get("name", self.__class__.__name__)
-        self.ac = kwargs.get("ac", 10)
+        self.ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
@@ -33,7 +33,7 @@ class Creature:
         self.cond_immunity = kwargs.get("cond_immunity", [])
         self.state = "OK"
         if "hp" in kwargs:
-            self.hp = kwargs["hp"]
+            self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         else:
             self.hp = self.roll_hp()
         self.max_hp = self.hp
@@ -42,6 +42,7 @@ class Creature:
         self.conditions = set()
         self.target = None
         self.coords = None
+        self.statistics = []
 
     ##########################################################################
     def __repr__(self):
@@ -53,7 +54,7 @@ class Creature:
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
-    def saving_throw(self, stat, dc):
+    def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
@@ -90,11 +91,16 @@ class Creature:
         print(f"{self} moving to {self.target}")
         for _ in range(self.speed):
             rnge, _ = self.get_attack_range()
-            if self.arena.distance(self, self.target) < rnge:
-                # Within range - don't move
+            # Within range - don't move
+            dist = self.arena.distance(self, self.target)
+            if dist <= rnge:
+                print(f"{self} within {rnge} range of {self.target}: {dist}")
                 return
-            dirn = self.arena.dir_to_move(self, self.target)
-            self.coords = self.arena.move(self, dirn)
+            old_coords = self.coords
+            self.coords = self.arena.move_towards(self, self.target)
+            if old_coords == self.coords:
+                # We aren't moving - don't keep trying
+                break
 
     ##########################################################################
     def get_attack_range(self):
@@ -255,6 +261,22 @@ class Creature:
             if creat == self:
                 continue
             creat.start_others_turn(self)
+
+    ##########################################################################
+    def dump_statistics(self):
+        """Dump out the attack statistics - make prettier"""
+        tmp = {}
+        for name, dmg, _, crit in self.statistics:
+            if name not in tmp:
+                tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
+            if dmg == 0:
+                tmp[name]["misses"] += 1
+            else:
+                tmp[name]["hits"] += 1
+                tmp[name]["dmg"] += dmg
+                if crit:
+                    tmp[name]["crits"] += 1
+        return tmp
 
     ##########################################################################
     def turn(self):

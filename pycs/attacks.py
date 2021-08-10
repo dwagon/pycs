@@ -57,8 +57,10 @@ class Attack(Action):
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
             target.hit(dmg, self.dmg_type, source, crit)
+            source.statistics.append((self.name, dmg, self.dmg_type, crit))
             self.post_attack_hook(source, target)
         else:
+            source.statistics.append((self.name, 0, False, False))
             print(f"{source} missed {target} with {self}")
 
     ########################################################################
@@ -152,12 +154,11 @@ class SpellAttack(Attack):
         """Special spell damage"""
         if self.style == "tohit":
             return super().roll_dmg(victim, critical)
-        else:
-            saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
-            dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
-            if saved:
-                dmg = int(dmg / 2)
-            return dmg
+        saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
+        dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+        if saved:
+            dmg = int(dmg / 2)
+        return dmg
 
     ########################################################################
     def roll_to_hit(self, rnge):
@@ -165,8 +166,7 @@ class SpellAttack(Attack):
         assert self.style in ("tohit", "save")
         if self.style == "tohit":
             return super().roll_to_hit(rnge)
-        else:
-            return 999, False
+        return 999, False
 
     ########################################################################
     def range(self):
