@@ -5,7 +5,7 @@ from prettytable import PrettyTable
 # from monster.skeleton import Skeleton
 # from monster.goblin import Goblin
 # from monster.ghoul import Ghoul
-from monster.zombie import Zombie
+from monster.ghast import Ghast
 from character.fighter import Fighter
 from character.warlock import Warlock
 from character.cleric import Cleric
@@ -81,27 +81,18 @@ def combat_test():
     turn = 0
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
-    # skeleton_a = Skeleton(arena=arena, name="Skeleton", side="Monsters")
-    # goblin = Goblin(arena=arena, name="Goblin", side="Monsters")
-    # ghoul = Ghoul(arena=arena, name="Ghoul", side="Monsters")
     fighter = Fighter(arena=arena, name="Frank", side="Humans")
     warlock = Warlock(arena=arena, name="Walter", side="Humans")
     cleric = Cleric(arena=arena, name="Charlise", side="Humans")
-    # arena.add_combatant(skeleton_a, (0, 0))
-    # arena.add_combatant(goblin, (arena.max_x - 1, 0))
-    # arena.add_combatant(ghoul, (arena.max_x / 2, 0))
-    arena.add_combatant(Zombie(arena=arena, name="Zombie 1", side="Monsters"), (0, 0))
-    arena.add_combatant(Zombie(arena=arena, name="Zombie 2", side="Monsters"), (4, 0))
-    arena.add_combatant(Zombie(arena=arena, name="Zombie 3", side="Monsters"), (8, 0))
-    arena.add_combatant(Zombie(arena=arena, name="Zombie 4", side="Monsters"), (12, 0))
-    arena.add_combatant(Zombie(arena=arena, name="Zombie 5", side="Monsters"), (14, 0))
+    arena.add_combatant(Ghast(arena=arena, name="Ghast 1", side="Monsters"), (16, 0))
+    arena.add_combatant(Ghast(arena=arena, name="Ghast 2", side="Monsters"), (18, 0))
     arena.add_combatant(fighter, (arena.max_x - 1, arena.max_y - 1))
     arena.add_combatant(warlock, (0, arena.max_y - 1))
     arena.add_combatant(cleric, (int(arena.max_x / 2), arena.max_y - 1))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
-        print(f"##### Turn {turn}: {arena.remaining_participants()}")
+        print(f"##### Turn {turn}: {dict(arena.remaining_participants())}")
         arena.turn()
         print(f"{arena}")
         turn += 1

@@ -21,7 +21,7 @@ class Arena(AStar):
                 self.grid[(i, j)] = None
 
     ##############################################################################
-    def distance_between(self, n1, n2):
+    def distance_between(self, n1, n2):  # pylint: disable=unused-argument
         """This method always returns 1, as two 'neighbors' are always adjacent"""
         return 1
 
@@ -88,8 +88,8 @@ class Arena(AStar):
 
     ##############################################################################
     def move_towards(self, creat, target):
-        """Move the creature creat towards target"""
-        print(f"{creat} @ {creat.coords} moving to {target} @ {target.coords}")
+        """Move the creature creat towards target one step"""
+        # print(f"{creat} @ {creat.coords} moving to {target} @ {target.coords}")
         # We can't move to the target square because it is occupied so no route
         # so try all the adjacent squares for the shortest route
         routes = {}
@@ -103,7 +103,7 @@ class Arena(AStar):
                     routes[dest] = list(route_iter)
 
         if not routes:
-            print("{creat} couldn't find path to {target}")
+            print(f"{creat} couldn't find path to {target}")
             return creat.coords
 
         # Now pick the shortest workable route

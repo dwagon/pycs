@@ -1,6 +1,7 @@
 """ Handle Attacks """
 import dice
 from constants import DamageType
+from constants import Condition
 from actions import Action
 
 
@@ -24,10 +25,10 @@ class Attack(Action):
             self.side_effect(target)
 
     ##########################################################################
-    def roll_to_hit(self, rnge):
+    def roll_to_hit(self, source, target, rnge):
         """Roll to hit with the attack"""
         crit = False
-        if self.has_disadvantage(rnge):
+        if self.has_disadvantage(source, target, rnge):
             to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
         else:
             to_hit_roll = int(dice.roll("d20"))
@@ -50,7 +51,7 @@ class Attack(Action):
     ########################################################################
     def perform_action(self, source, target, rnge):
         """Do the attack"""
-        to_hit, crit = self.roll_to_hit(rnge)
+        to_hit, crit = self.roll_to_hit(source, target, rnge)
         if to_hit > target.ac:
             dmg = self.roll_dmg(target, crit)
             print(
@@ -83,8 +84,10 @@ class Attack(Action):
         return dmg
 
     ########################################################################
-    def has_disadvantage(self, rnge):  # pylint: disable=unused-argument
+    def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument
         """Does this attack have disadvantage at this range"""
+        if source.has_condition(Condition.POISONED):
+            return True
         return False
 
 
@@ -123,7 +126,7 @@ class RangedAttack(Attack):
         return self.s_range, self.l_range
 
     ########################################################################
-    def has_disadvantage(self, rnge):
+    def has_disadvantage(self, source, target, rnge):
         """Does this attack have disadvantage at this range"""
         if rnge == 1:
             return True
@@ -161,11 +164,11 @@ class SpellAttack(Attack):
         return dmg
 
     ########################################################################
-    def roll_to_hit(self, rnge):
+    def roll_to_hit(self, source, target, rnge):
         """Special spell attack"""
         assert self.style in ("tohit", "save")
         if self.style == "tohit":
-            return super().roll_to_hit(rnge)
+            return super().roll_to_hit(source, target, rnge)
         return 999, False
 
     ########################################################################

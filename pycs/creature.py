@@ -19,15 +19,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
-        self.stats = {}
-        self.stats[Stat.STR] = kwargs.get("str", 11)
-        self.stats[Stat.INT] = kwargs.get("int", 11)
-        self.stats[Stat.DEX] = kwargs.get("dex", 11)
-        self.stats[Stat.WIS] = kwargs.get("wis", 11)
-        self.stats[Stat.CON] = kwargs.get("con", 11)
-        self.stats[Stat.CHA] = kwargs.get("cha", 11)
+        self.stats = {
+            Stat.STR: kwargs["str"],
+            Stat.INT: kwargs["int"],
+            Stat.DEX: kwargs["dex"],
+            Stat.WIS: kwargs["wis"],
+            Stat.CON: kwargs["con"],
+            Stat.CHA: kwargs["cha"],
+        }
         self.vulnerable = kwargs.get("vulnerable", [])
+        self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])
+        self.cond_immunity = kwargs.get("cond_immunity", [])
         self.state = "OK"
         if "hp" in kwargs:
             self.hp = kwargs["hp"]  # pylint: disable=invalid-name
@@ -37,6 +40,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.actions = []
         self.reactions = []
         self.conditions = set()
+        self.temp_effects = {}
         self.target = None
         self.coords = None
         self.statistics = []
@@ -134,7 +138,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg(self.target)
-            if atk.has_disadvantage(rnge):
+            if atk.has_disadvantage(self, self.target, rnge):
                 mxd /= 2
             if mxd > maxdmg:
                 maxdmg = mxd
@@ -154,7 +158,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if atk.range()[1] < rnge:
                 continue
             mxd = atk.max_dmg(source)
-            if atk.has_disadvantage(rnge):
+            if atk.has_disadvantage(self, self.target, rnge):
                 mxd /= 2
             if mxd > maxdmg:
                 maxdmg = mxd
@@ -201,9 +205,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return cond in self.conditions
 
     ##########################################################################
-    def add_condition(self, cond):
-        """Add a condition"""
-        self.conditions.add(cond)
+    def add_condition(self, cond, source=None):
+        """Add a condition - inflicted by source"""
+        if cond not in self.cond_immunity:
+            if source:
+                print(f"{self} got {cond.value} from {source}")
+            else:
+                print(f"{self} got {cond.value}")
+            self.conditions.add(cond)
 
     ##########################################################################
     def add_action(self, action):
@@ -252,6 +261,32 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"{self} has fallen unconscious")
 
     ##########################################################################
+    def check_end_effects(self):
+        """Are the any effects for the end of the turn"""
+        for effect, hook in self.temp_effects.copy().items():
+            remove = hook(self)
+            if remove:
+                self.remove_temp_effect(effect)
+
+    ##########################################################################
+    def remove_temp_effect(self, name):
+        """Remove a temporary effect"""
+        del self.temp_effects[name]
+
+    ##########################################################################
+    def add_temp_effect(self, name, hook):
+        """Add a temporary effect"""
+        self.temp_effects[name] = hook
+
+    ##########################################################################
+    def check_start_effects(self):
+        """Are there any effects for the start of the turn"""
+        for creat in self.arena.combatants:
+            if creat == self:
+                continue
+            creat.start_others_turn(self)
+
+    ##########################################################################
     def dump_statistics(self):
         """Dump out the attack statistics - make prettier"""
         tmp = {}
@@ -268,6 +303,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return tmp
 
     ##########################################################################
+    def start_others_turn(self, creat):
+        """Hook for anothing creature starting a turn near me"""
+
+    ##########################################################################
     def turn(self):
         """Have a go"""
         print()
@@ -278,6 +317,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.state != "OK":
             print(f"{self.name} {self.state}")
             return
+        self.check_start_effects()
         self.pick_target()
         self.move_to_target()
         action = self.choose_action()
@@ -289,6 +329,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.attack()
         else:
             action.perform_action(self, self.target, 0)
+
+        self.check_end_effects()
 
 
 # EOF
