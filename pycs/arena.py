@@ -144,7 +144,7 @@ class Arena(AStar):
                 f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance"
             )
             if dist < close_dist:
-                dist = close_dist
+                close_dist = dist
                 closest = enemy
         return closest
 
