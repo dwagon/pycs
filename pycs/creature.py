@@ -39,6 +39,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.conditions = set()
         self.target = None
         self.coords = None
+        self.statistics = []
 
     ##########################################################################
     def __repr__(self):
@@ -249,6 +250,22 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = 0
         self.state = "UNCONSCIOUS"
         print(f"{self} has fallen unconscious")
+
+    ##########################################################################
+    def dump_statistics(self):
+        """Dump out the attack statistics - make prettier"""
+        tmp = {}
+        for name, dmg, _, crit in self.statistics:
+            if name not in tmp:
+                tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
+            if dmg == 0:
+                tmp[name]["misses"] += 1
+            else:
+                tmp[name]["hits"] += 1
+                tmp[name]["dmg"] += dmg
+                if crit:
+                    tmp[name]["crits"] += 1
+        return tmp
 
     ##########################################################################
     def turn(self):

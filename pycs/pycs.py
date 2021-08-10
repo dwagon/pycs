@@ -35,6 +35,47 @@ def win_report(stats, rounds):
 
 
 ##############################################################################
+def statistics_report(arena):
+    """Dump the hit statistics at the end"""
+    tbl = PrettyTable()
+    tbl.field_names = [
+        "Name",
+        "Attack",
+        "Hits",
+        "Misses",
+        "Hit %",
+        "Damage",
+        "Crit %",
+        "HP",
+        "State",
+    ]
+    for creat in arena.combatants:
+        tmp = creat.dump_statistics()
+        for key, val in tmp.items():
+            try:
+                crit_p = int(100.0 * val["crits"] / val["hits"])
+            except ZeroDivisionError:
+                crit_p = 0
+            tbl.add_row(
+                [
+                    creat.name,
+                    key,
+                    val["hits"],
+                    val["misses"],
+                    int(100.0 * val["hits"] / (val["hits"] + val["misses"])),
+                    val["dmg"],
+                    crit_p,
+                    f"{creat.hp}/{creat.max_hp}",
+                    creat.state.title(),
+                ]
+            )
+    tbl.sortby = "Name"
+    tbl.align["Name"] = "l"
+    tbl.align["Attack"] = "l"
+    print(tbl)
+
+
+##############################################################################
 def combat_test():
     """Run through a combat"""
     turn = 0
@@ -53,6 +94,7 @@ def combat_test():
     arena.add_combatant(Zombie(arena=arena, name="Zombie 2", side="Monsters"), (4, 0))
     arena.add_combatant(Zombie(arena=arena, name="Zombie 3", side="Monsters"), (8, 0))
     arena.add_combatant(Zombie(arena=arena, name="Zombie 4", side="Monsters"), (12, 0))
+    arena.add_combatant(Zombie(arena=arena, name="Zombie 5", side="Monsters"), (14, 0))
     arena.add_combatant(fighter, (arena.max_x - 1, arena.max_y - 1))
     arena.add_combatant(warlock, (0, arena.max_y - 1))
     arena.add_combatant(cleric, (int(arena.max_x / 2), arena.max_y - 1))
@@ -64,6 +106,7 @@ def combat_test():
         print(f"{arena}")
         turn += 1
         assert turn < 100
+    statistics_report(arena)
 
     return arena.winning_side()
 
