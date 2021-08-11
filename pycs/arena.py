@@ -140,9 +140,9 @@ class Arena(AStar):
             if not enemy.is_alive():
                 continue
             dist = self.distance(creat, enemy)
-            print(
-                f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance"
-            )
+            # print(
+            # f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance"
+            # )
             if dist < close_dist:
                 close_dist = dist
                 closest = enemy

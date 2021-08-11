@@ -216,7 +216,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def remove_condition(self, cond):
         """Remove a condition"""
-        self.conditions.remove(cond)
+        if self.has_condition(cond):
+            self.conditions.remove(cond)
 
     ##########################################################################
     def add_condition(self, cond, source=None):
@@ -275,7 +276,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.add_condition(Condition.UNCONSCIOUS)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
-        print(f"{self} has fallen unconscious")
 
     ##########################################################################
     def check_end_effects(self):
@@ -321,6 +321,16 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return tmp
 
     ##########################################################################
+    def report(self):
+        """Short report on the character"""
+        print(f"| {self.name}")
+        print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
+        if self.conditions:
+            print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
+        if self.temp_effects:
+            print(f"|  Temp Effects: {', '.join(self.temp_effects)}")
+
+    ##########################################################################
     def start_turn(self):
         """Start the turn"""
 
@@ -332,20 +342,23 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def turn(self):
         """Have a go"""
         print()
-        print(f"{self.name} having a turn")
+        self.report()
         if self.has_condition(Condition.PARALYZED):
             print(f"{self} is paralyzed")
             return
         if self.state != "OK":
-            print(f"{self.name} {self.state}")
             return
         self.check_start_effects()
         self.pick_target()
         self.move_to_target()
         action = self.choose_action()
-        if action is None and self.target:
-            print(f"{self} dashing")
-            self.move_to_target()  # dash
+        if self.target:
+            if action is None:
+                print(f"{self} dashing")
+                self.move_to_target()  # dash
+                return
+        else:
+            print(f"{self} has no target")
             return
         if issubclass(action.__class__, Attack):
             self.attack()

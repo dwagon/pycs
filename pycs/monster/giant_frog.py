@@ -61,6 +61,7 @@ class GiantFrog(Monster):
             target.remove_condition(Condition.GRAPPLED)
             target.add_condition(Condition.RESTRAINED)
             target.add_condition(Condition.BLINDED)
+            return
 
         svth = target.saving_throw(Stat.STR, 11)
         if not svth:

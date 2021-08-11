@@ -77,8 +77,7 @@ class Ghast(Monster):
         if not svth:
             print(f"{target} got paralysed by {self}")
             target.add_condition(Condition.PARALYZED)
-        target.add_temp_effect("Ghast_Claw", self.recover_claws)
-        # Still todo: repeat at the end of each turn
+            target.add_temp_effect("Ghast_Claw", self.recover_claws)
 
     ##########################################################################
     def recover_claws(self, victim):
