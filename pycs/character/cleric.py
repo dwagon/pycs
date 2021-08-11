@@ -77,6 +77,11 @@ class Cleric(Character):
         )
 
     ##########################################################################
+    def report(self):
+        super().report()
+        print(f"| Spells: {self.spell_slots}")
+
+    ##########################################################################
     def spell_available(self, spell):
         """Do we have enough slots to cast a spell"""
         if spell.level == 0:
