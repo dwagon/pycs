@@ -16,6 +16,7 @@ class Attack(Action):
         super().__init__(name, **kwargs)
         self.dmg = kwargs.get("dmg", "")
         self.bonus = kwargs.get("bonus", "")
+        self.available = True
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
     ##########################################################################
@@ -27,7 +28,8 @@ class Attack(Action):
     ##########################################################################
     def roll_to_hit(self, source, target, rnge):
         """Roll to hit with the attack"""
-        crit = False
+        crit_hit = False
+        crit_miss = False
         balance = 0
         if self.has_disadvantage(source, target, rnge):
             balance -= 1
@@ -42,10 +44,17 @@ class Attack(Action):
             to_hit_roll = int(dice.roll("d20"))
 
         if to_hit_roll == 20:
-            crit = True
+            crit_hit = True
+        if to_hit_roll == 1:
+            crit_miss = True
         to_hit = to_hit_roll + self.bonus
-        print(f"{self} rolled {to_hit_roll} (critical: {crit}): {to_hit}")
-        return int(to_hit), crit
+        msg = f"{self} rolled {to_hit_roll} = {to_hit}"
+        if crit_hit:
+            msg += " (critical hit)"
+        if crit_miss:
+            msg += " (critical miss)"
+        print(msg)
+        return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
     def max_dmg(self, victim):
@@ -60,14 +69,14 @@ class Attack(Action):
     ########################################################################
     def perform_action(self, source, target, rnge):
         """Do the attack"""
-        to_hit, crit = self.roll_to_hit(source, target, rnge)
-        if to_hit > target.ac:
-            dmg = self.roll_dmg(target, crit)
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
+        if to_hit > target.ac and not crit_miss:
+            dmg = self.roll_dmg(target, crit_hit)
             print(
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
-            target.hit(dmg, self.dmg_type, source, crit)
-            source.statistics.append((self.name, dmg, self.dmg_type, crit))
+            target.hit(dmg, self.dmg_type, source, crit_hit)
+            source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
             self.post_attack_hook(source, target)
         else:
             source.statistics.append((self.name, 0, False, False))
@@ -123,6 +132,11 @@ class MeleeAttack(Attack):
         """Return the range of the attack"""
         return self.reach, self.reach
 
+    ########################################################################
+    def is_available(self, owner):
+        """Is this action available?"""
+        return self.available
+
 
 ##############################################################################
 ##############################################################################
@@ -135,6 +149,18 @@ class RangedAttack(Attack):
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
         self.l_range = int(kwargs.get("l_range", 999) / 5)
+        self.ammo = kwargs.get("ammo", None)
+
+    ########################################################################
+    def perform_action(self, source, target, rnge):
+        """Fire the weapon"""
+        if self.ammo is not None:
+            self.ammo -= 1
+            if self.ammo == 0:
+                print(f"{source} {self} has run out of ammo")
+                self.available = False
+
+        super().perform_action(source, target, rnge)
 
     ########################################################################
     def range(self):
@@ -185,7 +211,7 @@ class SpellAttack(Attack):
         assert self.style in ("tohit", "save")
         if self.style == "tohit":
             return super().roll_to_hit(source, target, rnge)
-        return 999, False
+        return 999, False, False
 
     ########################################################################
     def range(self):
