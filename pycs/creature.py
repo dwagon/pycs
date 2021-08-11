@@ -216,7 +216,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def remove_condition(self, cond):
         """Remove a condition"""
-        self.conditions.remove(cond)
+        if self.has_condition(cond):
+            self.conditions.remove(cond)
 
     ##########################################################################
     def add_condition(self, cond, source=None):
