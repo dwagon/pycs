@@ -11,7 +11,11 @@ class Action:
     ########################################################################
     def __init__(self, name, **kwargs):
         self.name = name
-        self.side_effect = kwargs.get("side_effect", None)
+        self.side_effect = kwargs.get("side_effect", self.no_side_effect)
+
+    ########################################################################
+    def no_side_effect(self, source, target):
+        """No side_effect"""
 
     ########################################################################
     def range(self):
@@ -24,7 +28,7 @@ class Action:
         return True
 
     ########################################################################
-    def perform_action(self, source, target, rnge):  # pylint: disable=unused-argument
+    def perform_action(self, source, target):  # pylint: disable=unused-argument
         """Perform the action"""
 
     ########################################################################

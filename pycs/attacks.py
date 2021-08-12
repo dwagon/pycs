@@ -23,7 +23,7 @@ class Attack(Action):
     def post_attack_hook(self, source, target):  # pylint: disable=unused-argument
         """Post attack hook"""
         if self.side_effect is not None:
-            self.side_effect(target)
+            self.side_effect(source, target)
 
     ##########################################################################
     def roll_to_hit(self, source, target, rnge):
@@ -67,8 +67,9 @@ class Attack(Action):
         return dmg
 
     ########################################################################
-    def perform_action(self, source, target, rnge):
+    def perform_action(self, source, target):
         """Do the attack"""
+        rnge = source.arena.distance(source, target)
         to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
         if to_hit > target.ac and not crit_miss:
             dmg = self.roll_dmg(target, crit_hit)
@@ -152,7 +153,7 @@ class RangedAttack(Attack):
         self.ammo = kwargs.get("ammo", None)
 
     ########################################################################
-    def perform_action(self, source, target, rnge):
+    def perform_action(self, source, target):
         """Fire the weapon"""
         if self.ammo is not None:
             self.ammo -= 1
@@ -160,7 +161,7 @@ class RangedAttack(Attack):
                 print(f"{source} {self} has run out of ammo")
                 self.available = False
 
-        super().perform_action(source, target, rnge)
+        super().perform_action(source, target)
 
     ########################################################################
     def range(self):

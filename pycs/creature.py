@@ -185,8 +185,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if attck is None:
             print(f"{self} has no attack")
             return
-        rnge = self.arena.distance(self, self.target)
-        attck.perform_action(self, self.target, rnge)
+        attck.perform_action(self, self.target)
 
     ##########################################################################
     def hit(self, dmg, dmg_type, source, critical):
@@ -198,16 +197,15 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
             if self.reactions:
-                rnge = self.arena.distance(self, source)
-                self.react(source, rnge)
+                self.react(source)
 
     ##########################################################################
-    def react(self, source, rnge):
+    def react(self, source):
         """React to an incoming attack with a reaction"""
         react = self.pick_best_reaction(source)
         if react is not None:
             print(f"{self} reacts against {source}")
-            react.perform_action(self, source, rnge)
+            react.perform_action(self, source)
 
     ##########################################################################
     def has_condition(self, cond):
@@ -366,7 +364,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if issubclass(action.__class__, Attack):
             self.attack()
         else:
-            action.perform_action(self, self.target, 0)
+            action.perform_action(self, self.target)
         self.move_to_target()
 
         self.check_end_effects()
