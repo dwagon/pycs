@@ -48,11 +48,13 @@ class Attack(Action):
         if to_hit_roll == 1:
             crit_miss = True
         to_hit = to_hit_roll + self.bonus
-        msg = f"{self} rolled {to_hit_roll} = {to_hit}"
+        msg = f"{source} rolled {to_hit_roll}"
         if crit_hit:
             msg += " (critical hit)"
-        if crit_miss:
+        elif crit_miss:
             msg += " (critical miss)"
+        else:
+            msg += f" = {to_hit}"
         print(msg)
         return int(to_hit), crit_hit, crit_miss
 
