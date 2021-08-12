@@ -1,10 +1,12 @@
 """ Cleric """
 import colors
 from attacks import MeleeAttack
-from attacks import SpellAttack
 from actions import SpellHealing
+from spells.sacred_flame import Sacred_Flame
+from spells.guiding_bolt import Guiding_Bolt
+from spells.cure_wounds import Cure_Wounds
+from spells.healing_word import Healing_Word
 from constants import DamageType
-from constants import Stat
 from .character import Character
 
 
@@ -13,7 +15,7 @@ class Cleric(Character):
     """Cleric class"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, level=1, **kwargs):
         kwargs.update(
             {
                 "str": 14,
@@ -23,11 +25,26 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
-                "hp": 10,
             }
         )
-        self.spell_slots = {1: 2}
-        self.spell_modifier = 3
+        if level == 1:
+            self.spell_slots = {1: 2}
+            self.spell_modifier = 3
+            kwargs["hp"] = 10
+        elif level == 2:
+            self.spell_slots = {1: 3}
+            self.spell_modifier = 3
+            kwargs["hp"] = 17
+        elif level == 3:
+            self.spell_slots = {1: 4, 2: 1}
+            kwargs["hp"] = 24
+        elif level == 4:
+            pass
+        elif level == 5:
+            pass
+        elif level == 6:
+            pass
+
         super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
@@ -38,43 +55,10 @@ class Cleric(Character):
                 dmg_type=DamageType.BLUDGEONING,
             )
         )
-        self.add_action(
-            SpellAttack(
-                "Sacred Flame",
-                reach=60,
-                style="save",
-                save=(Stat.DEX, 13),
-                dmg=("1d8", 0),
-                dmg_type=DamageType.RADIANT,
-                level=0,
-            )
-        )
-        self.add_action(
-            SpellAttack(
-                "Guiding Bolt",
-                reach=120,
-                bonus=5,
-                dmg=("4d6", 5),
-                dmg_type=DamageType.RADIANT,
-                level=1,
-            )
-        )
-        self.add_action(
-            SpellHealing(
-                "Cure Wounds",
-                reach=5,
-                cure=("1d8", 3),
-                level=1,
-            )
-        )
-        self.add_action(
-            SpellHealing(
-                "Healing Word",
-                reach=60,
-                cure=("1d4", 3),
-                level=1,
-            )
-        )
+        self.add_action(Sacred_Flame())
+        self.add_action(Guiding_Bolt())
+        self.add_action(Cure_Wounds())
+        self.add_action(Healing_Word())
 
     ##########################################################################
     def report(self):

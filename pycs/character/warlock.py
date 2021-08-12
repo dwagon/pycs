@@ -12,7 +12,8 @@ from .character import Character
 class Warlock(Character):
     """Warlock class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, level, **kwargs):
+        self.level = level
         kwargs.update(
             {
                 "str": 9,

@@ -9,7 +9,8 @@ from .character import Character
 class Fighter(Character):
     """Fighter class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, level=1, **kwargs):
+        self.level = level
         kwargs.update(
             {
                 "str": 16,
