@@ -17,6 +17,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.name = kwargs.get("name", self.__class__.__name__)
         self.ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
         self.speed = int(kwargs.get("speed", 30) / 5)
+        self.moves = self.speed
         self.size = kwargs.get("size", "M")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
@@ -98,19 +99,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
             return
-        print(f"{self} moving to {self.target}")
-        for _ in range(self.speed):
+        for _ in range(self.moves):
             rnge, _ = self.get_attack_range()
             # Within range - don't move
             dist = self.arena.distance(self, self.target)
             if dist <= rnge:
-                print(f"{self} within {rnge} range of {self.target}: {dist}")
                 return
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
-                # We aren't moving - don't keep trying
                 break
+            print(f"{self} moved to {self.coords}: {self.moves} left")
+            self.moves -= 1
 
     ##########################################################################
     def get_attack_range(self):
@@ -348,6 +348,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return
         if self.state != "OK":
             return
+        self.moves = self.speed
         self.check_start_effects()
         self.pick_target()
         self.move_to_target()
@@ -355,6 +356,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.target:
             if action is None:
                 print(f"{self} dashing")
+                self.moves = self.speed
                 self.move_to_target()  # dash
                 return
         else:
@@ -364,6 +366,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.attack()
         else:
             action.perform_action(self, self.target, 0)
+        self.move_to_target()
 
         self.check_end_effects()
 
