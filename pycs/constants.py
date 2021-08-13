@@ -66,9 +66,19 @@ class Stat(Enum):
 class SpellType(Enum):
     """What sort of spell is it"""
 
-    HEALING = "healing"
     ATTACK = "attack"
     BUFF = "buff"
+    HEALING = "healing"
 
+
+##############################################################################
+##############################################################################
+##############################################################################
+class MonsterType(Enum):
+    """What sort of Monster is it"""
+
+    BEAST = "beast"
+    HUMANOID = "humanoid"
+    UNDEAD = "undead"
 
 # EOF

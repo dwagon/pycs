@@ -4,6 +4,7 @@ from attacks import MeleeAttack
 from constants import DamageType
 from constants import Condition
 from constants import Stat
+from constants import MonsterType
 from .monster import Monster
 
 
@@ -18,6 +19,7 @@ class Ghoul(Monster):
             {
                 "ac": 12,
                 "speed": 30,
+                "type": MonsterType.UNDEAD,
                 "str": 13,
                 "dex": 15,
                 "con": 10,

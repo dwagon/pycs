@@ -7,6 +7,7 @@ class Monster(Creature):
     """Base monster class"""
 
     def __init__(self, **kwargs):
+        self.type = kwargs.get("type")
         super().__init__(**kwargs)
 
     ##########################################################################

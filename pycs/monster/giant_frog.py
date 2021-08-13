@@ -3,6 +3,7 @@ import colors
 import dice
 from attacks import MeleeAttack
 from constants import DamageType
+from constants import MonsterType
 from constants import Stat
 from constants import Condition
 from .monster import Monster
@@ -19,6 +20,7 @@ class GiantFrog(Monster):
             {
                 "ac": 11,
                 "speed": 30,
+                "type": MonsterType.BEAST,
                 "str": 12,
                 "dex": 13,
                 "con": 11,
