@@ -80,6 +80,8 @@ class Ghast(Monster):
             print(f"{target} got paralysed by {self}")
             target.add_condition(Condition.PARALYZED)
             target.add_temp_effect("Ghast_Claw", self.recover_claws)
+        else:
+            print(f"{target} resisted Ghast claws")
 
     ##########################################################################
     def recover_claws(self, victim):

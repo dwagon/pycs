@@ -63,6 +63,8 @@ class Ghoul(Monster):
         if not svth:
             print(f"{target} got paralysed by {self}")
             target.add_condition(Condition.PARALYZED)
+        else:
+            print(f"{target} resisted Ghoul claws")
 
     ##########################################################################
     def shortrepr(self):
