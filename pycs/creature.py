@@ -1,7 +1,6 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
 import dice
-from attacks import Attack
 from constants import Condition
 from constants import Stat
 
@@ -89,8 +88,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.target = self.arena.pick_closest_enemy(self)
         if self.target is None:
             print(f"{self} No more enemies to fight")
-        else:
-            print(f"{self} picked {self.target} as target")
 
     ##########################################################################
     def move_to_target(self):
@@ -110,8 +107,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
                 break
-            print(f"{self} moved to {self.coords}: {self.moves} left")
             self.moves -= 1
+            print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
     def get_attack_range(self):
@@ -136,7 +133,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def pick_best_attack(self):
         """Return the best (most damage) attack for this range"""
-        # Treat disdvantage as having half damage - need to make this cleverer
         if self.target is None:
             return None
         rnge = self.arena.distance(self, self.target)
@@ -145,9 +141,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for atk in self.actions:
             if not atk.is_available(self):
                 continue
-            if atk.range()[1] < rnge:
+            if atk.range()[1] < rnge:  # Not in range
                 continue
             mxd = atk.max_dmg(self.target)
+            # Treat disdvantage as having half damage - need to make this cleverer
             if atk.has_disadvantage(self, self.target, rnge):
                 mxd /= 2
             if mxd > maxdmg:
@@ -180,7 +177,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Attack the target"""
         if self.target is None:
             return
-        print(f"{self} attacking {self.target}")
         attck = self.pick_best_attack()
         if attck is None:
             print(f"{self} has no attack")
@@ -338,6 +334,32 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Hook for anothing creature starting a turn near me"""
 
     ##########################################################################
+    def move(self):
+        """Do a move"""
+        self.pick_target()
+        if self.target:
+            self.move_to_target()
+
+    ##########################################################################
+    def action(self):
+        """Have an action"""
+        act = self.choose_action()
+        if act:
+            did_act = act.perform_action(self, self.target)
+            if did_act:
+                return True
+        return False
+
+    ##########################################################################
+    def dash(self):
+        """Do a dash action"""
+        # Dash if we aren't in range yet
+        if self.target:
+            print(f"{self} dashing")
+            self.moves = self.speed
+            self.move_to_target()
+
+    ##########################################################################
     def turn(self):
         """Have a go"""
         print()
@@ -349,23 +371,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return
         self.moves = self.speed
         self.check_start_effects()
-        self.pick_target()
-        self.move_to_target()
-        action = self.choose_action()
-        if self.target:
-            if action is None:
-                print(f"{self} dashing")
-                self.moves = self.speed
-                self.move_to_target()  # dash
-                return
-        else:
-            print(f"{self} has no target")
-            return
-        if issubclass(action.__class__, Attack):
-            self.attack()
-        else:
-            action.perform_action(self, self.target)
-        self.move_to_target()
+
+        self.move()
+        if not self.action():
+            self.dash()
+        self.move()
 
         self.check_end_effects()
 

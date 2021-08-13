@@ -38,17 +38,20 @@ class Attack(Action):
 
         if balance < 0:
             to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg_0 = "with disadvantage"
         elif balance > 0:
             to_hit_roll = max(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg_0 = "with advantage"
         else:
             to_hit_roll = int(dice.roll("d20"))
+            msg_0 = ""
 
         if to_hit_roll == 20:
             crit_hit = True
         if to_hit_roll == 1:
             crit_miss = True
         to_hit = to_hit_roll + self.bonus
-        msg = f"{source} rolled {to_hit_roll}"
+        msg = f"{source} rolled {to_hit_roll} {msg_0}"
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
@@ -72,7 +75,13 @@ class Attack(Action):
     def perform_action(self, source, target):
         """Do the attack"""
         rnge = source.arena.distance(source, target)
+        if rnge > self.range()[1]:
+            print(f"{target} is out of range")
+            return False
         to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
+        print(
+            f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
+        )
         if to_hit > target.ac and not crit_miss:
             dmg = self.roll_dmg(target, crit_hit)
             print(
@@ -84,6 +93,7 @@ class Attack(Action):
         else:
             source.statistics.append((self.name, 0, False, False))
             print(f"{source} missed {target} with {self}")
+        return True
 
     ########################################################################
     def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
@@ -163,7 +173,7 @@ class RangedAttack(Attack):
                 print(f"{source} {self} has run out of ammo")
                 self.available = False
 
-        super().perform_action(source, target)
+        return super().perform_action(source, target)
 
     ########################################################################
     def range(self):

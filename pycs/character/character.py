@@ -16,7 +16,7 @@ class Character(Creature):
 
     ##########################################################################
     def spell_actions(self):
-        """ Return a list of actions that are spells """
+        """Return a list of actions that are spells"""
         return [_ for _ in self.actions if issubclass(_.__class__, SpellAction)]
 
 
