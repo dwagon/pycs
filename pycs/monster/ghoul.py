@@ -57,7 +57,7 @@ class Ghoul(Monster):
             return self.pick_attack_by_name("Claw")
 
     ##########################################################################
-    def ghoul_claws(self, target):
+    def ghoul_claws(self, source, target):  # pylint: disable=unused-argument
         """Side effect of ghoul claws"""
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:

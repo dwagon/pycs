@@ -41,7 +41,7 @@ class GiantFrog(Monster):
         self._swallowed = None
 
     ##########################################################################
-    def swallow(self, target):
+    def swallow(self, source, target):  # pylint: disable=unused-argument
         """bite and swallow the target"""
         # Bite. The target is grappled (escape DC 11). Until this grapple ends, the
         # target is restrained, and the frog can't bite another target.
