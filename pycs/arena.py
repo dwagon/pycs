@@ -38,8 +38,8 @@ class Arena(AStar):
         """Returns all the places we can reach from node"""
         node_x, node_y = node
         ans = []
-        for nbx in (node_x - 1, node_x + 2):
-            for nby in (node_y - 1, node_y + 2):
+        for nbx in range(node_x - 1, node_x + 2):
+            for nby in range(node_y - 1, node_y + 2):
                 if nbx == node_x and nby == node_y:
                     continue
                 pos = (nbx, nby)
