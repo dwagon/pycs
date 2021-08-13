@@ -2,6 +2,7 @@
 
 from attacks import SpellAttack
 from constants import DamageType
+from constants import SpellType
 
 
 ##############################################################################
@@ -12,6 +13,7 @@ class Guiding_Bolt(SpellAttack):
         name = "Guiding Bolt"
         kwargs.update(
             {
+                "type": SpellType.ATTACK,
                 "reach": 120,
                 "bonus": 5,
                 "dmg": ("4d6", 5),

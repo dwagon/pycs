@@ -3,6 +3,7 @@
 from attacks import SpellAttack
 from constants import DamageType
 from constants import Stat
+from constants import SpellType
 
 
 ##############################################################################
@@ -13,6 +14,7 @@ class Sacred_Flame(SpellAttack):
         name = "Sacred Flame"
         kwargs.update(
             {
+                "type": SpellType.ATTACK,
                 "reach": 60,
                 "style": "save",
                 "save": (Stat.DEX, 13),
