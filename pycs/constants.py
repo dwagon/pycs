@@ -81,4 +81,5 @@ class MonsterType(Enum):
     HUMANOID = "humanoid"
     UNDEAD = "undead"
 
+
 # EOF

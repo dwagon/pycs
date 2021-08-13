@@ -1,15 +1,26 @@
 """ Cleric """
 import colors
 from attacks import MeleeAttack
-from spells.sacred_flame import Sacred_Flame
-from spells.guiding_bolt import Guiding_Bolt
+from actions import Action
+from spells.aid import Aid
+from spells.bless import Bless
 from spells.cure_wounds import Cure_Wounds
+from spells.guiding_bolt import Guiding_Bolt
 from spells.healing_word import Healing_Word
+from spells.lesser_restoration import Lesser_Restoration
+from spells.enhance_ability import Enhance_Ability
+from spells.sacred_flame import Sacred_Flame
+from spells.shield_of_faith import Shield_Of_Faith
+from spells.spiritual_weapon import Spiritual_Weapon
 from constants import DamageType
+from constants import MonsterType
 from constants import SpellType
+from constants import Stat
 from .character import Character
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Cleric(Character):
     """Cleric class"""
@@ -29,23 +40,21 @@ class Cleric(Character):
         )
         if level == 1:
             self.spell_slots = {1: 2}
-            self.spell_modifier = 3
             kwargs["hp"] = 10
         elif level == 2:
             self.spell_slots = {1: 3}
-            self.spell_modifier = 3
             kwargs["hp"] = 17
         elif level == 3:
-            self.spell_slots = {1: 4, 2: 1}
+            self.spell_slots = {1: 4, 2: 2}
             kwargs["hp"] = 24
         elif level == 4:
-            pass
+            self.spell_slots = {1: 4, 2: 3}
         elif level == 5:
-            pass
+            self.spell_slots = {1: 4, 2: 3, 3: 2}
         elif level == 6:
-            pass
-
+            self.spell_slots = {1: 4, 2: 3, 3: 3}
         super().__init__(**kwargs)
+        self.spell_modifier = self.prof_bonus + self.stat_bonus(Stat.WIS)
         self.add_action(
             MeleeAttack(
                 "Mace",
@@ -55,10 +64,19 @@ class Cleric(Character):
                 dmg_type=DamageType.BLUDGEONING,
             )
         )
+        self.add_action(Bless())  # Life Domain freebie
+        self.add_action(Cure_Wounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
-        self.add_action(Cure_Wounds())
         self.add_action(Healing_Word())
+        self.add_action(Shield_Of_Faith())
+        if level >= 2:
+            self.add_action(TurnUndead())
+        if level >= 3:
+            self.add_action(Aid())
+            self.add_action(Lesser_Restoration())
+            self.add_action(Enhance_Ability())
+            self.add_action(Spiritual_Weapon())
 
     ##########################################################################
     def report(self):
@@ -106,8 +124,15 @@ class Cleric(Character):
             heals = []
             for actn in self.spell_actions():
                 if actn.is_type(SpellType.HEALING):
-                    # Sort by amount it can cure, then lowest spell level, then enforce no collision
-                    heals.append((actn.max_cure(self, self.target), 10-actn.level, id(actn), actn))
+                    # Sort by amount it can cure, then lowest spell level
+                    heals.append(
+                        (
+                            actn.max_cure(self, self.target),
+                            10 - actn.level,
+                            id(actn),
+                            actn,
+                        )
+                    )
             heals.sort(reverse=True)
             return heals[0][-1]
         else:
@@ -127,6 +152,48 @@ class Cleric(Character):
             return colors.blue("C", bg="green")
         else:
             return colors.blue("C", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TurnUndead(Action):
+    """As an action, you present your holy symbol and speak a prayer
+    censuring the undead. Each undead that can see or hear you within
+    30 feet of you must make a Wisdom saving throw. If the creature
+    fails its saving throw, it is turned for 1 minute or until it takes
+    any damage.
+
+    A turned creature must spend its turns trying to move as far away
+    from you as it can, and it can’t willingly move to a space within
+    30 feet of you. It also can’t take reactions. For its action, it
+    can use only the Dash action or try to escape from an effect that
+    prevents it from moving. If there’s nowhere to move, the creature
+    can use the Dodge action"""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        name = "Turn Undead"
+        super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def perform_action(self, source, target):
+        """Do the action"""
+        undead = [
+            _
+            for _ in source.arena.combatants
+            if _.side != source.side and _.is_type(MonsterType.UNDEAD)
+        ]
+        for und in undead:
+            if source.arena.distance(source, und) < 30 / 5:
+                if und.saving_throw(Stat.WIS, 10 + source.spell_modifier):
+                    print(f"{und} has been turned by {source}")
+                    und.add_temp_effect("turned", self.recover)
+
+    ##########################################################################
+    def recover(self, undead):  # pylint: disable=unused-argument
+        """Did we recover from being turned"""
+        return False
 
 
 # EOF

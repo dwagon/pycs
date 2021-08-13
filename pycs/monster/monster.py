@@ -6,8 +6,7 @@ from creature import Creature
 class Monster(Creature):
     """Base monster class"""
 
-    def __init__(self, **kwargs):
-        self.type = kwargs.get("type")
+    def __init__(self, **kwargs):  # pylint: disable=useless-super-delegation
         super().__init__(**kwargs)
 
     ##########################################################################

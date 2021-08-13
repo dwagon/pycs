@@ -7,7 +7,10 @@ from actions import SpellAction
 class Character(Creature):
     """Base character class"""
 
-    def __init__(self, **kwargs):  # pylint: disable=useless-super-delegation
+    def __init__(self, **kwargs):
+        if "prof_bonus" not in kwargs:
+            pb = int((kwargs.get("level", 1) - 1) / 4) + 2
+            kwargs.update({"prof_bonus": pb})
         super().__init__(**kwargs)
 
     ##########################################################################

@@ -3,6 +3,7 @@
 import dice
 from constants import Condition
 from constants import Stat
+from constants import MonsterType
 
 
 ##############################################################################
@@ -18,7 +19,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
+        self.type = kwargs.get("type", MonsterType.HUMANOID)
         self.size = kwargs.get("size", "M")
+        self.prof_bonus = kwargs.get("prof_bonus", 2)
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
             Stat.STR: kwargs["str"],
@@ -271,6 +274,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.add_condition(Condition.UNCONSCIOUS)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
+
+    ##########################################################################
+    def is_type(self, typ):
+        """Are we an instance of typ"""
+        return self.type == typ
 
     ##########################################################################
     def check_end_effects(self):
