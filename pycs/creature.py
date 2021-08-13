@@ -225,7 +225,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if source:
                 print(f"{self} got {cond.value} from {source}")
             else:
-                print(f"{self} got {cond.value}")
+                print(f"{self} is now {cond.value}")
             self.conditions.add(cond)
 
     ##########################################################################
@@ -322,7 +322,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def report(self):
         """Short report on the character"""
-        print(f"| {self.name}")
+        print(f"| {self.name} @ {self.coords}")
         print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
