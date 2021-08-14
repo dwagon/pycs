@@ -3,7 +3,9 @@ import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from attacks import SpellAttack
+from constants import ActionType
 from constants import DamageType
+from constants import SpellType
 from constants import Stat
 from .character import Character
 
@@ -12,7 +14,8 @@ from .character import Character
 class Warlock(Character):
     """Warlock class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, level, **kwargs):
+        self.level = level
         kwargs.update(
             {
                 "str": 9,
@@ -23,6 +26,12 @@ class Warlock(Character):
                 "cha": 16,
                 "ac": 13,
                 "hp": 10,
+                "heuristic": {
+                    SpellType.RANGED: 5,
+                    SpellType.MELEE: 3,
+                    ActionType.RANGED: 2,
+                    ActionType.MELEE: 1,
+                },
             }
         )
         self.spell_slots = 1

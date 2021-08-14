@@ -38,8 +38,8 @@ class Arena(AStar):
         """Returns all the places we can reach from node"""
         node_x, node_y = node
         ans = []
-        for nbx in (node_x - 1, node_x + 2):
-            for nby in (node_y - 1, node_y + 2):
+        for nbx in range(node_x - 1, node_x + 2):
+            for nby in range(node_y - 1, node_y + 2):
                 if nbx == node_x and nby == node_y:
                     continue
                 pos = (nbx, nby)
@@ -155,6 +155,11 @@ class Arena(AStar):
         if len([_ for _ in sides if _]) > 1:
             return True
         return False
+
+    ##############################################################################
+    def my_side(self, side):
+        """Who is still standing on my side"""
+        return [_ for _ in self.combatants if _.is_alive() and _.side == side]
 
     ##############################################################################
     def remaining_participants(self):

@@ -2,13 +2,16 @@
 from collections import defaultdict
 from prettytable import PrettyTable
 
-# from monster.skeleton import Skeleton
-# from monster.goblin import Goblin
-# from monster.ghoul import Ghoul
+from monster.skeleton import Skeleton
+from monster.goblin import Goblin
+from monster.ghoul import Ghoul
 from monster.ghast import Ghast
+from monster.giant_frog import GiantFrog
+
 from character.fighter import Fighter
-from character.warlock import Warlock
+from character.barbarian import Barbarian
 from character.cleric import Cleric
+from character.warlock import Warlock
 from arena import Arena
 
 
@@ -81,14 +84,25 @@ def combat_test():
     turn = 0
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
-    fighter = Fighter(arena=arena, name="Frank", side="Humans")
-    warlock = Warlock(arena=arena, name="Walter", side="Humans")
-    cleric = Cleric(arena=arena, name="Charlise", side="Humans")
-    arena.add_combatant(Ghast(arena=arena, name="Ghast 1", side="Monsters"), (16, 0))
-    arena.add_combatant(Ghast(arena=arena, name="Ghast 2", side="Monsters"), (18, 0))
+    fighter = Fighter(arena=arena, name="Frank", level=1, side="Humans")
+    barbarian = Barbarian(arena=arena, name="Barbara", level=1, side="Humans")
+    cleric = Cleric(arena=arena, name="Charlise", level=2, side="Humans")
+    warlock = Warlock(arena=arena, name="Wendy", level=1, side="Humans")
+
+    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"), (0, 0))
+    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"), (2, 0))
+    arena.add_combatant(
+        GiantFrog(arena=arena, name="Giant Frog", side="Monsters"), (18, 0)
+    )
+    arena.add_combatant(
+        Skeleton(arena=arena, name="Skeleton", side="Monsters"), (16, 0)
+    )
+    arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"), (14, 0))
+
     arena.add_combatant(fighter, (arena.max_x - 1, arena.max_y - 1))
-    arena.add_combatant(warlock, (0, arena.max_y - 1))
+    arena.add_combatant(barbarian, (1, arena.max_y - 1))
     arena.add_combatant(cleric, (int(arena.max_x / 2), arena.max_y - 1))
+    arena.add_combatant(warlock, (int(arena.max_x / 3), arena.max_y - 1))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():

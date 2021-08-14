@@ -3,6 +3,7 @@ import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from constants import DamageType
+from constants import MonsterType
 from .monster import Monster
 
 
@@ -17,6 +18,7 @@ class Skeleton(Monster):
             {
                 "ac": 13,
                 "speed": 30,
+                "type": MonsterType.UNDEAD,
                 "str": 10,
                 "dex": 14,
                 "con": 15,

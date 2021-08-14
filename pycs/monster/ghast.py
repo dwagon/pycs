@@ -4,6 +4,7 @@ from attacks import MeleeAttack
 from constants import DamageType
 from constants import Stat
 from constants import Condition
+from constants import MonsterType
 from .monster import Monster
 
 
@@ -18,6 +19,7 @@ class Ghast(Monster):
             {
                 "ac": 13,
                 "speed": 30,
+                "type": MonsterType.UNDEAD,
                 "str": 16,
                 "dex": 17,
                 "con": 10,
@@ -66,18 +68,23 @@ class Ghast(Monster):
             svth = creat.saving_throw(Stat.CON, 10)
             if not svth:
                 creat.add_condition(Condition.POISONED, self)
+            else:
+                print(f"{creat} resists Ghast's poisonous stench")
 
     ##########################################################################
-    def ghast_claws(self, target):
+    def ghast_claws(self, source):  # pylint: disable=unused-argument
         """If the target is a creature other than an undead, it must
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each
         of its turns, ending the effect on itself on a success."""
+        target = self.target
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:
             print(f"{target} got paralysed by {self}")
             target.add_condition(Condition.PARALYZED)
             target.add_temp_effect("Ghast_Claw", self.recover_claws)
+        else:
+            print(f"{target} resisted Ghast claws")
 
     ##########################################################################
     def recover_claws(self, victim):

@@ -3,6 +3,7 @@ import colors
 from attacks import MeleeAttack
 from constants import DamageType
 from constants import Stat
+from constants import MonsterType
 from .monster import Monster
 
 
@@ -17,6 +18,7 @@ class Zombie(Monster):
             {
                 "ac": 8,
                 "speed": 20,
+                "type": MonsterType.UNDEAD,
                 "str": 13,
                 "dex": 6,
                 "con": 16,

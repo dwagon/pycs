@@ -3,6 +3,7 @@ import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from constants import DamageType
+from constants import MonsterType
 from .monster import Monster
 
 
@@ -17,6 +18,7 @@ class Goblin(Monster):
             {
                 "ac": 15,
                 "speed": 30,
+                "type": MonsterType.HUMANOID,
                 "str": 8,
                 "dex": 14,
                 "con": 10,
