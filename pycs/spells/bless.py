@@ -22,7 +22,7 @@ class Bless(SpellAction):
         )
         super().__init__(name, **kwargs)
 
-    def bless(self, caster, target):
+    def bless(self, caster):
         """Do the spell"""
 
 

@@ -94,7 +94,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return init
 
     ##########################################################################
-    def move_to_target(self):
+    def move_to_target(self, act):
         """Move to the target"""
         if not self.target:
             return
@@ -102,29 +102,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} is grappled - not moving")
             return
         for _ in range(self.moves):
-            rnge, _ = self.get_attack_range()
-            # Within range - don't move
-            dist = self.distance(self.target)
-            if dist <= rnge:
-                return
+            if act:
+                rnge, _ = act.range()
+                # Within range - don't move
+                dist = self.distance(self.target)
+                if dist <= rnge:
+                    return
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
                 break
             self.moves -= 1
             print(f"{self} moved to {self.coords}: {self.moves} left")
-
-    ##########################################################################
-    def get_attack_range(self):
-        """Return the range and the attack with the longest range"""
-        attack = None
-        rnge = 0
-        for atk in self.actions:
-            _, long = atk.range()
-            if long > rnge:
-                rnge = long
-                attack = atk
-        return rnge, attack
 
     ##########################################################################
     def pick_attack_by_name(self, name):
@@ -340,7 +329,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if act.is_available(self):
                 quality = act.heuristic(self)
                 possible_acts.append((quality, act))
-        print(f"{possible_acts=}")
+        print(f"{self} {possible_acts=}")
         return possible_acts
 
     ##########################################################################
@@ -361,10 +350,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         try:
             todo = actions[0][-1]
             self.target = todo.pick_target(self)
+            print(f"{self} is going to do {todo} to {self.target}")
         except IndexError:
             todo = None
             self.target = None
-        print(f"{self} is going to do {todo} to {self.target}")
+            print(f"{self} has no target within range")
         return todo
 
     ##########################################################################
@@ -376,15 +366,16 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Hook for anothing creature starting a turn near me"""
 
     ##########################################################################
-    def move(self):
+    def move(self, act):
         """Do a move"""
+        print(f"{self} move to {self.target}")
         if self.target:
-            self.move_to_target()
+            self.move_to_target(act)
 
     ##########################################################################
     def action(self, act):
         """Have an action"""
-        if act:
+        if act and self.target:
             print(f"action {act=} {self.target=}")
             did_act = act.perform_action(self)
             if did_act:
@@ -392,13 +383,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def dash(self):
+    def dash(self, act):
         """Do a dash action"""
         # Dash if we aren't in range yet
         if self.target:
             print(f"{self} dashing")
             self.moves = self.speed
-            self.move_to_target()
+            self.move_to_target(act)
 
     ##########################################################################
     def turn(self):
@@ -416,10 +407,16 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         act = self.pick_action()
         if act is None:
             self.target = self.pick_closest_enemy()
-        self.move()
+            print(f"{self} now going toward {self.target}")
+        self.move(act)
+
+        act = self.pick_action()
+        if act is None:
+            self.target = self.pick_closest_enemy()
         if not self.action(act):
-            self.dash()
-        self.move()
+            self.dash(act)
+
+        self.move(act)
 
         self.check_end_effects()
 

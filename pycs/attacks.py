@@ -261,6 +261,18 @@ class SpellAttack(Attack):
         return dmg
 
     ########################################################################
+    def pick_target(self, doer):
+        """Who should we target"""
+        return doer.pick_closest_enemy()
+
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we cast this"""
+        if not doer.spell_available(self):
+            return 0
+        return 2
+
+    ########################################################################
     def roll_to_hit(self, source, target, rnge):
         """Special spell attack"""
         assert self.style in ("tohit", "save")

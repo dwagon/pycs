@@ -23,7 +23,7 @@ class Shield_Of_Faith(SpellAction):
         )
         super().__init__(name, **kwargs)
 
-    def shieldfaith(self, caster, target):
+    def shieldfaith(self, caster):
         """Do the spell"""
 
 
