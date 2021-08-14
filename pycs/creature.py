@@ -1,9 +1,12 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
+import random
 import dice
+from constants import ActionType
 from constants import Condition
-from constants import Stat
 from constants import MonsterType
+from constants import SpellType
+from constants import Stat
 
 
 ##############################################################################
@@ -31,6 +34,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
+        self.heuristic = kwargs.get(
+            "heuristic", {ActionType.MELEE: 1, ActionType.RANGED: 4}
+        )
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])
@@ -60,6 +66,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
+    def pick_closest_enemy(self):
+        """Which enemy is the closest"""
+        return self.arena.pick_closest_enemy(self)
+
+    ##########################################################################
     def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
@@ -83,16 +94,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return init
 
     ##########################################################################
-    def pick_target(self):
-        """Pick the target for the creature
-        This should be overwritten for cleverness
-        """
-        # Keep it simple and just go for the closest
-        self.target = self.arena.pick_closest_enemy(self)
-        if self.target is None:
-            print(f"{self} No more enemies to fight")
-
-    ##########################################################################
     def move_to_target(self):
         """Move to the target"""
         if not self.target:
@@ -103,7 +104,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for _ in range(self.moves):
             rnge, _ = self.get_attack_range()
             # Within range - don't move
-            dist = self.arena.distance(self, self.target)
+            dist = self.distance(self.target)
             if dist <= rnge:
                 return
             old_coords = self.coords
@@ -138,7 +139,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Return the best (most damage) attack for this range"""
         if self.target is None:
             return None
-        rnge = self.arena.distance(self, self.target)
+        rnge = self.distance(self.target)
         maxdmg = 0
         attck = None
         for atk in self.actions:
@@ -159,7 +160,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def pick_best_reaction(self, source):
         """Return the best (most damage) reaction for this range"""
         # Treat disdvantage as having half damage - need to make this cleverer
-        rnge = self.arena.distance(self, source)
+        rnge = self.distance(source)
         maxdmg = 0
         attck = None
         for atk in self.reactions:
@@ -184,7 +185,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if attck is None:
             print(f"{self} has no attack")
             return
-        attck.perform_action(self, self.target)
+        attck.perform_action(self)
 
     ##########################################################################
     def hit(self, dmg, dmg_type, source, critical):
@@ -204,7 +205,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         react = self.pick_best_reaction(source)
         if react is not None:
             print(f"{self} reacts against {source}")
-            react.perform_action(self, source)
+            react.perform_action(self)
 
     ##########################################################################
     def has_condition(self, cond):
@@ -255,14 +256,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         raise NotImplementedError(
             f"{self.__class__.__name__} needs to implement shortrepr()"
         )
-
-    ##########################################################################
-    def choose_action(self):
-        """What action are we going to take"""
-        if self.target is None:
-            return None
-        attck = self.pick_best_attack()
-        return attck
 
     ##########################################################################
     def fallen_unconscious(
@@ -334,6 +327,47 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Temp Effects: {', '.join(self.temp_effects)}")
 
     ##########################################################################
+    def distance(self, target):
+        """Distance from us to target"""
+        return self.arena.distance(self, target)
+
+    ##########################################################################
+    def possible_actions(self):
+        """What are all the things we can do this turn and how good do they
+        feel about happening"""
+        possible_acts = []
+        for act in self.actions:
+            if act.is_available(self):
+                quality = act.heuristic(self)
+                possible_acts.append((quality, act))
+        print(f"{possible_acts=}")
+        return possible_acts
+
+    ##########################################################################
+    def pick_action(self):
+        """What are we going to do this turn based on individual heuristic"""
+        actions = []
+        for qual, act in self.possible_actions():
+            if isinstance(act, ActionType):
+                qual *= self.heuristic.get(act, 1)
+            elif isinstance(act, SpellType):
+                qual *= self.heuristic.get(act, 1)
+            else:
+                qual *= self.heuristic.get(act.type, 1)
+            if qual:
+                actions.append((qual, random.random(), act))
+        actions.sort(reverse=True)
+        print(f"{self} {actions=}")
+        try:
+            todo = actions[0][-1]
+            self.target = todo.pick_target(self)
+        except IndexError:
+            todo = None
+            self.target = None
+        print(f"{self} is going to do {todo} to {self.target}")
+        return todo
+
+    ##########################################################################
     def start_turn(self):
         """Start the turn"""
 
@@ -344,16 +378,15 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def move(self):
         """Do a move"""
-        self.pick_target()
         if self.target:
             self.move_to_target()
 
     ##########################################################################
-    def action(self):
+    def action(self, act):
         """Have an action"""
-        act = self.choose_action()
         if act:
-            did_act = act.perform_action(self, self.target)
+            print(f"action {act=} {self.target=}")
+            did_act = act.perform_action(self)
             if did_act:
                 return True
         return False
@@ -380,8 +413,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.moves = self.speed
         self.check_start_effects()
 
+        act = self.pick_action()
+        if act is None:
+            self.target = self.pick_closest_enemy()
         self.move()
-        if not self.action():
+        if not self.action(act):
             self.dash()
         self.move()
 

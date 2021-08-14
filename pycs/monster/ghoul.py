@@ -35,6 +35,7 @@ class Ghoul(Monster):
                 "Bite",
                 reach=5,
                 bonus=2,
+                heuristic=self.ghoul_bite,
                 dmg=("2d6", 2),
                 dmg_type=DamageType.PIERCING,
             )
@@ -45,22 +46,30 @@ class Ghoul(Monster):
                 reach=5,
                 bonus=4,
                 dmg=("2d4", 2),
+                heuristic=self.ghoul_claw,
                 dmg_type=DamageType.SLASHING,
-                side_effect=self.ghoul_claws,
+                side_effect=self.se_ghoul_claws,
             )
         )
 
     ##########################################################################
-    def pick_best_attack(self):
-        """Pick the claw attack more often than damage would indicate"""
+    def ghoul_bite(self, actor):  # pylint: disable=unused-argument
+        """When is Ghoul bite good"""
         if self.target.has_condition(Condition.PARALYZED):
-            return self.pick_attack_by_name("Bite")
-        else:
-            return self.pick_attack_by_name("Claw")
+            return 2
+        return 1
 
     ##########################################################################
-    def ghoul_claws(self, source, target):  # pylint: disable=unused-argument
+    def ghoul_claw(self, actor):  # pylint: disable=unused-argument
+        """When is Ghoul claw good"""
+        if not self.target.has_condition(Condition.PARALYZED):
+            return 2
+        return 1
+
+    ##########################################################################
+    def se_ghoul_claws(self, source):  # pylint: disable=unused-argument
         """Side effect of ghoul claws"""
+        target = self.target
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:
             print(f"{target} got paralysed by {self}")

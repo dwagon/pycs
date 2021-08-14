@@ -72,11 +72,12 @@ class Ghast(Monster):
                 print(f"{creat} resists Ghast's poisonous stench")
 
     ##########################################################################
-    def ghast_claws(self, source, target):  # pylint: disable=unused-argument
+    def ghast_claws(self, source):  # pylint: disable=unused-argument
         """If the target is a creature other than an undead, it must
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each
         of its turns, ending the effect on itself on a success."""
+        target = self.target
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:
             print(f"{target} got paralysed by {self}")

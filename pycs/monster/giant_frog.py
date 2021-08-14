@@ -43,7 +43,7 @@ class GiantFrog(Monster):
         self._swallowed = None
 
     ##########################################################################
-    def swallow(self, source, target):  # pylint: disable=unused-argument
+    def swallow(self, source):  # pylint: disable=unused-argument
         """bite and swallow the target"""
         # Bite. The target is grappled (escape DC 11). Until this grapple ends, the
         # target is restrained, and the frog can't bite another target.
@@ -57,6 +57,7 @@ class GiantFrog(Monster):
         # If the frog dies, a swallowed creature is no longer restrained by
         # it and can escape from the corpse using 5 feet of movement, exiting
         # prone.
+        target = self.target
         if self.has_grappled == target and self._swallowed is None:
             self.has_grappled = None
             self._swallowed = target
@@ -70,14 +71,6 @@ class GiantFrog(Monster):
             print(f"{target} to grappled by {self}")
             target.add_condition(Condition.GRAPPLED)
             self.has_grappled = target
-
-    ##########################################################################
-    def pick_target(self):
-        """If we have someone grappled just chew on them"""
-        if self.has_grappled:
-            self.target = self.has_grappled
-        else:
-            super().pick_target()
 
     ##########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):

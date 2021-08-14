@@ -2,6 +2,7 @@
 import dice
 from constants import DamageType
 from constants import Condition
+from constants import ActionType
 from actions import Action
 
 
@@ -16,14 +17,13 @@ class Attack(Action):
         super().__init__(name, **kwargs)
         self.dmg = kwargs.get("dmg", "")
         self.bonus = kwargs.get("bonus", "")
-        self.available = True
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
     ##########################################################################
-    def post_attack_hook(self, source, target):  # pylint: disable=unused-argument
+    def post_attack_hook(self, source):
         """Post attack hook"""
         if self.side_effect is not None:
-            self.side_effect(source, target)
+            self.side_effect(source)
 
     ##########################################################################
     def roll_to_hit(self, source, target, rnge):
@@ -72,9 +72,10 @@ class Attack(Action):
         return dmg
 
     ########################################################################
-    def perform_action(self, source, target):
+    def perform_action(self, source):
         """Do the attack"""
-        rnge = source.arena.distance(source, target)
+        target = source.target
+        rnge = source.distance(target)
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
             return False
@@ -89,7 +90,7 @@ class Attack(Action):
             )
             target.hit(dmg, self.dmg_type, source, crit_hit)
             source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
-            self.post_attack_hook(source, target)
+            self.post_attack_hook(source)
         else:
             source.statistics.append((self.name, 0, False, False))
             print(f"{source} missed {target} with {self}")
@@ -139,6 +140,7 @@ class MeleeAttack(Attack):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
+        self.type = ActionType.MELEE
 
     ########################################################################
     def range(self):
@@ -149,6 +151,22 @@ class MeleeAttack(Attack):
     def is_available(self, owner):
         """Is this action available?"""
         return self.available
+
+    ########################################################################
+    def pick_target(self, doer):
+        """Who are we going to hit"""
+        enemy = doer.pick_closest_enemy()
+        return enemy
+
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we perform this attack - yes if adjacent"""
+        enemy = doer.pick_closest_enemy()
+        if not enemy:
+            return 0
+        if doer.distance(enemy) <= 1:
+            return 2
+        return 0
 
 
 ##############################################################################
@@ -162,10 +180,11 @@ class RangedAttack(Attack):
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
         self.l_range = int(kwargs.get("l_range", 999) / 5)
+        self.type = ActionType.RANGED
         self.ammo = kwargs.get("ammo", None)
 
     ########################################################################
-    def perform_action(self, source, target):
+    def perform_action(self, source):
         """Fire the weapon"""
         if self.ammo is not None:
             self.ammo -= 1
@@ -173,7 +192,29 @@ class RangedAttack(Attack):
                 print(f"{source} {self} has run out of ammo")
                 self.available = False
 
-        return super().perform_action(source, target)
+        return super().perform_action(source)
+
+    ########################################################################
+    def pick_target(self, doer):
+        """Who are we going to hit"""
+        enemy = doer.pick_closest_enemy()
+        return enemy
+
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we perform this attack - no if adjacent,
+        yes if in range, middling if at long range"""
+        enemy = doer.pick_closest_enemy()
+        if not enemy:
+            return 0
+        dist = doer.distance(enemy)
+        if dist <= 1:
+            return 0
+        if dist < self.l_range:
+            return 1
+        if dist < self.s_range:
+            return 2
+        return 0
 
     ########################################################################
     def range(self):
@@ -205,6 +246,7 @@ class SpellAttack(Attack):
         #   "tohit" you need to roll to hit,
         #   "save" you hit automatically but save on damage
         self.style = kwargs.get("style", "tohit")
+        self.type = kwargs.get("type")
         self.save = kwargs.get("save", ("none", 999))
 
     ########################################################################
@@ -232,7 +274,7 @@ class SpellAttack(Attack):
         return self.reach, self.reach
 
     ########################################################################
-    def post_attack_hook(self, source, target):
+    def post_attack_hook(self, source):
         """Tell the caster they have cast the spell"""
         source.cast(self)
 

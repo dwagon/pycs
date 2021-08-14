@@ -157,6 +157,11 @@ class Arena(AStar):
         return False
 
     ##############################################################################
+    def my_side(self, side):
+        """Who is still standing on my side"""
+        return [_ for _ in self.combatants if _.is_alive() and _.side == side]
+
+    ##############################################################################
     def remaining_participants(self):
         """Who is still standing"""
         sides = defaultdict(list)

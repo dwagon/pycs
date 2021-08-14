@@ -26,5 +26,25 @@ class Healing_Word(SpellAction):
         )
         super().__init__(name, **kwargs)
 
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we cast this"""
+        if not doer.spell_available(self):
+            return 0
+        peers = [
+            (1 - _.hp / _.max_hp, id(_), _)
+            for _ in doer.arena.my_side(doer.side)
+            if doer.distance(_) <= 60 / 5
+        ]
+        peers.sort(reverse=True)
+        if peers[0][0] < 0.25:  # No one is less than 25% wounded
+            return 0
+        elif peers[0][0] < 0.5:
+            return 2
+        elif peers[0][0] < 0.7:
+            return 3
+        else:
+            return 5
+
 
 # EOF

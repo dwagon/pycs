@@ -16,6 +16,7 @@ from constants import DamageType
 from constants import MonsterType
 from constants import SpellType
 from constants import Stat
+from constants import ActionType
 from .character import Character
 
 
@@ -36,6 +37,15 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
+                "heuristic": {
+                    SpellType.HEALING: 5,
+                    TurnUndead: 4,
+                    SpellType.BUFF: 3,
+                    SpellType.RANGED: 2,
+                    SpellType.MELEE: 1,
+                    ActionType.RANGED: 2,
+                    ActionType.MELEE: 1,
+                },
             }
         )
         if level == 1:
@@ -80,6 +90,7 @@ class Cleric(Character):
 
     ##########################################################################
     def report(self):
+        """Character report"""
         super().report()
         print(f"| Spells: {self.spell_slots}")
 
@@ -105,38 +116,6 @@ class Cleric(Character):
         if pct_hurt < 0.5:  # No one is too hurt
             target = None
         return target
-
-    ##########################################################################
-    def pick_target(self):
-        """See if anyone needs healing"""
-        heal_spells = [_ for _ in self.spell_actions() if _.is_type(SpellType.HEALING)]
-        for spell in heal_spells:
-            if self.spell_slots[spell.level] > 0:  # Spells healing available
-                self.target = self.find_most_hurt()
-                if self.target:
-                    return
-        super().pick_target()
-
-    ##########################################################################
-    def choose_action(self):
-        """Try and heal first then attack"""
-        if self.target and self.target.side == self.side:
-            heals = []
-            for actn in self.spell_actions():
-                if actn.is_type(SpellType.HEALING):
-                    # Sort by amount it can cure, then lowest spell level
-                    heals.append(
-                        (
-                            actn.max_cure(self, self.target),
-                            10 - actn.level,
-                            id(actn),
-                            actn,
-                        )
-                    )
-            heals.sort(reverse=True)
-            return heals[0][-1]
-        else:
-            return super().choose_action()
 
     ##########################################################################
     def cast(self, spell):
@@ -177,7 +156,7 @@ class TurnUndead(Action):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def perform_action(self, source, target):
+    def perform_action(self, source):
         """Do the action"""
         undead = [
             _

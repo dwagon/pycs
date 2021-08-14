@@ -14,7 +14,7 @@ class Sacred_Flame(SpellAttack):
         name = "Sacred Flame"
         kwargs.update(
             {
-                "type": SpellType.ATTACK,
+                "type": SpellType.RANGED,
                 "reach": 60,
                 "style": "save",
                 "save": (Stat.DEX, 13),

@@ -13,7 +13,7 @@ class Guiding_Bolt(SpellAttack):
         name = "Guiding Bolt"
         kwargs.update(
             {
-                "type": SpellType.ATTACK,
+                "type": SpellType.RANGED,
                 "reach": 120,
                 "bonus": 5,
                 "dmg": ("4d6", 5),
