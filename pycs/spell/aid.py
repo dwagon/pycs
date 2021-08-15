@@ -62,12 +62,13 @@ class Aid(SpellAction):
 ##############################################################################
 ##############################################################################
 class AidEffect(Effect):
-    """ Effect of the aid spell """
+    """Effect of the aid spell"""
+
     def __init__(self, **kwargs):
         super().__init__("Aid", **kwargs)
 
     def initial(self, target):
-        """ Initial effects of Aid"""
+        """Initial effects of Aid"""
         target.hp += 5
         target.max_hp += 5
 

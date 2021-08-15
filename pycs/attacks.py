@@ -52,7 +52,7 @@ class Attack(Action):
             crit_miss = True
         to_hit = to_hit_roll + self.bonus
         for eff in source.effects.values():
-            to_hit += eff.hook_attack_to_hit(target, rnge)['bonus']
+            to_hit += eff.hook_attack_to_hit(target, rnge)["bonus"]
         msg = f"{source} rolled {to_hit_roll} {msg_0}"
         if crit_hit:
             msg += " (critical hit)"
@@ -271,6 +271,11 @@ class SpellAttack(Attack):
     def heuristic(self, doer):
         """Should we cast this"""
         if not doer.spell_available(self):
+            return 0
+        pot_target = doer.pick_closest_enemy()
+        if not pot_target:
+            return 0
+        if doer.distance(pot_target) > self.range()[1]:
             return 0
         return 2
 

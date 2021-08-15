@@ -46,6 +46,12 @@ class Bless(SpellAction):
         return close
 
     ###########################################################################
+    def pick_target(self, doer):
+        """Who should we do the spell to"""
+        # Improve this
+        return doer
+
+    ###########################################################################
     def bless(self, caster):
         """Do the spell"""
         targets = 3
@@ -67,20 +73,21 @@ class Bless(SpellAction):
 ##############################################################################
 ##############################################################################
 class BlessEffect(Effect):
-    """ The Effect of the bless spell"""
+    """The Effect of the bless spell"""
+
     def __init__(self, **kwargs):
-        """ Initialise """
+        """Initialise"""
         super().__init__("Bless", **kwargs)
 
     def hook_attack_to_hit(self, target, rnge):
-        """ Mod attack roll """
+        """Mod attack roll"""
         eff = super().hook_attack_to_hit(target, rnge)
         eff.update({"bonus": int(dice.roll("d4"))})
         print(f"Bless adds {eff['bonus']} to attack roll")
         return eff
 
     def hook_saving_throw(self, stat):
-        """ Mod saving throw """
+        """Mod saving throw"""
         eff = super().hook_saving_throw(stat)
         eff.update({"bonus": int(dice.roll("d4"))})
         print(f"Bless adds {eff['bonus']} to saving throw")

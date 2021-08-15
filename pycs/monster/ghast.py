@@ -88,7 +88,6 @@ class Ghast(Monster):
         else:
             print(f"{target} resisted Ghast claws")
 
-
     ##########################################################################
     def pick_best_attack(self):
         """Pick the claw attack more often than damage would indicate"""
@@ -109,7 +108,8 @@ class Ghast(Monster):
 ##############################################################################
 ##############################################################################
 class GhastClawEffect(Effect):
-    """ Effect of Ghast Claws """
+    """Effect of Ghast Claws"""
+
     def __init__(self, **kwargs):
         super().__init__("Ghast Claws", **kwargs)
 
@@ -124,5 +124,6 @@ class GhastClawEffect(Effect):
             print(f"{victim} no longer paralyzed")
             return True
         return False
+
 
 # EOF

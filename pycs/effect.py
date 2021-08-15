@@ -20,7 +20,7 @@ class Effect:
     ##########################################################################
     def hook_saving_throw(self, stat):  # pylint: disable=unused-argument
         """Modify the saving throw roll"""
-        return {'bonus': 0}
+        return {"bonus": 0}
 
     ##########################################################################
     def initial(self, target):
