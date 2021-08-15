@@ -98,7 +98,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return False
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
         for eff in self.effects.values():
-            save += eff.hook_saving_throw(stat)['bonus']
+            save += eff.hook_saving_throw(stat)["bonus"]
         if save >= dc:
             print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
             return True
@@ -440,19 +440,28 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.moves = self.speed
         self.check_start_effects()
 
+        # What are we going to do this turn
         act = self.pick_action()
         if act is None:
             self.target = self.pick_closest_enemy()
             print(f"{self} now going toward {self.target}")
+        # Move closer to target
         self.move(act)
 
-        act = self.pick_action()
-        if act is None:
-            self.target = self.pick_closest_enemy()
+        # Now that we have moved is there something we can do
+        if not act:
+            act = self.pick_action()
+
+        # Do something, otherwise keep moving
         if not self.action(act):
             self.dash(act)
 
-        self.move(act)
+        # Move to next target if needed
+        if self.target.state != "OK":
+            self.target = self.pick_closest_enemy()
+            self.move(act)
+
+        print(self.arena)
 
         self.check_end_effects()
 
