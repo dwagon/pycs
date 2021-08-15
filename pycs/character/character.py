@@ -1,6 +1,6 @@
 """ Base Player character """
 from creature import Creature
-from actions import SpellAction
+from spells import SpellAction
 
 
 ##############################################################################

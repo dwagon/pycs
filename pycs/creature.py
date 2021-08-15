@@ -1,6 +1,7 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
 import random
+from collections import namedtuple
 import dice
 from constants import ActionType
 from constants import Condition
@@ -34,8 +35,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
-        self.heuristic = kwargs.get(
-            "heuristic", {ActionType.MELEE: 1, ActionType.RANGED: 4}
+        self.action_preference = kwargs.get(
+            "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
         )
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
@@ -66,9 +67,25 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
-    def pick_closest_enemy(self):
+    def heal(self, cure_dice, cure_bonus):
+        """Heal ourselves"""
+        chp = 0
+        if cure_dice:
+            chp = int(dice.roll(cure_dice))
+        chp += cure_bonus
+        chp = min(chp, self.max_hp - self.hp)
+        self.hp += chp
+        print(f"{self} cured of {chp} hp")
+
+    ##########################################################################
+    def pick_closest_enemy(self, num=1):
         """Which enemy is the closest"""
-        return self.arena.pick_closest_enemy(self)
+        return self.arena.pick_closest_enemy(self, num)
+
+    ##########################################################################
+    def pick_closest_friend(self, num=1):
+        """Which friend is the closest"""
+        return self.arena.pick_closest_friend(self, num)
 
     ##########################################################################
     def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
@@ -266,6 +283,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
         for effect, hook in self.temp_effects.copy().items():
+            if hook is None:
+                continue
             remove = hook(self)
             if remove:
                 self.remove_temp_effect(effect)
@@ -274,6 +293,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def remove_temp_effect(self, name):
         """Remove a temporary effect"""
         del self.temp_effects[name]
+
+    ##########################################################################
+    def has_temp_effect(self, name):
+        """Do we have a temporary effect"""
+        return name in self.temp_effects
 
     ##########################################################################
     def add_temp_effect(self, name, hook):
@@ -333,22 +357,32 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
+    def spell_available(self, spell):  # pylint: disable=unused-argument
+        """Spell casters should redefine this"""
+        return False
+
+    ##########################################################################
     def pick_action(self):
-        """What are we going to do this turn based on individual heuristic"""
+        """What are we going to do this turn based on individual action_preference"""
+        # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
+        acttuple = namedtuple("acttuple", "quality random act")
         for qual, act in self.possible_actions():
             if isinstance(act, ActionType):
-                qual *= self.heuristic.get(act, 1)
+                qual *= self.action_preference.get(act, 1)
             elif isinstance(act, SpellType):
-                qual *= self.heuristic.get(act, 1)
+                if self.spell_available(act):
+                    qual *= self.action_preference.get(act, 1)
+                else:
+                    qual = 0
             else:
-                qual *= self.heuristic.get(act.type, 1)
+                qual *= self.action_preference.get(act.type, 1)
             if qual:
-                actions.append((qual, random.random(), act))
+                actions.append(acttuple(qual, random.random(), act))
         actions.sort(reverse=True)
         print(f"{self} {actions=}")
         try:
-            todo = actions[0][-1]
+            todo = actions[0].act
             self.target = todo.pick_target(self)
             print(f"{self} is going to do {todo} to {self.target}")
         except IndexError:
@@ -368,8 +402,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def move(self, act):
         """Do a move"""
-        print(f"{self} move to {self.target}")
-        if self.target:
+        if self.target and self.moves:
+            print(f"{self} move to {self.target}")
             self.move_to_target(act)
 
     ##########################################################################

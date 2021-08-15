@@ -1,6 +1,7 @@
 """ Class defining the play area """
 import math
 from collections import defaultdict
+from collections import namedtuple
 from astar import AStar
 from constants import Stat
 
@@ -130,23 +131,40 @@ class Arena(AStar):
         return dest
 
     ##############################################################################
-    def pick_closest_enemy(self, creat):
-        """Pick the closest enemy to creat"""
-        myside = creat.side
-        otherside = [_ for _ in self.combatants if _.side != myside]
-        closest = None
-        close_dist = 9999
-        for enemy in otherside:
-            if not enemy.is_alive():
-                continue
-            dist = self.distance(creat, enemy)
-            # print(
-            # f"Looking to attack {enemy}@{enemy.coords} from {creat.coords}: {dist} distance"
-            # )
-            if dist < close_dist:
-                close_dist = dist
-                closest = enemy
-        return closest
+    def pick_closest_friend(self, creat, numb=1):
+        """Pick the closest {numb} friends to creat"""
+        result = namedtuple("result", "distance id creature")
+        combs = [
+            result(self.distance(creat, _), id(_), _)
+            for _ in self.combatants
+            if _.side == creat.side and _.is_alive()
+        ]
+        combs.sort()
+        if not combs:
+            return None
+        result = [_.creature for _ in combs[-numb:]]
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+    ##############################################################################
+    def pick_closest_enemy(self, creat, numb=1):
+        """Pick the closest {numb} enemy creatures to {creat}"""
+        result = namedtuple("result", "distance id creature")
+        combs = [
+            result(self.distance(creat, _), id(_), _)
+            for _ in self.combatants
+            if _.side != creat.side and _.is_alive()
+        ]
+        combs.sort()
+        if not combs:
+            return None
+        result = [_.creature for _ in combs[-numb:]]
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
 
     ##############################################################################
     def still_going(self):

@@ -2,16 +2,16 @@
 import colors
 from attacks import MeleeAttack
 from actions import Action
-from spells.aid import Aid
-from spells.bless import Bless
-from spells.cure_wounds import Cure_Wounds
-from spells.guiding_bolt import Guiding_Bolt
-from spells.healing_word import Healing_Word
-from spells.lesser_restoration import Lesser_Restoration
-from spells.enhance_ability import Enhance_Ability
-from spells.sacred_flame import Sacred_Flame
-from spells.shield_of_faith import Shield_Of_Faith
-from spells.spiritual_weapon import Spiritual_Weapon
+from spell.aid import Aid
+from spell.bless import Bless
+from spell.cure_wounds import Cure_Wounds
+from spell.guiding_bolt import Guiding_Bolt
+from spell.healing_word import Healing_Word
+from spell.lesser_restoration import Lesser_Restoration
+from spell.enhance_ability import Enhance_Ability
+from spell.sacred_flame import Sacred_Flame
+from spell.shield_of_faith import Shield_Of_Faith
+from spell.spiritual_weapon import Spiritual_Weapon
 from constants import DamageType
 from constants import MonsterType
 from constants import SpellType
@@ -37,13 +37,13 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
-                "heuristic": {
+                "action_preference": {
                     SpellType.HEALING: 5,
                     TurnUndead: 4,
                     SpellType.BUFF: 3,
                     SpellType.RANGED: 2,
-                    SpellType.MELEE: 1,
                     ActionType.RANGED: 2,
+                    SpellType.MELEE: 1,
                     ActionType.MELEE: 1,
                 },
             }

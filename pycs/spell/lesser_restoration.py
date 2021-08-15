@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/lesser-restoration"""
 
-from actions import SpellAction
+import spells
 from constants import SpellType
 
 
 ##############################################################################
-class Lesser_Restoration(SpellAction):
+class Lesser_Restoration(spells.SpellAction):
     """You touch a creature and can end either one disease or one
     condition afflicting it. The condition can be blinded, deafened,
     paralyzed, or poisoned."""
@@ -24,6 +24,11 @@ class Lesser_Restoration(SpellAction):
 
     def lesser_restoration(self, caster, target):
         """Do the spell"""
+
+    ###########################################################################
+    def heuristic(self, doer):
+        """Should we do the spell"""
+        return 0
 
 
 # EOF

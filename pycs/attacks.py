@@ -288,7 +288,7 @@ class SpellAttack(Attack):
     ########################################################################
     def post_attack_hook(self, source):
         """Tell the caster they have cast the spell"""
-        source.cast(self)
+        pass
 
     ########################################################################
     def is_available(self, owner):

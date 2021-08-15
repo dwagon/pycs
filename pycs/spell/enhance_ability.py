@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/enhance-ability"""
 
-from actions import SpellAction
+import spells
 from constants import SpellType
 
 
 ##############################################################################
-class Enhance_Ability(SpellAction):
+class Enhance_Ability(spells.SpellAction):
     """Up to six creatures of your choice that you can see within range
     each regain hit points equal to 2d8 + your spellcasting ability
     modifier. This spell has no effect on undead or constructs.
@@ -15,6 +15,7 @@ class Enhance_Ability(SpellAction):
     level above 2nd.
     """
 
+    ###########################################################################
     def __init__(self, **kwargs):
         name = "Enhance Ability"
         kwargs.update(
@@ -27,8 +28,14 @@ class Enhance_Ability(SpellAction):
         )
         super().__init__(name, **kwargs)
 
+    ###########################################################################
     def enhance_ability(self, caster, target):
         """Do the spell"""
+
+    ###########################################################################
+    def heuristic(self, doer):
+        """Should we do the spell"""
+        return 0
 
 
 # EOF

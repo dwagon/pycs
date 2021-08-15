@@ -1,13 +1,14 @@
 """https://www.dndbeyond.com/spells/cure-wounds"""
 
-from actions import SpellAction
-from constants import SpellType
 import spells
+from constants import SpellType
 
 
 ##############################################################################
-class Cure_Wounds(SpellAction):
-    """Spell"""
+class Cure_Wounds(spells.SpellAction):
+    """A creature you touch regains a number of hit points equal to 1d8
+    + your spellcasting ability modifier. This spell has no effect on
+    undead or constructs."""
 
     ########################################################################
     def __init__(self, **kwargs):
@@ -16,16 +17,21 @@ class Cure_Wounds(SpellAction):
             {
                 "type": SpellType.HEALING,
                 "reach": 5,
-                "cure_hp": ("1d8", 3),
                 "level": 1,
+                "side_effect": self.do_spell,
             }
         )
         super().__init__(name, **kwargs)
 
     ########################################################################
+    def do_spell(self, caster):
+        """Do the spell"""
+        caster.target.heal("1d8", caster.spell_modifier)
+
+    ########################################################################
     def pick_target(self, doer):
         """Who should we target"""
-        return spells.pick_target(doer)
+        return spells.pick_heal_target(doer)
 
     ########################################################################
     def heuristic(self, doer):

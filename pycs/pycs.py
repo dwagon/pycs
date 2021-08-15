@@ -86,7 +86,7 @@ def combat_test():
     arena = Arena(max_x=40, max_y=20)
     fighter = Fighter(arena=arena, name="Frank", level=1, side="Humans")
     barbarian = Barbarian(arena=arena, name="Barbara", level=1, side="Humans")
-    cleric = Cleric(arena=arena, name="Charlise", level=2, side="Humans")
+    cleric = Cleric(arena=arena, name="Charlise", level=3, side="Humans")
     warlock = Warlock(arena=arena, name="Wendy", level=1, side="Humans")
 
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"), (0, 0))
