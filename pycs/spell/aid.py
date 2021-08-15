@@ -1,9 +1,12 @@
 """https://www.dndbeyond.com/spells/aid"""
 
-from spells import SpellAction
 from constants import SpellType
+from effect import Effect
+from spells import SpellAction
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Aid(SpellAction):
     """Your spell bolsters your allies with toughness and resolve.
@@ -27,12 +30,10 @@ class Aid(SpellAction):
     def heuristic(self, doer):
         """Should we do the spell
         the more people it can effect the more we should do it"""
-        if not doer.spell_available(self):
-            return 0
         close = 0
-        for targ in doer.pick_closest_friend(3):
-            if doer.distance(targ) <= 30 / 6:
-                if doer.has_temp_effect("Aid"):
+        for targ in doer.arena.my_side(doer.side):
+            if doer.distance(targ) <= 30 / 5:
+                if doer.has_effect("Aid"):
                     continue
                 close += 1
         return close
@@ -45,26 +46,30 @@ class Aid(SpellAction):
         return doer
 
     ##########################################################################
-    def aid_person(self, person):
-        """Add the aid benefits to {person}"""
-        if person.has_temp_effect("Aid"):
-            return 0
-        else:
-            print(f"Aid: {person} increasing HPs by 5")
-            person.hp += 5
-            person.max_hp += 5
-            person.add_temp_effect("Aid", None)
-            return 1
-
-    ##########################################################################
     def aid(self, caster):
         """Do the spell"""
         targets = 3
         for targ in caster.arena.my_side(caster.side):
             if caster.distance(targ) <= 30 / 6:
-                targets -= self.aid_person(targ)
+                if not targ.has_effect("Aid"):
+                    targ.add_effect(AidEffect(cause=caster))
+                    targets -= 1
         if targets < 3:
-            self.aid_person(caster)
+            caster.add_effect(AidEffect(cause=caster))
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class AidEffect(Effect):
+    """ Effect of the aid spell """
+    def __init__(self, **kwargs):
+        super().__init__("Aid", **kwargs)
+
+    def initial(self, target):
+        """ Initial effects of Aid"""
+        target.hp += 5
+        target.max_hp += 5
 
 
 # EOF

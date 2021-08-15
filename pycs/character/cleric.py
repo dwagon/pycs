@@ -167,7 +167,7 @@ class TurnUndead(Action):
             if source.arena.distance(source, und) < 30 / 5:
                 if und.saving_throw(Stat.WIS, 10 + source.spell_modifier):
                     print(f"{und} has been turned by {source}")
-                    und.add_temp_effect("turned", self.recover)
+                    und.add_effect("turned", self.recover)
 
     ##########################################################################
     def recover(self, undead):  # pylint: disable=unused-argument

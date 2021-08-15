@@ -51,6 +51,8 @@ class Attack(Action):
         if to_hit_roll == 1:
             crit_miss = True
         to_hit = to_hit_roll + self.bonus
+        for eff in source.effects.values():
+            to_hit += eff.hook_attack_to_hit(target, rnge)['bonus']
         msg = f"{source} rolled {to_hit_roll} {msg_0}"
         if crit_hit:
             msg += " (critical hit)"

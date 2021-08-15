@@ -1,10 +1,13 @@
 """https://www.dndbeyond.com/spells/bless"""
 
 import dice
-from spells import SpellAction
 from constants import SpellType
+from effect import Effect
+from spells import SpellAction
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Bless(SpellAction):
     """You bless up to three creatures of your choice within range.
@@ -33,20 +36,55 @@ class Bless(SpellAction):
     ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
-        return 0
+        # The more applicable targets the more likely we should do it
+        close = 0
+        for targ in doer.arena.my_side(doer.side):
+            if doer.distance(targ) <= 30 / 5:
+                if doer.has_effect("Bless"):
+                    continue
+                close += 1
+        return close
 
     ###########################################################################
     def bless(self, caster):
         """Do the spell"""
-        friends = caster.pick_closest_friend(3)
-        for friend in friends:
-            friend.add_hook("attack_to_hit", self.bless_result)
-            friend.add_hook("saving_throw", self.bless_result)
+        targets = 3
+        for friend in caster.arena.my_side(caster.side):
+            if caster.has_effect("Bless"):
+                continue
+            targets -= 1
+            friend.add_effect(BlessEffect(cause=caster))
+            if targets <= 0:
+                break
 
     ###########################################################################
     def bless_result(self):
         """What does the bless do"""
         return int(dice.roll("d4"))
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class BlessEffect(Effect):
+    """ The Effect of the bless spell"""
+    def __init__(self, **kwargs):
+        """ Initialise """
+        super().__init__("Bless", **kwargs)
+
+    def hook_attack_to_hit(self, target, rnge):
+        """ Mod attack roll """
+        eff = super().hook_attack_to_hit(target, rnge)
+        eff.update({"bonus": int(dice.roll("d4"))})
+        print(f"Bless adds {eff['bonus']} to attack roll")
+        return eff
+
+    def hook_saving_throw(self, stat):
+        """ Mod saving throw """
+        eff = super().hook_saving_throw(stat)
+        eff.update({"bonus": int(dice.roll("d4"))})
+        print(f"Bless adds {eff['bonus']} to saving throw")
+        return eff
 
 
 # EOF

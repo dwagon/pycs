@@ -52,7 +52,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.actions = []
         self.reactions = []
         self.conditions = set()
-        self.temp_effects = {}
+        self.effects = {}
         self.target = None
         self.coords = None
         self.statistics = []
@@ -97,6 +97,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             )
             return False
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
+        for eff in self.effects.values():
+            save += eff.hook_saving_throw(stat)['bonus']
         if save >= dc:
             print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
             return True
@@ -282,27 +284,27 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
-        for effect, hook in self.temp_effects.copy().items():
-            if hook is None:
-                continue
-            remove = hook(self)
+        for name, effect in self.effects.copy().items():
+            remove = effect.removal_end_of_its_turn(self)
             if remove:
-                self.remove_temp_effect(effect)
+                self.remove_effect(name)
 
     ##########################################################################
-    def remove_temp_effect(self, name):
-        """Remove a temporary effect"""
-        del self.temp_effects[name]
+    def remove_effect(self, name):
+        """Remove an effect"""
+        del self.effects[name]
 
     ##########################################################################
-    def has_temp_effect(self, name):
-        """Do we have a temporary effect"""
-        return name in self.temp_effects
+    def has_effect(self, name):
+        """Do we have an effect"""
+        return name in self.effects
 
     ##########################################################################
-    def add_temp_effect(self, name, hook):
-        """Add a temporary effect"""
-        self.temp_effects[name] = hook
+    def add_effect(self, effect):
+        """Add an effect"""
+        self.effects[effect.name] = effect
+        if not self.has_effect(effect.name):
+            effect.initial(self)
 
     ##########################################################################
     def check_start_effects(self):
@@ -336,8 +338,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
-        if self.temp_effects:
-            print(f"|  Temp Effects: {', '.join(self.temp_effects)}")
+        if self.effects:
+            print(f"|  Temp Effects: {', '.join(self.effects)}")
 
     ##########################################################################
     def distance(self, target):

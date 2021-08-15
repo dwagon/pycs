@@ -1,13 +1,16 @@
 """ Ghast Monster Class """
 import colors
 from attacks import MeleeAttack
-from constants import DamageType
-from constants import Stat
 from constants import Condition
+from constants import DamageType
 from constants import MonsterType
+from constants import Stat
+from effect import Effect
 from .monster import Monster
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Ghast(Monster):
     """Ghast - https://www.dndbeyond.com/monsters/ghast"""
@@ -81,19 +84,10 @@ class Ghast(Monster):
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:
             print(f"{target} got paralysed by {self}")
-            target.add_condition(Condition.PARALYZED)
-            target.add_temp_effect("Ghast_Claw", self.recover_claws)
+            target.add_effect(GhastClawEffect(cause=self))
         else:
             print(f"{target} resisted Ghast claws")
 
-    ##########################################################################
-    def recover_claws(self, victim):
-        """Check to see if victim can recover from claws"""
-        svth = victim.saving_throw(Stat.CON, 10)
-        if svth:
-            print(f"{victim} no longer paralyzed")
-            return True
-        return False
 
     ##########################################################################
     def pick_best_attack(self):
@@ -110,5 +104,25 @@ class Ghast(Monster):
             return colors.red("G", bg="green", style="bold")
         return colors.green("G", bg="red")
 
+
+##############################################################################
+##############################################################################
+##############################################################################
+class GhastClawEffect(Effect):
+    """ Effect of Ghast Claws """
+    def __init__(self, **kwargs):
+        super().__init__("Ghast Claws", **kwargs)
+
+    def initial(self, target):
+        target.add_condition(Condition.PARALYZED)
+
+    ##########################################################################
+    def recover_end_of_its_turn(self, victim):
+        """Check to see if victim can recover from claws"""
+        svth = victim.saving_throw(Stat.CON, 10)
+        if svth:
+            print(f"{victim} no longer paralyzed")
+            return True
+        return False
 
 # EOF
