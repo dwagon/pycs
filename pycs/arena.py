@@ -139,7 +139,7 @@ class Arena(AStar):
             for _ in self.combatants
             if _.side == creat.side and _.is_alive()
         ]
-        combs.sort()
+        combs.sort(reverse=True)
         if not combs:
             return None
         result = [_.creature for _ in combs[-numb:]]
@@ -157,7 +157,7 @@ class Arena(AStar):
             for _ in self.combatants
             if _.side != creat.side and _.is_alive()
         ]
-        combs.sort()
+        combs.sort(reverse=True)
         if not combs:
             return None
         result = [_.creature for _ in combs[-numb:]]
