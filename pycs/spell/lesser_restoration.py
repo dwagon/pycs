@@ -25,6 +25,7 @@ class Lesser_Restoration(spells.SpellAction):
     ###########################################################################
     def cast(self, caster):
         """Do the spell"""
+        return True
 
     ###########################################################################
     def heuristic(self, doer):

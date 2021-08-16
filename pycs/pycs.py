@@ -108,7 +108,6 @@ def combat_test():
     while arena.still_going():
         print(f"##### Turn {turn}: {dict(arena.remaining_participants())}")
         arena.turn()
-        print(f"{arena}")
         turn += 1
         assert turn < 100
     statistics_report(arena)

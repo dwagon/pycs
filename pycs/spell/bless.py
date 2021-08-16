@@ -58,9 +58,11 @@ class Bless(SpellAction):
             if caster.has_effect("Bless"):
                 continue
             targets -= 1
+            print(f"{friend} is now Blessed")
             friend.add_effect(BlessEffect(cause=caster))
             if targets <= 0:
                 break
+        return True
 
     ###########################################################################
     def bless_result(self):

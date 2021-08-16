@@ -50,10 +50,13 @@ class Aid(SpellAction):
         for targ in caster.arena.my_side(caster.side):
             if caster.distance(targ) <= 30 / 6:
                 if not targ.has_effect("Aid"):
+                    print(f"{caster} casts Aid on {targ}")
                     targ.add_effect(AidEffect(cause=caster))
                     targets -= 1
         if targets < 3:
+            print(f"{caster} casts Aid on self")
             caster.add_effect(AidEffect(cause=caster))
+        return True
 
 
 ##############################################################################

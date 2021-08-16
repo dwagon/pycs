@@ -118,7 +118,6 @@ class Arena(AStar):
 
         # Are we adjacent - then don't bother moving
         if len(route) < 2:
-            print(f"{creat} already adjacent to {target}")
             return creat.coords
 
         dest = route[1]

@@ -114,12 +114,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def move_to_target(self, act):
-        """Move to the target"""
+        """Move closer to the target - until we are in range of our action"""
         if not self.target:
             return
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
             return
+        if self.moves:
+            print(f"{self} move to {self.target}")
         for _ in range(self.moves):
             if act:
                 rnge, _ = act.range()
@@ -405,7 +407,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def move(self, act):
         """Do a move"""
         if self.target and self.moves:
-            print(f"{self} move to {self.target}")
             self.move_to_target(act)
 
     ##########################################################################
@@ -450,7 +451,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.move(act)
 
         # Now that we have moved is there something we can do
-        if not act:
+        if act is None:
             act = self.pick_action()
 
         # Do something, otherwise keep moving

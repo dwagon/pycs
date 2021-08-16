@@ -30,6 +30,7 @@ class Enhance_Ability(spells.SpellAction):
     ###########################################################################
     def cast(self, caster):
         """Do the spell"""
+        return False
 
     ###########################################################################
     def heuristic(self, doer):
