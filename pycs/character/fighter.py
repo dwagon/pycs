@@ -20,9 +20,12 @@ class Fighter(Character):
                 "wis": 13,
                 "cha": 9,
                 "ac": 18,
-                "hp": 10,
             }
         )
+        if level == 1:
+            kwargs["hp"] = 10
+        elif level == 2:
+            kwargs["hp"] = 18
         super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
