@@ -55,7 +55,7 @@ class Bless(SpellAction):
         """Do the spell"""
         targets = 3
         for friend in caster.arena.my_side(caster.side):
-            if caster.has_effect("Bless"):
+            if friend.has_effect("Bless"):
                 continue
             targets -= 1
             print(f"{friend} is now Blessed")
