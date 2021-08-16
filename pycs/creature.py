@@ -422,10 +422,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dash(self, act):
         """Do a dash action"""
         # Dash if we aren't in range yet
-        if self.target:
-            print(f"{self} dashing")
-            self.moves = self.speed
-            self.move_to_target(act)
+        if not self.target:
+            self.target = self.pick_closest_enemy()
+        print(f"{self} dashing")
+        self.moves = self.speed
+        self.move_to_target(act)
 
     ##########################################################################
     def turn(self):
