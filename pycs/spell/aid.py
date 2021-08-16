@@ -53,7 +53,7 @@ class Aid(SpellAction):
                     print(f"{caster} casts Aid on {targ}")
                     targ.add_effect(AidEffect(cause=caster))
                     targets -= 1
-        if targets < 3:
+        if targets:
             print(f"{caster} casts Aid on self")
             caster.add_effect(AidEffect(cause=caster))
         return True
