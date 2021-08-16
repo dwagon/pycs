@@ -97,6 +97,30 @@ class Action:
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
+    def do_attack(self, source):
+        """Do the attack from {source}"""
+        target = source.target
+        rnge = source.distance(target)
+        if rnge > self.range()[1]:
+            print(f"{target} is out of range")
+            return False
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
+        print(
+            f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
+        )
+        if to_hit > target.ac and not crit_miss:
+            dmg = self.roll_dmg(target, crit_hit)
+            print(
+                f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
+            )
+            target.hit(dmg, self.dmg_type, source, crit_hit)
+            source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
+        else:
+            source.statistics.append((self.name, 0, False, False))
+            print(f"{source} missed {target} with {self}")
+        return True
+
+    ########################################################################
     def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
         """Roll the damage of the attack"""
         if critical:

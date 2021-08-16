@@ -1,5 +1,4 @@
 """ Handle Attacks """
-import dice
 from constants import ActionType
 from actions import Action
 
@@ -10,36 +9,10 @@ from actions import Action
 class Attack(Action):
     """generic attack"""
 
-    ##########################################################################
-    def post_attack_hook(self, source):
-        """Post attack hook"""
-        if self.side_effect is not None:
-            self.side_effect(source)
-
     ########################################################################
     def perform_action(self, source):
         """Do the attack"""
-        target = source.target
-        rnge = source.distance(target)
-        if rnge > self.range()[1]:
-            print(f"{target} is out of range")
-            return False
-        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
-        print(
-            f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
-        )
-        if to_hit > target.ac and not crit_miss:
-            dmg = self.roll_dmg(target, crit_hit)
-            print(
-                f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
-            )
-            target.hit(dmg, self.dmg_type, source, crit_hit)
-            source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
-            self.post_attack_hook(source)
-        else:
-            source.statistics.append((self.name, 0, False, False))
-            print(f"{source} missed {target} with {self}")
-        return True
+        return self.do_attack(source)
 
 
 ##############################################################################

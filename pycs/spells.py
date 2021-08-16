@@ -28,7 +28,7 @@ class SpellAction(Action):
         """Cast the spell"""
         print(f"{source} is casting {self.name}")
         source.cast(self)
-        self.cast(source)
+        return self.cast(source)
 
     ########################################################################
     def heuristic(self, doer):
@@ -41,6 +41,7 @@ class SpellAction(Action):
     def cast(self, caster):  # pylint: disable=unused-argument
         """Needs to be replaced"""
         print(f"SpellAction.{__class__.__name__} needs a cast()")
+        return False
 
 
 ##############################################################################
@@ -139,14 +140,14 @@ class AttackSpell(SpellAction):
         return self.reach, self.reach
 
     ########################################################################
-    def post_attack_hook(self, source):
-        """Tell the caster they have cast the spell"""
-        pass
-
-    ########################################################################
     def is_available(self, owner):
         """Is this action available?"""
         return owner.spell_available(self)
+
+    ########################################################################
+    def cast(self, caster):
+        """Cast the attack spell - overwrite if required"""
+        return self.do_attack(caster)
 
 
 # EOF
