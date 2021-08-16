@@ -110,14 +110,16 @@ class Ghast(Monster):
 class GhastClawEffect(Effect):
     """Effect of Ghast Claws"""
 
+    ##########################################################################
     def __init__(self, **kwargs):
         super().__init__("Ghast Claws", **kwargs)
 
+    ##########################################################################
     def initial(self, target):
         target.add_condition(Condition.PARALYZED)
 
     ##########################################################################
-    def recover_end_of_its_turn(self, victim):
+    def removal_end_of_its_turn(self, victim):
         """Check to see if victim can recover from claws"""
         svth = victim.saving_throw(Stat.CON, 10)
         if svth:
