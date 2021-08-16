@@ -114,6 +114,7 @@ class Action:
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
             target.hit(dmg, self.dmg_type, source, crit_hit)
+            self.side_effect(source)
             source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
         else:
             source.statistics.append((self.name, 0, False, False))
