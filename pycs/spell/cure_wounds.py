@@ -18,13 +18,12 @@ class Cure_Wounds(spells.SpellAction):
                 "type": SpellType.HEALING,
                 "reach": 5,
                 "level": 1,
-                "side_effect": self.do_spell,
             }
         )
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def do_spell(self, caster):
+    def cast(self, caster):
         """Do the spell"""
         caster.target.heal("1d8", caster.spell_modifier)
 

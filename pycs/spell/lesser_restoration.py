@@ -10,19 +10,20 @@ class Lesser_Restoration(spells.SpellAction):
     condition afflicting it. The condition can be blinded, deafened,
     paralyzed, or poisoned."""
 
+    ###########################################################################
     def __init__(self, **kwargs):
         name = "Lesser Restoration"
         kwargs.update(
             {
                 "reach": 5,
                 "level": 2,
-                "side_effect": self.lesser_restoration,
                 "type": SpellType.HEALING,
             }
         )
         super().__init__(name, **kwargs)
 
-    def lesser_restoration(self, caster, target):
+    ###########################################################################
+    def cast(self, caster):
         """Do the spell"""
 
     ###########################################################################

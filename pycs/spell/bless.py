@@ -26,7 +26,6 @@ class Bless(SpellAction):
             {
                 "reach": 30,
                 "level": 1,
-                "side_effect": self.bless,
                 "type": SpellType.BUFF,
                 "concentration": True,
             }
@@ -52,7 +51,7 @@ class Bless(SpellAction):
         return doer
 
     ###########################################################################
-    def bless(self, caster):
+    def cast(self, caster):
         """Do the spell"""
         targets = 3
         for friend in caster.arena.my_side(caster.side):

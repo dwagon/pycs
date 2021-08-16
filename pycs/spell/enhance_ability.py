@@ -22,14 +22,13 @@ class Enhance_Ability(spells.SpellAction):
             {
                 "reach": 5,
                 "level": 2,
-                "side_effect": self.enhance_ability,
                 "type": SpellType.BUFF,
             }
         )
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def enhance_ability(self, caster, target):
+    def cast(self, caster):
         """Do the spell"""
 
     ###########################################################################

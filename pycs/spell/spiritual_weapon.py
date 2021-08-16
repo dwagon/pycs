@@ -17,15 +17,16 @@ class Spiritual_Weapon(spells.SpellAction):
                 "casting": "bonus",
                 "reach": 60,
                 "level": 1,
-                "side_effect": self.spiritual_weap,
                 "type": SpellType.BUFF,
             }
         )
         super().__init__(name, **kwargs)
 
-    def spiritual_weap(self, caster, target):
+    ###########################################################################
+    def cast(self, caster):
         """Do the spell"""
 
+    ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
         return 0

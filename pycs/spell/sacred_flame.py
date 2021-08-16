@@ -1,15 +1,16 @@
 """ https://www.dndbeyond.com/spells/sacred-flame"""
 
-from attacks import SpellAttack
+from spells import AttackSpell
 from constants import DamageType
 from constants import Stat
 from constants import SpellType
 
 
 ##############################################################################
-class Sacred_Flame(SpellAttack):
+class Sacred_Flame(AttackSpell):
     """Spell"""
 
+    ###########################################################################
     def __init__(self, **kwargs):
         name = "Sacred Flame"
         kwargs.update(

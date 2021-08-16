@@ -457,7 +457,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.dash(act)
 
         # Move to next target if needed
-        if self.target.state != "OK":
+        if self.target and self.target.state != "OK":
             self.target = self.pick_closest_enemy()
             self.move(act)
 

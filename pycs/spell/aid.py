@@ -21,9 +21,7 @@ class Aid(SpellAction):
     ##########################################################################
     def __init__(self, **kwargs):
         name = "Aid"
-        kwargs.update(
-            {"reach": 30, "level": 2, "side_effect": self.aid, "type": SpellType.BUFF}
-        )
+        kwargs.update({"reach": 30, "level": 2, "type": SpellType.BUFF})
         super().__init__(name, **kwargs)
 
     ##########################################################################
@@ -46,7 +44,7 @@ class Aid(SpellAction):
         return doer
 
     ##########################################################################
-    def aid(self, caster):
+    def cast(self, caster):
         """Do the spell"""
         targets = 3
         for targ in caster.arena.my_side(caster.side):
