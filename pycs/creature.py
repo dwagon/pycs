@@ -429,18 +429,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.move_to_target(act)
 
     ##########################################################################
-    def turn(self):
-        """Have a go"""
-        print()
-        self.report()
-        if self.has_condition(Condition.PARALYZED):
-            print(f"{self} is paralyzed")
-            return
-        if self.state != "OK":
-            return
-        self.moves = self.speed
-        self.check_start_effects()
-
+    def do_stuff(self):
+        """All the doing bits"""
         # What are we going to do this turn
         act = self.pick_action()
         if act is None:
@@ -464,6 +454,19 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         print(self.arena)
 
+    ##########################################################################
+    def turn(self):
+        """Have a go"""
+        print()
+        self.report()
+        if self.has_condition(Condition.PARALYZED):
+            print(f"{self} is paralyzed")
+            return
+        if self.state != "OK":
+            return
+        self.check_start_effects()
+        self.moves = self.speed
+        self.do_stuff()
         self.check_end_effects()
 
 
