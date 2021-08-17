@@ -1,11 +1,12 @@
 """https://www.dndbeyond.com/spells/protection-from-poison"""
 
-from actions import SpellAction
+from spells import SpellAction
 from constants import SpellType
 
 
 ##############################################################################
 class Protection_From_Poison(SpellAction):
+    """ Spell """
     def __init__(self, **kwargs):
         name = "Protection From Poison"
         kwargs.update(

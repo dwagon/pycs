@@ -1,11 +1,12 @@
 """https://www.dndbeyond.com/spells/branding-smite"""
 
-from actions import SpellAction
+from spells import SpellAction
 from constants import SpellType
 
 
 ##############################################################################
 class Branding_Smite(SpellAction):
+    """ Spell """
     def __init__(self, **kwargs):
         name = "Branding Smite"
         kwargs.update(

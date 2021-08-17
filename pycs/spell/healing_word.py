@@ -28,7 +28,7 @@ class Healing_Word(spells.SpellAction):
     ########################################################################
     def cast(self, caster):
         """Do the spell"""
-        caster.target.heal("1d4", caster.spell_modifier)
+        caster.target.heal("1d4", self.modifier(caster))
         return True
 
     ########################################################################

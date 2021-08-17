@@ -25,7 +25,7 @@ class Cure_Wounds(spells.SpellAction):
     ########################################################################
     def cast(self, caster):
         """Do the spell"""
-        caster.target.heal("1d8", caster.spell_modifier)
+        caster.target.heal("1d8", self.modifier(caster))
         return True
 
     ########################################################################

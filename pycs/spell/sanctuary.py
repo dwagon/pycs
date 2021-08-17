@@ -1,11 +1,12 @@
 """https://www.dndbeyond.com/spells/sanctuary"""
 
-from actions import SpellAction
+from spells import SpellAction
 from constants import SpellType
 
 
 ##############################################################################
 class Sanctuary(SpellAction):
+    """ Spell """
     def __init__(self, **kwargs):
         name = "Sanctuary"
         kwargs.update(
