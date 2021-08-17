@@ -37,6 +37,7 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
+                "spellcast_bonus": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
                     TurnUndead: 4,
@@ -69,7 +70,6 @@ class Cleric(Character):
             MeleeAttack(
                 "Mace",
                 reach=5,
-                bonus=4,
                 dmg=("1d6", 2),
                 dmg_type=DamageType.BLUDGEONING,
             )

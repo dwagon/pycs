@@ -29,7 +29,6 @@ class Barbarian(Character):
             MeleeAttack(
                 "Greataxe",
                 reach=5,
-                bonus=5,
                 dmg=("1d12", 3),
                 dmg_type=DamageType.SLASHING,
             )
@@ -38,8 +37,7 @@ class Barbarian(Character):
             RangedAttack(
                 "Javelin",
                 reach=5,
-                bonus=5,
-                ammo=2,
+                ammo=3,
                 dmg=("1d6", 3),
                 dmg_type=DamageType.PIERCING,
             )
@@ -49,8 +47,7 @@ class Barbarian(Character):
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("B", bg="green")
-        else:
-            return colors.blue("B", bg="red")
+        return colors.blue("B", bg="red")
 
 
 # EOF

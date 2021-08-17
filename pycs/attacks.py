@@ -1,5 +1,6 @@
 """ Handle Attacks """
 from constants import ActionType
+from constants import Stat
 from actions import Action
 
 
@@ -31,6 +32,11 @@ class MeleeAttack(Attack):
     def range(self):
         """Return the range of the attack"""
         return self.reach, self.reach
+
+    ########################################################################
+    def modifier(self, attacker):  # pylint: disable=no-self-use
+        """The melee attack modifier"""
+        return attacker.prof_bonus + attacker.stat_bonus(Stat.STR)
 
     ########################################################################
     def is_available(self, owner):
@@ -100,6 +106,11 @@ class RangedAttack(Attack):
         if dist < self.s_range:
             return 2
         return 0
+
+    ########################################################################
+    def modifier(self, attacker):  # pylint: disable=no-self-use
+        """The melee attack modifier"""
+        return attacker.prof_bonus + attacker.stat_bonus(Stat.DEX)
 
     ########################################################################
     def range(self):

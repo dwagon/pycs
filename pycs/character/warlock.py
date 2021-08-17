@@ -26,6 +26,7 @@ class Warlock(Character):
                 "cha": 16,
                 "ac": 13,
                 "hp": 10,
+                "spellcast_bonus": Stat.CHA,
                 "action_preference": {
                     SpellType.RANGED: 5,
                     SpellType.MELEE: 3,
@@ -40,7 +41,6 @@ class Warlock(Character):
             MeleeAttack(
                 "Mace",
                 reach=5,
-                bonus=1,
                 dmg=("1d6", -1),
                 dmg_type=DamageType.BLUDGEONING,
             )
@@ -50,7 +50,6 @@ class Warlock(Character):
                 "Light Crossbow",
                 s_range=80,
                 l_range=320,
-                bonus=4,
                 dmg=("1d8", 2),
                 dmg_type=DamageType.PIERCING,
             )
@@ -59,7 +58,6 @@ class Warlock(Character):
             AttackSpell(
                 "Eldritch Blast",
                 reach=120,
-                bonus=5,
                 dmg=("1d10", 0),
                 level=0,
                 dmg_type=DamageType.FORCE,
@@ -80,7 +78,6 @@ class Warlock(Character):
             AttackSpell(
                 "Hellish Rebuke",
                 reach=60,
-                bonus=5,
                 dmg=("2d10", 0),
                 level=1,
                 dmg_type=DamageType.FIRE,
@@ -113,8 +110,7 @@ class Warlock(Character):
         """What a warlock looks like in the arena"""
         if self.is_alive():
             return colors.blue("W", bg="green")
-        else:
-            return colors.blue("W", bg="red")
+        return colors.blue("W", bg="red")
 
 
 # EOF

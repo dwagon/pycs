@@ -26,6 +26,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.type = kwargs.get("type", MonsterType.HUMANOID)
         self.size = kwargs.get("size", "M")
         self.prof_bonus = kwargs.get("prof_bonus", 2)
+        self.spellcast_bonus = kwargs.get("spellcast_bonus")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
             Stat.STR: kwargs["str"],

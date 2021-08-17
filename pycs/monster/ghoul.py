@@ -34,7 +34,6 @@ class Ghoul(Monster):
             MeleeAttack(
                 "Bite",
                 reach=5,
-                bonus=2,
                 heuristic=self.ghoul_bite,
                 dmg=("2d6", 2),
                 dmg_type=DamageType.PIERCING,
@@ -44,7 +43,6 @@ class Ghoul(Monster):
             MeleeAttack(
                 "Claw",
                 reach=5,
-                bonus=4,
                 dmg=("2d4", 2),
                 heuristic=self.ghoul_claw,
                 dmg_type=DamageType.SLASHING,
@@ -82,8 +80,7 @@ class Ghoul(Monster):
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("G", style="bold")
-        else:
-            return colors.green("G", bg="red", style="bold")
+        return colors.green("G", bg="red", style="bold")
 
 
 # EOF

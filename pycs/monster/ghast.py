@@ -43,7 +43,6 @@ class Ghast(Monster):
             MeleeAttack(
                 "Bite",
                 reach=5,
-                bonus=3,
                 dmg=("2d8", 3),
                 dmg_type=DamageType.PIERCING,
             )
@@ -52,7 +51,6 @@ class Ghast(Monster):
             MeleeAttack(
                 "Claw",
                 reach=5,
-                bonus=5,
                 dmg=("2d6", 3),
                 dmg_type=DamageType.SLASHING,
                 side_effect=self.ghast_claws,

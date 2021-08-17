@@ -2,7 +2,9 @@
 import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
+from constants import ActionType
 from constants import DamageType
+from constants import SpellType
 from constants import Race
 from spells.bless import Bless
 from spells.branding_smite import Branding_Smite
@@ -30,8 +32,14 @@ class Paladin(Character):
                 "int": 8,
                 "wis": 12,
                 "cha": 14,
-                "hp": 14,
+                "spellcast_bonus": Stat.CHA,
                 "race": Race.HALFORC,
+                "action_preference": {
+                    SpellType.HEALING: 5,
+                    SpellType.BUFF: 4,
+                    ActionType.RANGED: 4,
+                    ActionType.MELEE: 4,
+                }
                 # "immunity": DISEASE
             }
         )
@@ -81,7 +89,6 @@ class Paladin(Character):
             MeleeAttack(
                 "Longsword",
                 reach=5,
-                bonus=5,  # Change to dynamic
                 dmg=("1d8", 3),
                 dmg_type=DamageType.SLASHING,
             )

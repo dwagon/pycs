@@ -24,6 +24,11 @@ class SpellAction(Action):
         return self.type in types
 
     ########################################################################
+    def modifier(self, attacker):
+        """Attack modifier"""
+        return attacker.prof_bonus + attacker.stat_bonus(attacker.spellcast_bonus)
+
+    ########################################################################
     def perform_action(self, source):
         """Cast the spell"""
         print(f"{source} is casting {self.name}")
@@ -38,10 +43,9 @@ class SpellAction(Action):
         return 1
 
     ########################################################################
-    def cast(self, caster):  # pylint: disable=unused-argument
+    def cast(self, caster):
         """Needs to be replaced"""
-        print(f"SpellAction.{__class__.__name__} needs a cast()")
-        return False
+        raise NotImplementedError(f"SpellAction.{__class__.__name__} needs a cast()")
 
 
 ##############################################################################

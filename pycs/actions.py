@@ -18,8 +18,12 @@ class Action:
         self.type = ActionType.UNKNOWN
         self.side_effect = kwargs.get("side_effect", self.no_side_effect)
         self.dmg = kwargs.get("dmg", "")
-        self.bonus = kwargs.get("bonus", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
+
+    ########################################################################
+    def modifier(self, attacker):
+        """Modifier to the action dice roll"""
+        raise NotImplementedError(f"{__class__.__name__} hasn't implemented modifier()")
 
     ########################################################################
     def no_side_effect(self, source):
@@ -31,7 +35,7 @@ class Action:
         print(f"{self.__class__.__name__}.pick_target({doer=}) - needs to be replaced")
 
     ########################################################################
-    def heuristic(self, doer):  # pylint: disable=unused-argument
+    def heuristic(self, doer):  # pylint: disable=unused-argument, no-self-use
         """How good is this action for doer this turn
         0 - don't do
         1 - whatevs
@@ -41,12 +45,12 @@ class Action:
         return 1
 
     ########################################################################
-    def range(self):
+    def range(self):  # pylint: disable=no-self-use
         """Return the range (good, max) of the action"""
         return 0, 0
 
     ##########################################################################
-    def is_available(self, owner):  # pylint: disable=unused-argument
+    def is_available(self, owner):  # pylint: disable=unused-argument, no-self-use
         """Is this action currently available to the creature"""
         return True
 
@@ -71,10 +75,10 @@ class Action:
 
         if balance < 0:
             to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
-            msg_0 = "with disadvantage"
+            msg_0 = " with disadvantage"
         elif balance > 0:
             to_hit_roll = max(int(dice.roll("d20")), int(dice.roll("d20")))
-            msg_0 = "with advantage"
+            msg_0 = " with advantage"
         else:
             to_hit_roll = int(dice.roll("d20"))
             msg_0 = ""
@@ -83,10 +87,10 @@ class Action:
             crit_hit = True
         if to_hit_roll == 1:
             crit_miss = True
-        to_hit = to_hit_roll + self.bonus
+        to_hit = to_hit_roll + self.modifier(source)
         for eff in source.effects.values():
             to_hit += eff.hook_attack_to_hit(target, rnge)["bonus"]
-        msg = f"{source} rolled {to_hit_roll} {msg_0}"
+        msg = f"{source} rolled {to_hit_roll}{msg_0}"
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
