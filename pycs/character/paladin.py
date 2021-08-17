@@ -1,11 +1,13 @@
 """ Paladin """
 import colors
+from actions import Action
 from attacks import MeleeAttack
 from attacks import RangedAttack
 from constants import ActionType
+from constants import Condition
 from constants import DamageType
-from constants import SpellType
 from constants import Race
+from constants import SpellType
 from constants import Stat
 from effect import Effect
 from spell.bless import Bless
@@ -41,6 +43,7 @@ class Paladin(Character):
                 "spellcast_bonus": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {
+                    LayOnHands: 5,
                     SpellType.HEALING: 5,
                     SpellType.BUFF: 4,
                     ActionType.RANGED: 4,
@@ -86,6 +89,7 @@ class Paladin(Character):
             # for a 1st-level spell slot, plus 1d8 for each spell level higher
             # than 1st, to a maximum of 5d8. The damage increases by 1d8 if the
             # target is an undead or a fiend, to a maximum of 6d8.
+            self.add_action(LayOnHands())
         if level >= 3:
             self.add_action(Sanctuary())
             # Add Action Channel Divinity : Sacred Weapon
@@ -113,10 +117,6 @@ class Paladin(Character):
         )
 
     # Create Lay on Hands Action
-    # You have a pool of healing power that can restore 5 HP per
-    # long rest. As an action, you can touch a creature to restore
-    # any number of HP remaining in the pool, or 5 HP to either cure
-    # a disease or neutralize a poison affecting the creature.
 
     ########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):
@@ -141,6 +141,7 @@ class Paladin(Character):
     def report(self):
         """Character report"""
         super().report()
+        print(f"|  Lay On Hands: {self.lay_on_hands}")
         print(f"|  Spells: {self.spell_slots}")
         javs = self.pick_attack_by_name("Javelin")
         print(f"|  Javelins: {javs.ammo}")
@@ -153,6 +154,53 @@ class Paladin(Character):
         return colors.blue("P", bg="red")
 
 
+##############################################################################
+##############################################################################
+##############################################################################
+class LayOnHands(Action):
+    """You have a pool of healing power that can restore 5 HP per long
+    rest. As an action, you can touch a creature to restore any number
+    of HP remaining in the pool, or 5 HP to either cure a disease or
+    neutralize a poison affecting the creature."""
+
+    ########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Lay on Hands", **kwargs)
+
+    ########################################################################
+    def perform_action(self, source):
+        """Do the action"""
+        if source.lay_on_hands >= 5 and source.target.has_condition(Condition.POISONED):
+            print(f"{source} lays on hands to {source.target} and cures them of poison")
+            source.lay_on_hands -= 5
+            source.target.remove_condition(Condition.POISONED)
+        print(f"{source} lays on hands to {source.target} to heal them")
+        chp = min(source.lay_on_hands, source.target.max_hp - source.target.hp)
+        source.lay_on_hands -= source.target.heal(0, chp)
+
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we do this action"""
+        if doer.lay_on_hands == 0:
+            return 0
+        friend = doer.pick_closest_friend()
+        if friend.has_condition(Condition.POISONED):
+            return 3
+        if friend.hp < friend.max_hp / 2:
+            return 3
+        if friend.hp < friend.max_hp:
+            return 1
+        return 0
+
+    ########################################################################
+    def pick_target(self, doer):
+        """Who are we doing the action to"""
+        return doer.pick_closest_friend()
+
+
+##############################################################################
+##############################################################################
 ##############################################################################
 class RelentlessEndurance(Effect):
     """Relentless Endurance - When you are reduced to 0 HP but not
