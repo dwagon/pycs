@@ -32,7 +32,7 @@ class Goblin(Monster):
             MeleeAttack(
                 "scimitar",
                 reach=5,
-                dmg=("1d6", 2),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )
@@ -42,7 +42,7 @@ class Goblin(Monster):
                 "shortbow",
                 s_range=80,
                 l_range=320,
-                dmg=("1d6", 2),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )

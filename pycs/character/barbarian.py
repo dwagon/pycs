@@ -30,7 +30,7 @@ class Barbarian(Character):
             MeleeAttack(
                 "Greataxe",
                 reach=5,
-                dmg=("1d12", 3),
+                dmg=("1d12", 0),
                 dmg_type=DamageType.SLASHING,
             )
         )
@@ -39,7 +39,7 @@ class Barbarian(Character):
                 "Javelin",
                 reach=5,
                 ammo=3,
-                dmg=("1d6", 3),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )

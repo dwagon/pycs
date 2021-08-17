@@ -35,7 +35,7 @@ class Ghoul(Monster):
                 "Bite",
                 reach=5,
                 heuristic=self.ghoul_bite,
-                dmg=("2d6", 2),
+                dmg=("2d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )
@@ -43,7 +43,7 @@ class Ghoul(Monster):
             MeleeAttack(
                 "Claw",
                 reach=5,
-                dmg=("2d4", 2),
+                dmg=("2d4", 0),
                 heuristic=self.ghoul_claw,
                 dmg_type=DamageType.SLASHING,
                 side_effect=self.se_ghoul_claws,

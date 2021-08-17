@@ -31,7 +31,7 @@ class Fighter(Character):
             MeleeAttack(
                 "Longsword",
                 reach=5,
-                dmg=("1d8", 3),
+                dmg=("1d8", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )

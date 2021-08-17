@@ -103,10 +103,15 @@ class AttackSpell(SpellAction):
         self.save = kwargs.get("save", ("none", 999))
 
     ########################################################################
-    def roll_dmg(self, victim, critical=False):
+    def dmg_bonus(self, attacker):
+        """ No spell bonus to damage """
+        return 0
+
+    ########################################################################
+    def roll_dmg(self, source, victim, critical=False):
         """Special spell damage"""
         if self.style == "tohit":
-            return super().roll_dmg(victim, critical)
+            return super().roll_dmg(source, victim, critical)
         saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
         dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         if saved:

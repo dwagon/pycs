@@ -1,7 +1,7 @@
 """ Handle Attacks """
+from actions import Action
 from constants import ActionType
 from constants import Stat
-from actions import Action
 
 
 ##############################################################################
@@ -14,6 +14,10 @@ class Attack(Action):
     def perform_action(self, source):
         """Do the attack"""
         return self.do_attack(source)
+
+    ########################################################################
+    def modifier(self, attacker):
+        raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
 
 
 ##############################################################################
@@ -37,6 +41,11 @@ class MeleeAttack(Attack):
     def modifier(self, attacker):  # pylint: disable=no-self-use
         """The melee attack modifier"""
         return attacker.prof_bonus + attacker.stat_bonus(Stat.STR)
+
+    ########################################################################
+    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
+        """The melee damage bonus modifier"""
+        return attacker.stat_bonus(Stat.STR)
 
     ########################################################################
     def is_available(self, owner):
@@ -113,6 +122,11 @@ class RangedAttack(Attack):
     def modifier(self, attacker):  # pylint: disable=no-self-use
         """The melee attack modifier"""
         return attacker.prof_bonus + attacker.stat_bonus(Stat.DEX)
+
+    ########################################################################
+    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
+        """The melee damage bonus modifier"""
+        return attacker.stat_bonus(Stat.DEX)
 
     ########################################################################
     def range(self):

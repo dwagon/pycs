@@ -98,7 +98,7 @@ class Paladin(Character):
             MeleeAttack(
                 "Longsword",
                 reach=5,
-                dmg=("1d8", 3),
+                dmg=("1d8", 0),
                 dmg_type=DamageType.SLASHING,
             )
         )
@@ -107,7 +107,7 @@ class Paladin(Character):
                 "Javelin",
                 reach=5,
                 ammo=3,
-                dmg=("1d6", 3),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )

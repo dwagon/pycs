@@ -41,7 +41,7 @@ class Warlock(Character):
             MeleeAttack(
                 "Mace",
                 reach=5,
-                dmg=("1d6", -1),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.BLUDGEONING,
             )
         )
@@ -50,7 +50,7 @@ class Warlock(Character):
                 "Light Crossbow",
                 s_range=80,
                 l_range=320,
-                dmg=("1d8", 2),
+                dmg=("1d8", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )

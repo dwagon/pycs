@@ -26,6 +26,13 @@ class Action:
         raise NotImplementedError(f"{__class__.__name__} hasn't implemented modifier()")
 
     ########################################################################
+    def dmg_bonus(self, attacker):
+        """Modifier to the damage bonus"""
+        raise NotImplementedError(
+            f"{__class__.__name__} hasn't implemented dmg_bonus()"
+        )
+
+    ########################################################################
     def no_side_effect(self, source):
         """No side_effect"""
 
@@ -117,7 +124,7 @@ class Action:
             f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
         if to_hit > target.ac and not crit_miss:
-            dmg = self.roll_dmg(target, crit_hit)
+            dmg = self.roll_dmg(source, target, crit_hit)
             print(
                 f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
@@ -130,7 +137,7 @@ class Action:
         return True
 
     ########################################################################
-    def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
+    def roll_dmg(self, source, victim, critical=False):
         """Roll the damage of the attack"""
         if critical:
             dmg = (
@@ -140,6 +147,7 @@ class Action:
             )
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+        dmg += self.dmg_bonus(source)
         if self.dmg_type in victim.vulnerable:
             print(f"{self} is vulnerable to {self.dmg_type.value}")
             dmg *= 2

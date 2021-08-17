@@ -69,7 +69,7 @@ class Cleric(Character):
             MeleeAttack(
                 "Mace",
                 reach=5,
-                dmg=("1d6", 2),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.BLUDGEONING,
             )
         )
