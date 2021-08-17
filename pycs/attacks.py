@@ -73,7 +73,7 @@ class RangedAttack(Attack):
         """Fire the weapon"""
         if self.ammo is not None:
             self.ammo -= 1
-            if self.ammo == 0:
+            if self.ammo <= 0:
                 print(f"{source} {self} has run out of ammo")
                 self.available = False
 
