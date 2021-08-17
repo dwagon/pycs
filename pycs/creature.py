@@ -128,10 +128,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 # Within range - don't move
                 dist = self.distance(self.target)
                 if dist <= rnge:
+                    print(f"{self.target} is within range of {act}")
                     return
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
+                print("Hand brake is on")
                 break
             self.moves -= 1
             print(f"{self} moved to {self.coords}: {self.moves} left")
@@ -287,6 +289,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
+            print(f"check_end_effects {name}")
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
@@ -431,6 +434,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def do_stuff(self):
         """All the doing bits"""
+        if self.has_condition(Condition.PARALYZED):
+            return
+        if self.state != "OK":
+            return
+
         # What are we going to do this turn
         act = self.pick_action()
         if act is None:
@@ -459,11 +467,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Have a go"""
         print()
         self.report()
-        if self.has_condition(Condition.PARALYZED):
-            print(f"{self} is paralyzed")
-            return
-        if self.state != "OK":
-            return
         self.check_start_effects()
         self.moves = self.speed
         self.do_stuff()
