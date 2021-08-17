@@ -7,6 +7,7 @@ from constants import DamageType
 from constants import SpellType
 from constants import Race
 from constants import Stat
+from effect import Effect
 from spell.bless import Bless
 from spell.branding_smite import Branding_Smite
 from spell.cure_wounds import Cure_Wounds
@@ -18,6 +19,8 @@ from spell.shield_of_faith import Shield_Of_Faith
 from .character import Character
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Paladin(Character):
     """Paladin class"""
@@ -115,8 +118,12 @@ class Paladin(Character):
     # any number of HP remaining in the pool, or 5 HP to either cure
     # a disease or neutralize a poison affecting the creature.
 
-    # Relentless Endurance
-    # When you are reduced to 0 HP but not killed, you can drop to 1 HP instead once per long rest.
+    ########################################################################
+    def fallen_unconscious(self, dmg, dmg_type, critical):
+        if self.has_effect("Relentless Endurance"):
+            super().fallen_unconscious(dmg, dmg_type, critical)
+        else:
+            self.add_effect(RelentlessEndurance())
 
     ########################################################################
     def spell_available(self, spell):
@@ -144,6 +151,22 @@ class Paladin(Character):
         if self.is_alive():
             return colors.blue("P", bg="green")
         return colors.blue("P", bg="red")
+
+
+##############################################################################
+class RelentlessEndurance(Effect):
+    """Relentless Endurance - When you are reduced to 0 HP but not
+    killed, you can drop to 1 HP instead once per long rest."""
+
+    ########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Relentless Endurance", **kwargs)
+
+    ########################################################################
+    def initial(self, target):
+        print(f"{target}'s Relentless Endurance kicks in")
+        target.hp = 1
 
 
 # EOF
