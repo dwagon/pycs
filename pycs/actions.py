@@ -21,16 +21,18 @@ class Action:
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
     ########################################################################
-    def modifier(self, attacker):
+    def modifier(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the action dice roll"""
-        raise NotImplementedError(f"{__class__.__name__} hasn't implemented modifier()")
+        # Don't use NotImplementedError as isn't required for every action
+        print(f"{__class__.__name__} hasn't implemented modifier()")
+        return 0
 
     ########################################################################
-    def dmg_bonus(self, attacker):
+    def dmg_bonus(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
-        raise NotImplementedError(
-            f"{__class__.__name__} hasn't implemented dmg_bonus()"
-        )
+        # Don't use NotImplementedError as isn't required for every action
+        print(f"{__class__.__name__} hasn't implemented dmg_bonus()")
+        return 0
 
     ########################################################################
     def no_side_effect(self, source):
