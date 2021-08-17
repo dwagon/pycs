@@ -103,8 +103,7 @@ class Paladin(Character):
             RangedAttack(
                 "Javelin",
                 reach=5,
-                bonus=5,  # Change to dynamic
-                ammo=2,
+                ammo=3,
                 dmg=("1d6", 3),
                 dmg_type=DamageType.PIERCING,
             )
@@ -135,7 +134,9 @@ class Paladin(Character):
     def report(self):
         """Character report"""
         super().report()
-        print(f"| Spells: {self.spell_slots}")
+        print(f"|  Spells: {self.spell_slots}")
+        javs = self.pick_attack_by_name("Javelin")
+        print(f"|  Javelins: {javs.ammo}")
 
     ########################################################################
     def shortrepr(self):
