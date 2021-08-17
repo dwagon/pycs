@@ -6,13 +6,14 @@ from constants import ActionType
 from constants import DamageType
 from constants import SpellType
 from constants import Race
-from spells.bless import Bless
-from spells.branding_smite import Branding_Smite
-from spells.cure_wounds import Cure_Wounds
-from spells.lesser_restoration import Lesser_Restoration
-from spells.protection_from_poison import Protection_From_Poison
-from spells.sanctuary import Sanctuary
-from spells.shield_of_faith import Shield_Of_Faith
+from constants import Stat
+from spell.bless import Bless
+from spell.branding_smite import Branding_Smite
+from spell.cure_wounds import Cure_Wounds
+from spell.lesser_restoration import Lesser_Restoration
+from spell.protection_from_poison import Protection_From_Poison
+from spell.sanctuary import Sanctuary
+from spell.shield_of_faith import Shield_Of_Faith
 
 from .character import Character
 
@@ -24,6 +25,8 @@ class Paladin(Character):
     ########################################################################
     def __init__(self, level, **kwargs):
         self.level = level
+        self.channel_divinity = 0
+        self.lay_on_hands = 0
         kwargs.update(
             {
                 "str": 17,
@@ -47,10 +50,28 @@ class Paladin(Character):
             kwargs["hp"] = 14
             kwargs["ac"] = 18
             self.spell_slots = {}
-        if level >= 2:
+        if level == 2:
             kwargs["hp"] = 20
             kwargs["ac"] = 19  # Defense fighting style
             self.spell_slots = {1: 2}
+        if level == 3:
+            kwargs["hp"] = 28
+            self.spell_slots = {1: 3}
+            self.lay_on_hands = 15
+            self.channel_divinity = 1
+        if level == 4:
+            kwargs["hp"] = 36
+            kwargs["str"] = 19
+            self.lay_on_hands = 20
+        if level == 5:
+            # Prof Bonus = 3
+            # Attacks per action = 2
+            kwargs["hp"] = 44
+            self.spell_slots = {1: 4, 2: 2}
+            self.lay_on_hands = 25
+
+        super().__init__(**kwargs)
+        if level >= 2:
             self.lay_on_hands = 5
             self.add_action(Cure_Wounds())
             self.add_action(Bless())
@@ -63,28 +84,13 @@ class Paladin(Character):
             # than 1st, to a maximum of 5d8. The damage increases by 1d8 if the
             # target is an undead or a fiend, to a maximum of 6d8.
         if level >= 3:
-            kwargs["hp"] = 28
-            self.spell_slots = {1: 3}
-            self.lay_on_hands = 15
-            self.channel_divinity = 1
             self.add_action(Sanctuary())
             # Add Action Channel Divinity : Sacred Weapon
             # Add Action Channel Divinity : Turn the Unholy
-        if level >= 4:
-            kwargs["hp"] = 36
-            kwargs["str"] = 19
-            self.lay_on_hands = 20
         if level >= 5:
-            # Prof Bonus = 3
-            # Attacks per action = 2
-            kwargs["hp"] = 44
-            self.spell_slots = {1: 4, 2: 2}
-            self.lay_on_hands = 25
             self.add_action(Branding_Smite())
             self.add_action(Lesser_Restoration())
             self.add_action(Protection_From_Poison())
-
-        super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
                 "Longsword",

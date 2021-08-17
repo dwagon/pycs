@@ -39,9 +39,8 @@ class Fighter(Character):
     def shortrepr(self):
         """What a fighter looks like in the arena"""
         if self.is_alive():
-            return colors.blue("F")
-        else:
-            return colors.blue("F", bg="red")
+            return colors.blue("F", bg="green")
+        return colors.blue("F", bg="red")
 
 
 # EOF

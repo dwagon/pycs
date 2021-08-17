@@ -65,7 +65,6 @@ class Cleric(Character):
         elif level == 6:
             self.spell_slots = {1: 4, 2: 3, 3: 3}
         super().__init__(**kwargs)
-        self.spell_modifier = self.prof_bonus + self.stat_bonus(Stat.WIS)
         self.add_action(
             MeleeAttack(
                 "Mace",
@@ -151,7 +150,7 @@ class TurnUndead(Action):
         ]
         for und in undead:
             if source.arena.distance(source, und) < 30 / 5:
-                if und.saving_throw(Stat.WIS, 10 + source.spell_modifier):
+                if und.saving_throw(Stat.WIS, 10 + source.spellcast_modifier):
                     print(f"{und} has been turned by {source}")
                     und.add_effect("turned", self.recover)
 
