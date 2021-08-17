@@ -10,6 +10,7 @@ from .character import Character
 class Barbarian(Character):
     """Barbarian class"""
 
+    ##########################################################################
     def __init__(self, level, **kwargs):
         self.level = level
         kwargs.update(
@@ -45,6 +46,14 @@ class Barbarian(Character):
             )
         )
 
+    ##########################################################################
+    def report(self):
+        """Character Report"""
+        super().report()
+        javs = self.pick_attack_by_name("Javelin")
+        print(f"| Javelins: {javs.ammo}")
+
+    ##########################################################################
     def shortrepr(self):
         """What a fighter looks like in the arena"""
         if self.is_alive():
