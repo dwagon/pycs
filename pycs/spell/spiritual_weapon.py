@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/spiritual-weapon"""
 
-from actions import SpellAction
+import spells
 from constants import SpellType
 
 
 ##############################################################################
-class Spiritual_Weapon(SpellAction):
+class Spiritual_Weapon(spells.SpellAction):
     """A shimmering field appears and surrounds a creature of your
     choice within range, granting it a +2 bonus to AC for the duration.
     """
@@ -17,14 +17,20 @@ class Spiritual_Weapon(SpellAction):
                 "casting": "bonus",
                 "reach": 60,
                 "level": 1,
-                "side_effect": self.spiritual_weap,
                 "type": SpellType.BUFF,
             }
         )
         super().__init__(name, **kwargs)
 
-    def spiritual_weap(self, caster, target):
+    ###########################################################################
+    def cast(self, caster):
         """Do the spell"""
+        return True
+
+    ###########################################################################
+    def heuristic(self, doer):
+        """Should we do the spell"""
+        return 0
 
 
 # EOF

@@ -1,12 +1,12 @@
 """ https://www.dndbeyond.com/spells/guiding-bolt """
 
-from attacks import SpellAttack
+from spells import AttackSpell
 from constants import DamageType
 from constants import SpellType
 
 
 ##############################################################################
-class Guiding_Bolt(SpellAttack):
+class Guiding_Bolt(AttackSpell):
     """Spell"""
 
     def __init__(self, **kwargs):

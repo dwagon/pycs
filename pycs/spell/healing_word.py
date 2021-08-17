@@ -1,12 +1,11 @@
 """https://www.dndbeyond.com/spells/healing-word"""
 
-from actions import SpellAction
-from constants import SpellType
 import spells
+from constants import SpellType
 
 
 ##############################################################################
-class Healing_Word(SpellAction):
+class Healing_Word(spells.SpellAction):
     """A creature of your choice that you can see within range regains
     hit points equal to 1d4 + your spellcasting ability modifier. This
     spell has no effect on undead or constructs.
@@ -21,16 +20,21 @@ class Healing_Word(SpellAction):
             {
                 "type": SpellType.HEALING,
                 "reach": 60,
-                "cure_hp": ("1d4", 3),
                 "level": 1,
             }
         )
         super().__init__(name, **kwargs)
 
     ########################################################################
+    def cast(self, caster):
+        """Do the spell"""
+        caster.target.heal("1d4", caster.spell_modifier)
+        return True
+
+    ########################################################################
     def pick_target(self, doer):
         """Who should we target"""
-        return spells.pick_target(doer)
+        return spells.pick_heal_target(doer)
 
     ########################################################################
     def heuristic(self, doer):

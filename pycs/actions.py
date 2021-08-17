@@ -1,6 +1,8 @@
 """ Handle non-attack Actions """
 import dice
 from constants import ActionType
+from constants import Condition
+from constants import DamageType
 
 
 ##############################################################################
@@ -15,6 +17,9 @@ class Action:
         self.available = True
         self.type = ActionType.UNKNOWN
         self.side_effect = kwargs.get("side_effect", self.no_side_effect)
+        self.dmg = kwargs.get("dmg", "")
+        self.bonus = kwargs.get("bonus", "")
+        self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
     ########################################################################
     def no_side_effect(self, source):
@@ -53,47 +58,111 @@ class Action:
     def __repr__(self):
         return self.name
 
+    ##########################################################################
+    def roll_to_hit(self, source, target, rnge):
+        """Roll to hit with the attack"""
+        crit_hit = False
+        crit_miss = False
+        balance = 0
+        if self.has_disadvantage(source, target, rnge):
+            balance -= 1
+        elif self.has_advantage(source, target, rnge):
+            balance += 1
 
-##############################################################################
-##############################################################################
-##############################################################################
-class SpellAction(Action):
-    """Spell action"""
+        if balance < 0:
+            to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg_0 = "with disadvantage"
+        elif balance > 0:
+            to_hit_roll = max(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg_0 = "with advantage"
+        else:
+            to_hit_roll = int(dice.roll("d20"))
+            msg_0 = ""
+
+        if to_hit_roll == 20:
+            crit_hit = True
+        if to_hit_roll == 1:
+            crit_miss = True
+        to_hit = to_hit_roll + self.bonus
+        for eff in source.effects.values():
+            to_hit += eff.hook_attack_to_hit(target, rnge)["bonus"]
+        msg = f"{source} rolled {to_hit_roll} {msg_0}"
+        if crit_hit:
+            msg += " (critical hit)"
+        elif crit_miss:
+            msg += " (critical miss)"
+        else:
+            msg += f" = {to_hit}"
+        print(msg)
+        return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def __init__(self, name, **kwargs):
-        super().__init__(name, **kwargs)
-        self.type = kwargs.get("type")
-        self.cure_hp = kwargs.get("cure_hp")
-        self.level = kwargs.get("level")
-
-    ########################################################################
-    def max_cure(self, source, target):
-        """What is the most effective cure"""
-        mhp = (
-            int(dice.roll_max(self.cure_hp[0]))
-            + self.cure_hp[1]
-            + source.spell_modifier
+    def do_attack(self, source):
+        """Do the attack from {source}"""
+        target = source.target
+        rnge = source.distance(target)
+        if rnge > self.range()[1]:
+            print(f"{target} is out of range")
+            return False
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
+        print(
+            f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
-        thp = target.max_hp - target.hp
-        return min(mhp, thp)
+        if to_hit > target.ac and not crit_miss:
+            dmg = self.roll_dmg(target, crit_hit)
+            print(
+                f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
+            )
+            target.hit(dmg, self.dmg_type, source, crit_hit)
+            self.side_effect(source)
+            source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
+        else:
+            source.statistics.append((self.name, 0, False, False))
+            print(f"{source} missed {target} with {self}")
+        return True
 
     ########################################################################
-    def cure(self, source, target):
-        """Cure the target"""
-        chp = int(dice.roll(self.cure_hp[0])) + self.cure_hp[1] + source.spell_modifier
-        target.hp += chp
-        target.hp = min(target.max_hp, target.hp)
-        print(f"{source} cured {target} of {chp} hp")
+    def roll_dmg(self, victim, critical=False):  # pylint: disable=unused-argument
+        """Roll the damage of the attack"""
+        if critical:
+            dmg = (
+                int(dice.roll_max(self.dmg[0]))
+                + int(dice.roll(self.dmg[0]))
+                + self.dmg[1]
+            )
+        else:
+            dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+        if self.dmg_type in victim.vulnerable:
+            print(f"{self} is vulnerable to {self.dmg_type.value}")
+            dmg *= 2
+        if self.dmg_type in victim.immunity:
+            print(f"{self} is immune to {self.dmg_type.value}")
+            dmg = 0
+        return dmg
 
     ########################################################################
-    def is_type(self, *types):
-        """Is this spell of the specified types"""
-        return self.type in types
+    def max_dmg(self, victim):
+        """What is the most damage this attack can do"""
+        dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
+        if self.dmg_type in victim.vulnerable:
+            dmg *= 2
+        if self.dmg_type in victim.immunity:
+            dmg = 0
+        return dmg
 
     ########################################################################
-    def perform_action(self, source):  # pylint: disable=unused-argument
-        self.side_effect(source)
+    def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument
+        """Does this attack have disadvantage at this range"""
+        if source.has_condition(Condition.POISONED):
+            return True
+        return False
+
+    ########################################################################
+    def has_advantage(self, source, target, rnge):  # pylint: disable=unused-argument
+        """Does this attack have advantage at this range"""
+        if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
+            return True
+        return False
 
 
 # EOF

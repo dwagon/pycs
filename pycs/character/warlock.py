@@ -2,7 +2,7 @@
 import colors
 from attacks import MeleeAttack
 from attacks import RangedAttack
-from attacks import SpellAttack
+from spells import AttackSpell
 from constants import ActionType
 from constants import DamageType
 from constants import SpellType
@@ -26,7 +26,7 @@ class Warlock(Character):
                 "cha": 16,
                 "ac": 13,
                 "hp": 10,
-                "heuristic": {
+                "action_preference": {
                     SpellType.RANGED: 5,
                     SpellType.MELEE: 3,
                     ActionType.RANGED: 2,
@@ -56,7 +56,7 @@ class Warlock(Character):
             )
         )
         self.add_action(
-            SpellAttack(
+            AttackSpell(
                 "Eldritch Blast",
                 reach=120,
                 bonus=5,
@@ -66,7 +66,7 @@ class Warlock(Character):
             )
         )
         self.add_action(
-            SpellAttack(
+            AttackSpell(
                 "Burning Hands",
                 style="save",
                 reach=15,
@@ -77,7 +77,7 @@ class Warlock(Character):
             )
         )
         self.add_reaction(
-            SpellAttack(
+            AttackSpell(
                 "Hellish Rebuke",
                 reach=60,
                 bonus=5,
