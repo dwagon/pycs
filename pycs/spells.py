@@ -104,7 +104,7 @@ class AttackSpell(SpellAction):
 
     ########################################################################
     def dmg_bonus(self, attacker):
-        """ No spell bonus to damage """
+        """No spell bonus to damage"""
         return 0
 
     ########################################################################

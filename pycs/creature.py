@@ -77,6 +77,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         chp = min(chp, self.max_hp - self.hp)
         self.hp += chp
         print(f"{self} cured of {chp} hp")
+        return chp
 
     ##########################################################################
     def pick_closest_enemy(self, num=1):
@@ -383,7 +384,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 else:
                     qual = 0
             else:
-                qual *= self.action_preference.get(act.type, 1)
+                qual *= self.action_preference.get(act, 1)
             if qual:
                 actions.append(acttuple(qual, random.random(), act))
         actions.sort(reverse=True)
