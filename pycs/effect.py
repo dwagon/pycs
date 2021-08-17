@@ -31,5 +31,10 @@ class Effect:
         """Do we remove this effect and the end of the victims turn"""
         return False
 
+    ##########################################################################
+    def hook_ac_modifier(self, target):  # pylint: disable=unused-argument
+        """Modifications to {target}'s armour class"""
+        return {"bonus": 0}
+
 
 # EOF

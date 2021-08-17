@@ -125,10 +125,18 @@ class Action:
         print(
             f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
-        if to_hit > target.ac and not crit_miss:
+        tmp_ac = target.ac
+        for name, eff in target.effects.items():
+            mod = eff.hook_ac_modifier(target)["bonus"]
+            if mod:
+                print(f"{target}'s AC boosted by {mod} from {name}")
+            tmp_ac += mod
+
+        if to_hit > tmp_ac and not crit_miss:
             dmg = self.roll_dmg(source, target, crit_hit)
             print(
-                f"{source} hit {target} with {self} for {dmg} hp {self.dmg_type.value} damage"
+                f"{source} hit {target} (AC: {tmp_ac})"
+                f" with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
             target.hit(dmg, self.dmg_type, source, crit_hit)
             self.side_effect(source)
