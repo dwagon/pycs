@@ -82,15 +82,19 @@ class Action:
         else:
             to_hit_roll = int(dice.roll("d20"))
             msg_0 = ""
+        msg = f"{source} rolled {to_hit_roll}{msg_0}"
 
         if to_hit_roll == 20:
             crit_hit = True
         if to_hit_roll == 1:
             crit_miss = True
-        to_hit = to_hit_roll + self.modifier(source)
-        for eff in source.effects.values():
-            to_hit += eff.hook_attack_to_hit(target, rnge)["bonus"]
-        msg = f"{source} rolled {to_hit_roll}{msg_0}"
+        modifier = self.modifier(source)
+        msg += f" +{self.modifier(source)}"
+        to_hit = to_hit_roll + modifier
+        for name, eff in source.effects.items():
+            mod = eff.hook_attack_to_hit(target, rnge)["bonus"]
+            to_hit += mod
+            msg += f" +{mod} from {name}"
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
@@ -155,14 +159,14 @@ class Action:
         return dmg
 
     ########################################################################
-    def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument
+    def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument, no-self-use
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
             return True
         return False
 
     ########################################################################
-    def has_advantage(self, source, target, rnge):  # pylint: disable=unused-argument
+    def has_advantage(self, source, target, rnge):  # pylint: disable=unused-argument, no-self-use
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
