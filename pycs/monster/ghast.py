@@ -124,6 +124,7 @@ class GhastClawEffect(Effect):
         svth = victim.saving_throw(Stat.CON, 10)
         if svth:
             print(f"{victim} no longer paralyzed")
+            victim.remove_condition(Condition.PARALYZED)
             return True
         return False
 
