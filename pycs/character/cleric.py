@@ -104,20 +104,6 @@ class Cleric(Character):
         return False
 
     ##########################################################################
-    def find_most_hurt(self):
-        """Find who is the most hurt on our side"""
-        target = None
-        pct_hurt = 0.0
-        for person in self.arena.remaining_participants()[self.side]:
-            hurt = 1 - person.hp / person.max_hp
-            if hurt > pct_hurt:
-                pct_hurt = hurt
-                target = person
-        if pct_hurt < 0.5:  # No one is too hurt
-            target = None
-        return target
-
-    ##########################################################################
     def cast(self, spell):
         """Cast a spell"""
         if spell.level == 0:
