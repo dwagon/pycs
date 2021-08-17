@@ -13,6 +13,7 @@ class SpellAction(Action):
     ########################################################################
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
+        self.reach = kwargs.get("reach", 0) / 5
         self.type = kwargs.get("type")
         self.cure_hp = kwargs.get("cure_hp")
         self.level = kwargs.get("level")
@@ -22,6 +23,11 @@ class SpellAction(Action):
     def is_type(self, *types):
         """Is this spell of the specified types"""
         return self.type in types
+
+    ########################################################################
+    def range(self):
+        """Return the good / worse range for the spell"""
+        return self.reach, self.reach
 
     ########################################################################
     def modifier(self, attacker):

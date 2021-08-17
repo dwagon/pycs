@@ -102,8 +102,9 @@ class Action:
         to_hit = to_hit_roll + modifier
         for name, eff in source.effects.items():
             mod = eff.hook_attack_to_hit(target, rnge)["bonus"]
-            to_hit += mod
-            msg += f" +{mod} from {name}"
+            if mod:
+                to_hit += mod
+                msg += f" (+{mod} from {name})"
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:

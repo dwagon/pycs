@@ -342,6 +342,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Short report on the character"""
         print(f"| {self.name} @ {self.coords}")
         print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
+        print(f"|  AC: {self.ac}")
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
