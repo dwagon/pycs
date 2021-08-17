@@ -6,7 +6,8 @@ from constants import SpellType
 
 ##############################################################################
 class Branding_Smite(SpellAction):
-    """ Spell """
+    """Spell"""
+
     def __init__(self, **kwargs):
         name = "Branding Smite"
         kwargs.update(

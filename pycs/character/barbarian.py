@@ -49,7 +49,7 @@ class Barbarian(Character):
         """Character Report"""
         super().report()
         javs = self.pick_attack_by_name("Javelin")
-        print(f"| Javelins: {javs.ammo}")
+        print(f"|  Javelins: {javs.ammo}")
 
     ##########################################################################
     def shortrepr(self):

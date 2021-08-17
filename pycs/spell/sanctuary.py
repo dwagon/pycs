@@ -6,7 +6,8 @@ from constants import SpellType
 
 ##############################################################################
 class Sanctuary(SpellAction):
-    """ Spell """
+    """Spell"""
+
     def __init__(self, **kwargs):
         name = "Sanctuary"
         kwargs.update(

@@ -6,7 +6,8 @@ from constants import SpellType
 
 ##############################################################################
 class Protection_From_Poison(SpellAction):
-    """ Spell """
+    """Spell"""
+
     def __init__(self, **kwargs):
         name = "Protection From Poison"
         kwargs.update(

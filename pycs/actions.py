@@ -159,14 +159,18 @@ class Action:
         return dmg
 
     ########################################################################
-    def has_disadvantage(self, source, target, rnge):  # pylint: disable=unused-argument, no-self-use
+    def has_disadvantage(
+        self, source, target, rnge
+    ):  # pylint: disable=unused-argument, no-self-use
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
             return True
         return False
 
     ########################################################################
-    def has_advantage(self, source, target, rnge):  # pylint: disable=unused-argument, no-self-use
+    def has_advantage(
+        self, source, target, rnge
+    ):  # pylint: disable=unused-argument, no-self-use
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
