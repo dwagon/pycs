@@ -98,6 +98,8 @@ class RangedAttack(Attack):
         enemy = doer.pick_closest_enemy()
         if not enemy:
             return 0
+        if not self.available:
+            return 0
         dist = doer.distance(enemy)
         if dist <= 1:
             return 0
