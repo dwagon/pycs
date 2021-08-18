@@ -206,9 +206,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         attck.perform_action(self)
 
     ##########################################################################
-    def hit(
-        self, dmg: int, dmg_type: DamageType, source, critical: bool
-    ) -> None:
+    def hit(self, dmg: int, dmg_type: DamageType, source, critical: bool) -> None:
         """We've been hit by source- take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
