@@ -8,10 +8,12 @@ from monster.ghoul import Ghoul
 from monster.ghast import Ghast
 from monster.giant_frog import GiantFrog
 
-from character.fighter import Fighter
 from character.barbarian import Barbarian
 from character.cleric import Cleric
+from character.fighter import Fighter
+from character.paladin import Paladin
 from character.warlock import Warlock
+
 from arena import Arena
 
 
@@ -84,9 +86,10 @@ def combat_test():
     turn = 0
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
-    fighter = Fighter(arena=arena, name="Frank", level=1, side="Humans")
     barbarian = Barbarian(arena=arena, name="Barbara", level=1, side="Humans")
-    cleric = Cleric(arena=arena, name="Charlise", level=2, side="Humans")
+    cleric = Cleric(arena=arena, name="Charlise", level=3, side="Humans")
+    fighter = Fighter(arena=arena, name="Frank", level=2, side="Humans")
+    paladin = Paladin(arena=arena, name="Patty", level=2, side="Humans")
     warlock = Warlock(arena=arena, name="Wendy", level=1, side="Humans")
 
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"), (0, 0))
@@ -99,16 +102,16 @@ def combat_test():
     )
     arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"), (14, 0))
 
-    arena.add_combatant(fighter, (arena.max_x - 1, arena.max_y - 1))
-    arena.add_combatant(barbarian, (1, arena.max_y - 1))
-    arena.add_combatant(cleric, (int(arena.max_x / 2), arena.max_y - 1))
-    arena.add_combatant(warlock, (int(arena.max_x / 3), arena.max_y - 1))
+    arena.add_combatant(barbarian, (18, arena.max_y - 1))
+    arena.add_combatant(cleric, (16, arena.max_y - 1))
+    arena.add_combatant(fighter, (20, arena.max_y - 1))
+    arena.add_combatant(paladin, (24, arena.max_y - 1))
+    arena.add_combatant(warlock, (22, arena.max_y - 1))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
         print(f"##### Turn {turn}: {dict(arena.remaining_participants())}")
         arena.turn()
-        print(f"{arena}")
         turn += 1
         assert turn < 100
     statistics_report(arena)

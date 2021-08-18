@@ -1,6 +1,7 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
 import random
+from collections import namedtuple
 import dice
 from constants import ActionType
 from constants import Condition
@@ -25,6 +26,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.type = kwargs.get("type", MonsterType.HUMANOID)
         self.size = kwargs.get("size", "M")
         self.prof_bonus = kwargs.get("prof_bonus", 2)
+        self.spellcast_bonus = kwargs.get("spellcast_bonus")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
             Stat.STR: kwargs["str"],
@@ -34,8 +36,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
-        self.heuristic = kwargs.get(
-            "heuristic", {ActionType.MELEE: 1, ActionType.RANGED: 4}
+        self.action_preference = kwargs.get(
+            "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
         )
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
@@ -51,7 +53,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.actions = []
         self.reactions = []
         self.conditions = set()
-        self.temp_effects = {}
+        self.effects = {}
         self.target = None
         self.coords = None
         self.statistics = []
@@ -66,9 +68,26 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
+    def heal(self, cure_dice, cure_bonus):
+        """Heal ourselves"""
+        chp = 0
+        if cure_dice:
+            chp = int(dice.roll(cure_dice))
+        chp += cure_bonus
+        chp = min(chp, self.max_hp - self.hp)
+        self.hp += chp
+        print(f"{self} cured of {chp} hp")
+        return chp
+
+    ##########################################################################
     def pick_closest_enemy(self):
         """Which enemy is the closest"""
         return self.arena.pick_closest_enemy(self)
+
+    ##########################################################################
+    def pick_closest_friends(self):
+        """Which friend is the closest"""
+        return self.arena.pick_closest_friends(self)
 
     ##########################################################################
     def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
@@ -80,6 +99,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             )
             return False
         save = int(dice.roll("d20")) + self.stat_bonus(stat)
+        for eff in self.effects.values():
+            save += eff.hook_saving_throw(stat)["bonus"]
         if save >= dc:
             print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
             return True
@@ -95,22 +116,26 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def move_to_target(self, act):
-        """Move to the target"""
+        """Move closer to the target - until we are in range of our action"""
         if not self.target:
             return
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
             return
+        if self.moves:
+            print(f"{self} move to {self.target}")
         for _ in range(self.moves):
             if act:
                 rnge, _ = act.range()
                 # Within range - don't move
                 dist = self.distance(self.target)
                 if dist <= rnge:
+                    print(f"{self.target} is within range of {act}")
                     return
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
+                print("Hand brake is on")
                 break
             self.moves -= 1
             print(f"{self} moved to {self.coords}: {self.moves} left")
@@ -265,20 +290,27 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
-        for effect, hook in self.temp_effects.copy().items():
-            remove = hook(self)
+        for name, effect in self.effects.copy().items():
+            print(f"check_end_effects {name}")
+            remove = effect.removal_end_of_its_turn(self)
             if remove:
-                self.remove_temp_effect(effect)
+                self.remove_effect(name)
 
     ##########################################################################
-    def remove_temp_effect(self, name):
-        """Remove a temporary effect"""
-        del self.temp_effects[name]
+    def remove_effect(self, name):
+        """Remove an effect"""
+        del self.effects[name]
 
     ##########################################################################
-    def add_temp_effect(self, name, hook):
-        """Add a temporary effect"""
-        self.temp_effects[name] = hook
+    def has_effect(self, name):
+        """Do we have an effect"""
+        return name in self.effects
+
+    ##########################################################################
+    def add_effect(self, effect):
+        """Add an effect"""
+        self.effects[effect.name] = effect
+        effect.initial(self)
 
     ##########################################################################
     def check_start_effects(self):
@@ -310,10 +342,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Short report on the character"""
         print(f"| {self.name} @ {self.coords}")
         print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
+        print(f"|  AC: {self.ac}")
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
-        if self.temp_effects:
-            print(f"|  Temp Effects: {', '.join(self.temp_effects)}")
+        if self.effects:
+            print(f"|  Temp Effects: {', '.join(self.effects)}")
 
     ##########################################################################
     def distance(self, target):
@@ -333,22 +366,32 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
+    def spell_available(self, spell):  # pylint: disable=unused-argument, no-self-use
+        """Spell casters should redefine this"""
+        return False
+
+    ##########################################################################
     def pick_action(self):
-        """What are we going to do this turn based on individual heuristic"""
+        """What are we going to do this turn based on individual action_preference"""
+        # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
+        acttuple = namedtuple("acttuple", "quality random act")
         for qual, act in self.possible_actions():
             if isinstance(act, ActionType):
-                qual *= self.heuristic.get(act, 1)
+                qual *= self.action_preference.get(act, 1)
             elif isinstance(act, SpellType):
-                qual *= self.heuristic.get(act, 1)
+                if self.spell_available(act):
+                    qual *= self.action_preference.get(act, 1)
+                else:
+                    qual = 0
             else:
-                qual *= self.heuristic.get(act.type, 1)
+                qual *= self.action_preference.get(act, 1)
             if qual:
-                actions.append((qual, random.random(), act))
+                actions.append(acttuple(qual, random.random(), act))
         actions.sort(reverse=True)
         print(f"{self} {actions=}")
         try:
-            todo = actions[0][-1]
+            todo = actions[0].act
             self.target = todo.pick_target(self)
             print(f"{self} is going to do {todo} to {self.target}")
         except IndexError:
@@ -368,8 +411,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def move(self, act):
         """Do a move"""
-        print(f"{self} move to {self.target}")
-        if self.target:
+        if self.target and self.moves:
             self.move_to_target(act)
 
     ##########################################################################
@@ -386,38 +428,57 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dash(self, act):
         """Do a dash action"""
         # Dash if we aren't in range yet
-        if self.target:
-            print(f"{self} dashing")
-            self.moves = self.speed
-            self.move_to_target(act)
+        if not self.target:
+            enemies = self.pick_closest_enemy()
+            if enemies:
+                self.target = enemies[0]
+        print(f"{self} dashing")
+        self.moves = self.speed
+        self.move_to_target(act)
+
+    ##########################################################################
+    def do_stuff(self):
+        """All the doing bits"""
+        if self.has_condition(Condition.PARALYZED):
+            return
+        if self.state != "OK":
+            return
+
+        # What are we going to do this turn
+        act = self.pick_action()
+        if act is None:
+            victim = self.pick_closest_enemy()
+            if victim:
+                self.target = victim[0]
+            print(f"{self} now going toward {self.target}")
+        # Move closer to target
+        self.move(act)
+
+        # Now that we have moved is there something we can do
+        if act is None:
+            act = self.pick_action()
+
+        # Do something, otherwise keep moving
+        if not self.action(act):
+            self.dash(act)
+
+        # Move to next target if needed
+        if self.target and self.target.state != "OK":
+            victim = self.pick_closest_enemy()
+            if victim:
+                self.target = victim[0]
+            self.move(act)
+
+        print(self.arena)
 
     ##########################################################################
     def turn(self):
         """Have a go"""
         print()
         self.report()
-        if self.has_condition(Condition.PARALYZED):
-            print(f"{self} is paralyzed")
-            return
-        if self.state != "OK":
-            return
-        self.moves = self.speed
         self.check_start_effects()
-
-        act = self.pick_action()
-        if act is None:
-            self.target = self.pick_closest_enemy()
-            print(f"{self} now going toward {self.target}")
-        self.move(act)
-
-        act = self.pick_action()
-        if act is None:
-            self.target = self.pick_closest_enemy()
-        if not self.action(act):
-            self.dash(act)
-
-        self.move(act)
-
+        self.moves = self.speed
+        self.do_stuff()
         self.check_end_effects()
 
 

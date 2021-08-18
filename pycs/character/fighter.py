@@ -20,16 +20,18 @@ class Fighter(Character):
                 "wis": 13,
                 "cha": 9,
                 "ac": 18,
-                "hp": 10,
             }
         )
+        if level == 1:
+            kwargs["hp"] = 10
+        elif level == 2:
+            kwargs["hp"] = 18
         super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
                 "Longsword",
                 reach=5,
-                bonus=5,
-                dmg=("1d8", 3),
+                dmg=("1d8", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )
@@ -37,9 +39,8 @@ class Fighter(Character):
     def shortrepr(self):
         """What a fighter looks like in the arena"""
         if self.is_alive():
-            return colors.blue("F")
-        else:
-            return colors.blue("F", bg="red")
+            return colors.blue("F", bg="green")
+        return colors.blue("F", bg="red")
 
 
 # EOF

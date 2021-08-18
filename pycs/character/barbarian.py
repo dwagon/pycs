@@ -10,6 +10,7 @@ from .character import Character
 class Barbarian(Character):
     """Barbarian class"""
 
+    ##########################################################################
     def __init__(self, level, **kwargs):
         self.level = level
         kwargs.update(
@@ -29,8 +30,7 @@ class Barbarian(Character):
             MeleeAttack(
                 "Greataxe",
                 reach=5,
-                bonus=5,
-                dmg=("1d12", 3),
+                dmg=("1d12", 0),
                 dmg_type=DamageType.SLASHING,
             )
         )
@@ -38,19 +38,25 @@ class Barbarian(Character):
             RangedAttack(
                 "Javelin",
                 reach=5,
-                bonus=5,
-                ammo=2,
-                dmg=("1d6", 3),
+                ammo=3,
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
             )
         )
 
+    ##########################################################################
+    def report(self):
+        """Character Report"""
+        super().report()
+        javs = self.pick_attack_by_name("Javelin")
+        print(f"|  Javelins: {javs.ammo}")
+
+    ##########################################################################
     def shortrepr(self):
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("B", bg="green")
-        else:
-            return colors.blue("B", bg="red")
+        return colors.blue("B", bg="red")
 
 
 # EOF

@@ -33,8 +33,7 @@ class Zombie(Monster):
             MeleeAttack(
                 "Slam",
                 reach=5,
-                bonus=3,
-                dmg=("1d6", 1),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.BLUDGEONING,
             )
         )

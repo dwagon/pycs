@@ -53,8 +53,9 @@ clean-venv:  ## Remove venv
 lint: ## check style with flake8
 	flake8 pycs tests
 
-test: ## run tests quickly with the default Python
-	python setup.py test
+test:
+	coverage run -m pytest tests
+	coverage report -m
 
 test-all: ## run tests on every Python version with tox
 	tox

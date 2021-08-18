@@ -34,8 +34,7 @@ class GiantFrog(Monster):
             MeleeAttack(
                 "Bite",
                 reach=5,
-                bonus=3,
-                dmg=("1d6", 1),
+                dmg=("1d6", 0),
                 dmg_type=DamageType.PIERCING,
                 side_effect=self.swallow,
             )
