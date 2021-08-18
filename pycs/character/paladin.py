@@ -184,7 +184,10 @@ class LayOnHands(Action):
         """Should we do this action"""
         if doer.lay_on_hands == 0:
             return 0
-        friend = doer.pick_closest_friend()
+        friends = doer.pick_closest_friends()
+        if not friends:
+            return 0
+        friend = friends[0]
         if friend.has_condition(Condition.POISONED):
             return 3
         if friend.hp < friend.max_hp / 2:
@@ -196,7 +199,10 @@ class LayOnHands(Action):
     ########################################################################
     def pick_target(self, doer):
         """Who are we doing the action to"""
-        return doer.pick_closest_friend()
+        friends = doer.pick_closest_friends()
+        if friends:
+            return friends[0]
+        return None
 
 
 ##############################################################################
