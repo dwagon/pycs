@@ -59,18 +59,13 @@ class Ghast(Monster):
 
     ##########################################################################
     def start_others_turn(self, creat):
-        """Creature creat is starting a turn"""
         # Stench. Any creature that starts its turn within 5 feet of the
         # ghast must succeed on a DC 10 Constitution saving throw or be
         # poisoned until the start of its next turn. On a successful saving
         # throw, the creature is immune to the ghast's Stench for 24 hours."
         dist = self.arena.distance(self, creat)
         if dist <= 1:
-            svth = creat.saving_throw(Stat.CON, 10)
-            if not svth:
-                creat.add_condition(Condition.POISONED, self)
-            else:
-                print(f"{creat} resists Ghast's poisonous stench")
+            creat.add_effect(GhastStenchEffect(cause=self))
 
     ##########################################################################
     def ghast_claws(self, source, target):  # pylint: disable=unused-argument
@@ -78,13 +73,7 @@ class Ghast(Monster):
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each
         of its turns, ending the effect on itself on a success."""
-        target = self.target
-        svth = target.saving_throw(Stat.CON, 10)
-        if not svth:
-            print(f"{target} got paralysed by {self}")
-            target.add_effect(GhastClawEffect(cause=self))
-        else:
-            print(f"{target} resisted Ghast claws")
+        self.target.add_effect(GhastClawEffect(cause=self))
 
     ##########################################################################
     def pick_best_attack(self):
@@ -100,6 +89,44 @@ class Ghast(Monster):
         if self.is_alive():
             return colors.red("G", bg="green", style="bold")
         return colors.green("G", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class GhastStenchEffect(Effect):
+    """Effect of Ghast Stench"""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        self.immune = False
+        self.target = None
+        super().__init__("Ghast Stench", **kwargs)
+
+    ##########################################################################
+    def initial(self, target):
+        """Use the effect to store the immunity"""
+        self.target = target
+        if self.immune:
+            print(f"{target} is immune to the stench")
+            return
+        svth = target.saving_throw(Stat.CON, 10)
+        if not svth:
+            print(f"{target} got poisoned by Ghast stench")
+            target.add_condition(Condition.POISONED)
+        else:
+            print(f"{target} resisted Ghast stench")
+            self.immune = True
+
+    ##########################################################################
+    def hook_start_turn(self):
+        """Start turn"""
+        if not self.immune:
+            svth = self.target.saving_throw(Stat.CON, 10)
+            if svth:
+                print("Made saving throw - immune to Ghast stench")
+                self.target.remove_condition(Condition.POISONED)
+                self.immune = True
 
 
 ##############################################################################
