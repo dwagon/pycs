@@ -127,7 +127,7 @@ class AttackSpell(SpellAction):
     ########################################################################
     def pick_target(self, doer):
         """Who should we target"""
-        return doer.pick_closest_enemy()
+        return doer.pick_closest_enemy()[0]
 
     ########################################################################
     def heuristic(self, doer):
@@ -137,7 +137,7 @@ class AttackSpell(SpellAction):
         pot_target = doer.pick_closest_enemy()
         if not pot_target:
             return 0
-        if doer.distance(pot_target) > self.range()[1]:
+        if doer.distance(pot_target[0]) > self.range()[1]:
             return 0
         return 2
 

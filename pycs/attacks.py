@@ -55,7 +55,7 @@ class MeleeAttack(Attack):
     ########################################################################
     def pick_target(self, doer):
         """Who are we going to hit"""
-        enemy = doer.pick_closest_enemy()
+        enemy = doer.pick_closest_enemy()[0]
         return enemy
 
     ########################################################################
@@ -64,7 +64,7 @@ class MeleeAttack(Attack):
         enemy = doer.pick_closest_enemy()
         if not enemy:
             return 0
-        if doer.distance(enemy) <= 1:
+        if doer.distance(enemy[0]) <= 1:
             return 2
         return 0
 
@@ -97,7 +97,7 @@ class RangedAttack(Attack):
     ########################################################################
     def pick_target(self, doer):
         """Who are we going to hit"""
-        enemy = doer.pick_closest_enemy()
+        enemy = doer.pick_closest_enemy()[0]
         return enemy
 
     ########################################################################
@@ -109,7 +109,7 @@ class RangedAttack(Attack):
             return 0
         if not self.available:
             return 0
-        dist = doer.distance(enemy)
+        dist = doer.distance(enemy[0])
         if dist <= 1:
             return 0
         if dist < self.l_range:

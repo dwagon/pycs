@@ -80,14 +80,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return chp
 
     ##########################################################################
-    def pick_closest_enemy(self, num=1):
+    def pick_closest_enemy(self):
         """Which enemy is the closest"""
-        return self.arena.pick_closest_enemy(self, num)
+        return self.arena.pick_closest_enemy(self)
 
     ##########################################################################
-    def pick_closest_friend(self, num=1):
+    def pick_closest_friends(self):
         """Which friend is the closest"""
-        return self.arena.pick_closest_friend(self, num)
+        return self.arena.pick_closest_friends(self)
 
     ##########################################################################
     def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
@@ -366,7 +366,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(self, spell):  # pylint: disable=unused-argument
+    def spell_available(self, spell):  # pylint: disable=unused-argument, no-self-use
         """Spell casters should redefine this"""
         return False
 
@@ -429,7 +429,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Do a dash action"""
         # Dash if we aren't in range yet
         if not self.target:
-            self.target = self.pick_closest_enemy()
+            enemies = self.pick_closest_enemy()
+            if enemies:
+                self.target = enemies[0]
         print(f"{self} dashing")
         self.moves = self.speed
         self.move_to_target(act)
@@ -445,7 +447,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         # What are we going to do this turn
         act = self.pick_action()
         if act is None:
-            self.target = self.pick_closest_enemy()
+            victim = self.pick_closest_enemy()
+            if victim:
+                self.target = victim[0]
             print(f"{self} now going toward {self.target}")
         # Move closer to target
         self.move(act)
@@ -460,7 +464,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         # Move to next target if needed
         if self.target and self.target.state != "OK":
-            self.target = self.pick_closest_enemy()
+            victim = self.pick_closest_enemy()
+            if victim:
+                self.target = victim[0]
             self.move(act)
 
         print(self.arena)

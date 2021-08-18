@@ -22,12 +22,14 @@ class Arena(AStar):
                 self.grid[(i, j)] = None
 
     ##############################################################################
-    def distance_between(self, n1, n2):  # pylint: disable=unused-argument
+    def distance_between(
+        self, n1, n2
+    ):  # pylint: disable=unused-argument, no-self-use, invalid-name
         """This method always returns 1, as two 'neighbors' are always adjacent"""
         return 1
 
     ##########################################################################
-    def heuristic_cost_estimate(self, current, goal):
+    def heuristic_cost_estimate(self, current, goal):  # pylint: disable=no-self-use
         """computes the 'direct' distance between two (x,y) tuples"""
         (point_x1, point_y1) = current
         (point_x2, point_y2) = goal
@@ -130,40 +132,30 @@ class Arena(AStar):
         return dest
 
     ##############################################################################
-    def pick_closest_friend(self, creat, numb=1):
-        """Pick the closest {numb} friends to creat"""
+    def pick_closest_friends(self, creat):
+        """Pick the closest friends to creat sorted by distance"""
         result = namedtuple("result", "distance id creature")
         combs = [
             result(self.distance(creat, _), id(_), _)
             for _ in self.combatants
-            if _.side == creat.side and _.is_alive()
+            if _.side == creat.side and _.is_alive() and _ != creat
         ]
-        combs.sort(reverse=True)
-        if not combs:
-            return None
-        result = [_.creature for _ in combs[-numb:]]
-        if len(result) == 1:
-            return result[0]
-        else:
-            return result
+        combs.sort()
+        result = [_.creature for _ in combs]
+        return result
 
     ##############################################################################
-    def pick_closest_enemy(self, creat, numb=1):
-        """Pick the closest {numb} enemy creatures to {creat}"""
+    def pick_closest_enemy(self, creat):
+        """Pick the closest enemy creatures to {creat} sorted by distance"""
         result = namedtuple("result", "distance id creature")
         combs = [
             result(self.distance(creat, _), id(_), _)
             for _ in self.combatants
             if _.side != creat.side and _.is_alive()
         ]
-        combs.sort(reverse=True)
-        if not combs:
-            return None
-        result = [_.creature for _ in combs[-numb:]]
-        if len(result) == 1:
-            return result[0]
-        else:
-            return result
+        combs.sort()
+        result = [_.creature for _ in combs]
+        return result
 
     ##############################################################################
     def still_going(self):
