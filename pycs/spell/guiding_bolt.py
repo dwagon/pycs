@@ -1,14 +1,23 @@
-""" https://www.dndbeyond.com/spells/guiding-bolt """
+""" https://www.dndbeyond.com/spells/guiding-bolt"""
 
 from spells import AttackSpell
 from constants import DamageType
 from constants import SpellType
+from effect import Effect
 
 
 ##############################################################################
+##############################################################################
+##############################################################################
 class Guiding_Bolt(AttackSpell):
-    """Spell"""
+    """A flash of light streaks toward a creature of your choice within
+    range. Make a ranged spell attack against the target. On a hit, the
+    target takes 4d6 radiant damage, and the next attack roll made
+    against this target before the end of your next turn has advantage,
+    thanks to the mystical dim light glittering on the target until
+    then."""
 
+    ##########################################################################
     def __init__(self, **kwargs):
         name = "Guiding Bolt"
         kwargs.update(
@@ -22,6 +31,34 @@ class Guiding_Bolt(AttackSpell):
             }
         )
         super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def cast(self, caster):
+        """Do the spell"""
+        caster.target.add_effect(GuidingBoltEffect(cause=caster))
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class GuidingBoltEffect(Effect):
+    """Spell"""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Guiding Bolt", **kwargs)
+
+    ##########################################################################
+    def hook_gives_advantage_against(self):
+        """Gives advantage against creature who has effect"""
+        print(f"{self.name} gives you advantage")
+        return True
+
+    ##########################################################################
+    def removal_after_being_attacked(self):
+        """Do we remove the effect after being turned"""
+        return True
 
 
 # EOF

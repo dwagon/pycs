@@ -1,11 +1,15 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
 import random
+from typing import Optional
 from collections import namedtuple
 import dice
+from actions import Action
+from attacks import Attack
 from constants import ActionType
 from constants import Condition
 from constants import MonsterType
+from constants import DamageType
 from constants import SpellType
 from constants import Stat
 
@@ -63,12 +67,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return f"{self.name}"
 
     ##########################################################################
-    def stat_bonus(self, stat):
+    def stat_bonus(self, stat: Stat) -> int:
         """What's the stat bonus for the stat"""
         return int((self.stats[stat] - 10) / 2)
 
     ##########################################################################
-    def heal(self, cure_dice, cure_bonus):
+    def heal(self, cure_dice: str, cure_bonus: int) -> int:
         """Heal ourselves"""
         chp = 0
         if cure_dice:
@@ -80,17 +84,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return chp
 
     ##########################################################################
-    def pick_closest_enemy(self):
+    def pick_closest_enemy(self) -> list:
         """Which enemy is the closest"""
         return self.arena.pick_closest_enemy(self)
 
     ##########################################################################
-    def pick_closest_friends(self):
+    def pick_closest_friends(self) -> list:
         """Which friend is the closest"""
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(self, stat, dc):  # pylint: disable=invalid-name
+    def saving_throw(self, stat: Stat, dc: int) -> bool:  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
         if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
@@ -108,14 +112,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def roll_initiative(self):
+    def roll_initiative(self) -> int:
         """Roll initiative"""
         init = dice.roll(f"d20+{self.stat_bonus(Stat.DEX)}")
         print(f"{self} rolled {init} for initiative")
         return init
 
     ##########################################################################
-    def move_to_target(self, act):
+    def move_to_target(self, act: Action) -> None:
         """Move closer to the target - until we are in range of our action"""
         if not self.target:
             return
@@ -141,7 +145,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
-    def pick_attack_by_name(self, name):
+    def pick_attack_by_name(self, name: str) -> Optional[Attack]:
         """Pick the attack by name"""
         for atk in self.actions:
             if atk.name == name:
@@ -149,7 +153,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return None
 
     ##########################################################################
-    def pick_best_attack(self):
+    def pick_best_attack(self) -> Optional[Attack]:
         """Return the best (most damage) attack for this range"""
         if self.target is None:
             return None
@@ -171,7 +175,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return attck
 
     ##########################################################################
-    def pick_best_reaction(self, source):
+    def pick_best_reaction(self, source) -> Optional[Action]:
         """Return the best (most damage) reaction for this range"""
         # Treat disdvantage as having half damage - need to make this cleverer
         rnge = self.distance(source)
@@ -191,7 +195,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return attck
 
     ##########################################################################
-    def attack(self):
+    def attack(self) -> None:
         """Attack the target"""
         if self.target is None:
             return
@@ -202,7 +206,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         attck.perform_action(self)
 
     ##########################################################################
-    def hit(self, dmg, dmg_type, source, critical):
+    def hit(self, dmg: int, dmg_type: DamageType, source, critical: bool) -> None:
         """We've been hit by source- take damage"""
         print(f"{self} has taken {dmg} damage")
         self.hp -= dmg
@@ -214,7 +218,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 self.react(source)
 
     ##########################################################################
-    def react(self, source):
+    def react(self, source) -> None:
         """React to an incoming attack with a reaction"""
         react = self.pick_best_reaction(source)
         if react is not None:
@@ -222,18 +226,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             react.perform_action(self)
 
     ##########################################################################
-    def has_condition(self, cond):
+    def has_condition(self, cond) -> bool:
         """Do we have a condition"""
         return cond in self.conditions
 
     ##########################################################################
-    def remove_condition(self, cond):
+    def remove_condition(self, cond) -> None:
         """Remove a condition"""
         if self.has_condition(cond):
             self.conditions.remove(cond)
 
     ##########################################################################
-    def add_condition(self, cond, source=None):
+    def add_condition(self, cond: Condition, source=None) -> None:
         """Add a condition - inflicted by source"""
         if cond not in self.cond_immunity:
             if source:
@@ -243,24 +247,24 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.conditions.add(cond)
 
     ##########################################################################
-    def add_action(self, action):
+    def add_action(self, action: Action) -> None:
         """Add an action to the creature"""
         self.actions.append(action)
 
     ##########################################################################
-    def add_reaction(self, action):
+    def add_reaction(self, action: Action) -> None:
         """Add an reaction to the creature"""
         self.reactions.append(action)
 
     ##########################################################################
-    def roll_hp(self):
+    def roll_hp(self) -> int:
         """Roll the initial hitpoints"""
         if not hasattr(self, "hitdice"):
             self.hitdice = ""
         return int(dice.roll(self.hitdice))
 
     ##########################################################################
-    def is_alive(self):
+    def is_alive(self) -> bool:
         """return if the creature is alive"""
         return self.hp > 0
 
@@ -273,8 +277,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def fallen_unconscious(
-        self, dmg, dmg_type, critical
-    ):  # pylint: disable=unused-argument
+        self,
+        dmg: int,
+        dmg_type: DamageType,
+        critical: bool,  # pylint: disable=unused-argument
+    ) -> None:
         """Creature has fallen unconscious"""
         self.hp = 0
         self.state = "UNCONSCIOUS"
@@ -283,7 +290,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.has_grappled.remove_condition(Condition.GRAPPLED)
 
     ##########################################################################
-    def is_type(self, typ):
+    def is_type(self, typ) -> bool:
         """Are we an instance of typ"""
         return self.type == typ
 
@@ -291,7 +298,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
-            print(f"check_end_effects {name}")
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
@@ -302,7 +308,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         del self.effects[name]
 
     ##########################################################################
-    def has_effect(self, name):
+    def has_effect(self, name) -> bool:
         """Do we have an effect"""
         return name in self.effects
 
@@ -322,7 +328,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             creat.start_others_turn(self)
 
     ##########################################################################
-    def dump_statistics(self):
+    def dump_statistics(self) -> dict:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
         for name, dmg, _, crit in self.statistics:
@@ -349,12 +355,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Temp Effects: {', '.join(self.effects)}")
 
     ##########################################################################
-    def distance(self, target):
+    def distance(self, target) -> int:
         """Distance from us to target"""
         return self.arena.distance(self, target)
 
     ##########################################################################
-    def possible_actions(self):
+    def possible_actions(self) -> list:
         """What are all the things we can do this turn and how good do they
         feel about happening"""
         possible_acts = []
@@ -366,12 +372,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(self, spell):  # pylint: disable=unused-argument, no-self-use
+    def spell_available(
+        self, spell
+    ) -> bool:  # pylint: disable=unused-argument, no-self-use
         """Spell casters should redefine this"""
         return False
 
     ##########################################################################
-    def pick_action(self):
+    def pick_action(self) -> Action:
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
@@ -409,13 +417,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Hook for anothing creature starting a turn near me"""
 
     ##########################################################################
-    def move(self, act):
+    def move(self, act: Action):
         """Do a move"""
         if self.target and self.moves:
             self.move_to_target(act)
 
     ##########################################################################
-    def action(self, act):
+    def action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
             print(f"action {act=} {self.target=}")
@@ -425,7 +433,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def dash(self, act):
+    def dash(self, act: Action) -> None:
         """Do a dash action"""
         # Dash if we aren't in range yet
         if not self.target:
@@ -437,7 +445,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.move_to_target(act)
 
     ##########################################################################
-    def do_stuff(self):
+    def do_stuff(self) -> None:
         """All the doing bits"""
         if self.has_condition(Condition.PARALYZED):
             return

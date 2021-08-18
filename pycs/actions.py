@@ -1,4 +1,5 @@
 """ Handle non-attack Actions """
+from typing import Tuple
 import dice
 from constants import ActionType
 from constants import Condition
@@ -12,7 +13,7 @@ class Action:
     """generic action"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs):
         self.name = name
         self.available = True
         self.type = ActionType.UNKNOWN
@@ -72,7 +73,7 @@ class Action:
         return self.name
 
     ##########################################################################
-    def roll_to_hit(self, source, target, rnge):
+    def roll_to_hit(self, source, target, rnge: int) -> Tuple[int, bool, bool]:
         """Roll to hit with the attack"""
         crit_hit = False
         crit_miss = False
@@ -115,7 +116,7 @@ class Action:
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def do_attack(self, source):
+    def do_attack(self, source) -> bool:
         """Do the attack from {source}"""
         target = source.target
         rnge = source.distance(target)
@@ -145,10 +146,14 @@ class Action:
         else:
             source.statistics.append((self.name, 0, False, False))
             print(f"{source} missed {target} with {self}")
+        for name, eff in target.effects.copy().items():
+            if eff.removal_after_being_attacked():
+                print(f"{name} removed from {target}")
+                target.remove_effect(name)
         return True
 
     ########################################################################
-    def roll_dmg(self, source, victim, critical=False):
+    def roll_dmg(self, source, victim, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
             dmg = (
@@ -168,7 +173,7 @@ class Action:
         return dmg
 
     ########################################################################
-    def max_dmg(self, victim):
+    def max_dmg(self, victim) -> int:
         """What is the most damage this attack can do"""
         dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
         if self.dmg_type in victim.vulnerable:
@@ -179,8 +184,8 @@ class Action:
 
     ########################################################################
     def has_disadvantage(
-        self, source, target, rnge
-    ):  # pylint: disable=unused-argument, no-self-use
+        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
+    ) -> bool:
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
             return True
@@ -188,11 +193,14 @@ class Action:
 
     ########################################################################
     def has_advantage(
-        self, source, target, rnge
-    ):  # pylint: disable=unused-argument, no-self-use
+        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
+    ) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
+        for _, eff in target.effects.items():
+            if eff.hook_gives_advantage_against():
+                return True
         return False
 
 
