@@ -27,6 +27,10 @@ class Effect:
         """Initial effects on target"""
 
     ##########################################################################
+    def hook_start_turn(self):
+        """ We start the turn with an effect """
+
+    ##########################################################################
     def removal_end_of_its_turn(self, victim):  # pylint: disable=unused-argument
         """Do we remove this effect and the end of the victims turn"""
         return False
