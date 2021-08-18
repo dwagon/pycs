@@ -43,30 +43,31 @@ class TestArena(unittest.TestCase):
 
     ########################################################################
     def test_closest_friend(self):
-        """ Test pick_closest_friends() """
+        """Test pick_closest_friends()"""
         self.arena.add_combatant(self.critter1, (0, 0))
         self.arena.add_combatant(self.critter2, (1, 1))
         self.arena.add_combatant(self.critter3, (2, 2))
         self.arena.add_combatant(self.critter4, (3, 3))
-        self.critter1.side = 'a'
-        self.critter2.side = 'b'
-        self.critter3.side = 'a'
-        self.critter4.side = 'a'
+        self.critter1.side = "a"
+        self.critter2.side = "b"
+        self.critter3.side = "a"
+        self.critter4.side = "a"
         friends = self.arena.pick_closest_friends(self.critter1)
         self.assertEqual(friends, [self.critter3, self.critter4])
 
     ########################################################################
     def test_closest_enemy(self):
-        """ Test pick_closest_enemy() """
+        """Test pick_closest_enemy()"""
         self.arena.add_combatant(self.critter1, (0, 0))
         self.arena.add_combatant(self.critter2, (1, 1))
         self.arena.add_combatant(self.critter3, (2, 2))
         self.arena.add_combatant(self.critter4, (3, 3))
-        self.critter1.side = 'a'
-        self.critter2.side = 'b'
-        self.critter3.side = 'b'
-        self.critter4.side = 'a'
+        self.critter1.side = "a"
+        self.critter2.side = "b"
+        self.critter3.side = "b"
+        self.critter4.side = "a"
         enemy = self.arena.pick_closest_enemy(self.critter1)
         self.assertEqual(enemy, [self.critter2, self.critter3])
+
 
 # EOF
