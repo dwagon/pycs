@@ -17,7 +17,7 @@ class Action:
         self.name = name
         self.available = True
         self.type = ActionType.UNKNOWN
-        self.side_effect = kwargs.get("side_effect", self.no_side_effect)
+        self.side_effect = kwargs.get("side_effect")
         self.dmg = kwargs.get("dmg", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
@@ -34,10 +34,6 @@ class Action:
         # Don't use NotImplementedError as isn't required for every action
         print(f"{__class__.__name__} hasn't implemented dmg_bonus()")
         return 0
-
-    ########################################################################
-    def no_side_effect(self, source):
-        """No side_effect"""
 
     ########################################################################
     def pick_target(self, doer):
@@ -141,7 +137,8 @@ class Action:
                 f" with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
             target.hit(dmg, self.dmg_type, source, crit_hit)
-            self.side_effect(source)
+            if self.side_effect:
+                self.side_effect(source=source, target=target)
             source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
         else:
             source.statistics.append((self.name, 0, False, False))

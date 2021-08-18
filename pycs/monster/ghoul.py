@@ -1,5 +1,6 @@
 """ Ghoul Monster Class """
 import colors
+from effect import Effect
 from attacks import MeleeAttack
 from constants import DamageType
 from constants import Condition
@@ -8,6 +9,8 @@ from constants import MonsterType
 from .monster import Monster
 
 
+##############################################################################
+##############################################################################
 ##############################################################################
 class Ghoul(Monster):
     """Ghoul - https://www.dndbeyond.com/monsters/ghoul"""
@@ -51,6 +54,16 @@ class Ghoul(Monster):
         )
 
     ##########################################################################
+    def se_ghoul_claws(self, source, target):
+        """Implement Side Effect of Ghoul Claws"""
+        svth = target.saving_throw(Stat.CON, 10)
+        if not svth:
+            print(f"{target} got paralysed by {source}")
+            target.add_effect(GhoulClawEffect())
+        else:
+            print(f"{target} resisted Ghoul claws")
+
+    ##########################################################################
     def ghoul_bite(self, actor):  # pylint: disable=unused-argument
         """When is Ghoul bite good"""
         if self.target.has_condition(Condition.PARALYZED):
@@ -65,22 +78,39 @@ class Ghoul(Monster):
         return 1
 
     ##########################################################################
-    def se_ghoul_claws(self, source):  # pylint: disable=unused-argument
-        """Side effect of ghoul claws"""
-        target = self.target
-        svth = target.saving_throw(Stat.CON, 10)
-        if not svth:
-            print(f"{target} got paralysed by {self}")
-            target.add_condition(Condition.PARALYZED)
-        else:
-            print(f"{target} resisted Ghoul claws")
-
-    ##########################################################################
     def shortrepr(self):
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("G", style="bold")
         return colors.green("G", bg="red", style="bold")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class GhoulClawEffect(Effect):
+    """If the target is a creature other than an elf or undead, it must
+    succeed on a DC 10 Constitution saving throw or be paralyzed for 1
+    minute. The target can repeat the saving throw at the end of each
+    of its turns, ending the effect on itself on a success."""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        super().__init__("Ghoul Claws", **kwargs)
+
+    ##########################################################################
+    def initial(self, target):
+        """First effect"""
+        target.add_condition(Condition.PARALYZED)
+
+    ##########################################################################
+    def removal_end_of_its_turn(self, victim):
+        """Do we rmove the effect"""
+        svth = victim.saving_throw(Stat.CON, 10)
+        if svth:
+            print(f"{victim} resisted Ghoul claws")
+            return True
+        return False
 
 
 # EOF
