@@ -146,6 +146,10 @@ class Action:
         else:
             source.statistics.append((self.name, 0, False, False))
             print(f"{source} missed {target} with {self}")
+        for name, eff in target.effects.copy().items():
+            if eff.removal_after_being_attacked():
+                print(f"{name} removed from {target}")
+                target.remove_effect(name)
         return True
 
     ########################################################################
@@ -194,6 +198,9 @@ class Action:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
+        for _, eff in target.effects.items():
+            if eff.hook_gives_advantage_against():
+                return True
         return False
 
 

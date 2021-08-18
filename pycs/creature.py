@@ -277,8 +277,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def fallen_unconscious(
-        self, dmg: int, dmg_type: DamageType, critical: bool
-    ) -> None:  # pylint: disable=unused-argument
+        self,
+        dmg: int,
+        dmg_type: DamageType,
+        critical: bool,  # pylint: disable=unused-argument
+    ) -> None:
         """Creature has fallen unconscious"""
         self.hp = 0
         self.state = "UNCONSCIOUS"
@@ -295,7 +298,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def check_end_effects(self):
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
-            print(f"check_end_effects {name}")
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)

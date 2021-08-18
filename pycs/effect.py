@@ -36,5 +36,15 @@ class Effect:
         """Modifications to {target}'s armour class"""
         return {"bonus": 0}
 
+    ##########################################################################
+    def hook_gives_advantage_against(self):
+        """Gives advantage against creature who has effect"""
+        return False
+
+    ##########################################################################
+    def removal_after_being_attacked(self):
+        """Do we remove the effect after being turned"""
+        return False
+
 
 # EOF
