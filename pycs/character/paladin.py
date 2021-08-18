@@ -116,8 +116,6 @@ class Paladin(Character):
             )
         )
 
-    # Create Lay on Hands Action
-
     ########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):
         if self.has_effect("Relentless Endurance"):
