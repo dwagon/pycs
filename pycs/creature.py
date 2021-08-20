@@ -425,7 +425,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def start_turn(self):
         """Start the turn"""
-        for eff in self.effects.values():
+        for eff in self.effects.copy().values():
             eff.hook_start_turn()
 
     ##########################################################################
