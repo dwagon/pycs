@@ -6,11 +6,11 @@ from collections import namedtuple
 import dice
 from actions import Action
 from attacks import Attack
+from spells import SpellAction
 from constants import ActionType
 from constants import Condition
 from constants import MonsterType
 from constants import DamageType
-from constants import SpellType
 from constants import Stat
 from constants import Statistics
 
@@ -396,19 +396,15 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
-        acttuple = namedtuple("acttuple", "quality random act")
+        acttuple = namedtuple("acttuple", "quality random preference act")
         for qual, act in self.possible_actions():
-            if isinstance(act, ActionType):
-                qual *= self.action_preference.get(act, 1)
-            elif isinstance(act, SpellType):
-                if self.spell_available(act):
-                    qual *= self.action_preference.get(act, 1)
-                else:
-                    qual = 0
+            if issubclass(act.__class__, SpellAction):
+                pref = self.action_preference.get(act.type, 1)
+            elif issubclass(act.__class__, Attack):
+                pref = self.action_preference.get(act.type, 1)
             else:
-                qual *= self.action_preference.get(act, 1)
-            if qual:
-                actions.append(acttuple(qual, random.random(), act))
+                pref = self.action_preference.get(act, 1)
+            actions.append(acttuple(qual * pref, random.random(), pref, act))
         actions.sort(reverse=True)
         print(f"{self} {actions=}")
         try:
