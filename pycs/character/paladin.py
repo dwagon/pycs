@@ -96,9 +96,9 @@ class Paladin(Character):
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
             pass
-#            self.add_action(Branding_Smite())
-#            self.add_action(Lesser_Restoration())
-#            self.add_action(Protection_From_Poison())
+        #            self.add_action(Branding_Smite())
+        #            self.add_action(Lesser_Restoration())
+        #            self.add_action(Protection_From_Poison())
         self.add_action(
             MeleeAttack(
                 "Longsword",
