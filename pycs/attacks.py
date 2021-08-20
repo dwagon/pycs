@@ -13,7 +13,12 @@ class Attack(Action):
     ########################################################################
     def perform_action(self, source):
         """Do the attack"""
-        return self.do_attack(source)
+        response = False
+        for atk in range(source.attacks_per_action):
+            success = self.do_attack(source)
+            if success:
+                response = True
+        return response
 
     ########################################################################
     def modifier(self, attacker):
