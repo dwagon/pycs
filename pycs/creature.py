@@ -43,6 +43,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.action_preference = kwargs.get(
             "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
         )
+        self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])

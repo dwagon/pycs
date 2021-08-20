@@ -11,10 +11,12 @@ from constants import SpellType
 from constants import Stat
 from effect import Effect
 from spell.bless import Bless
-from spell.branding_smite import Branding_Smite
+
+# from spell.branding_smite import Branding_Smite
 from spell.cure_wounds import Cure_Wounds
-from spell.lesser_restoration import Lesser_Restoration
-from spell.protection_from_poison import Protection_From_Poison
+
+# from spell.lesser_restoration import Lesser_Restoration
+# from spell.protection_from_poison import Protection_From_Poison
 from spell.sanctuary import Sanctuary
 from spell.shield_of_faith import Shield_Of_Faith
 
@@ -43,11 +45,11 @@ class Paladin(Character):
                 "spellcast_bonus": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {
-                    LayOnHands: 5,
-                    SpellType.HEALING: 5,
-                    SpellType.BUFF: 4,
+                    LayOnHands: 3,
+                    SpellType.HEALING: 3,
+                    SpellType.BUFF: 2,
                     ActionType.RANGED: 4,
-                    ActionType.MELEE: 4,
+                    ActionType.MELEE: 5,
                 }
                 # "immunity": DISEASE
             }
@@ -71,7 +73,7 @@ class Paladin(Character):
             self.lay_on_hands = 20
         if level == 5:
             # Prof Bonus = 3
-            # Attacks per action = 2
+            kwargs["attacks_per_action"] = 2
             kwargs["hp"] = 44
             self.spell_slots = {1: 4, 2: 2}
             self.lay_on_hands = 25
@@ -95,9 +97,10 @@ class Paladin(Character):
             # Add Action Channel Divinity : Sacred Weapon
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
-            self.add_action(Branding_Smite())
-            self.add_action(Lesser_Restoration())
-            self.add_action(Protection_From_Poison())
+            pass
+        #            self.add_action(Branding_Smite())
+        #            self.add_action(Lesser_Restoration())
+        #            self.add_action(Protection_From_Poison())
         self.add_action(
             MeleeAttack(
                 "Longsword",

@@ -86,11 +86,6 @@ def combat_test():
     turn = 0
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
-    barbarian = Barbarian(arena=arena, name="Barbara", level=1, side="Humans")
-    cleric = Cleric(arena=arena, name="Charlise", level=3, side="Humans")
-    fighter = Fighter(arena=arena, name="Frank", level=2, side="Humans")
-    paladin = Paladin(arena=arena, name="Patty", level=2, side="Humans")
-    warlock = Warlock(arena=arena, name="Wendy", level=1, side="Humans")
 
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"), (0, 0))
     arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"), (2, 0))
@@ -102,11 +97,26 @@ def combat_test():
     )
     arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"), (14, 0))
 
-    arena.add_combatant(barbarian, (18, arena.max_y - 1))
-    arena.add_combatant(cleric, (16, arena.max_y - 1))
-    arena.add_combatant(fighter, (20, arena.max_y - 1))
-    arena.add_combatant(paladin, (24, arena.max_y - 1))
-    arena.add_combatant(warlock, (22, arena.max_y - 1))
+    arena.add_combatant(
+        Barbarian(arena=arena, name="Barbara", level=1, side="Humans"),
+        (18, arena.max_y - 1),
+    )
+    arena.add_combatant(
+        Cleric(arena=arena, name="Charlise", level=3, side="Humans"),
+        (16, arena.max_y - 1),
+    )
+    arena.add_combatant(
+        Fighter(arena=arena, name="Frank", level=2, side="Humans"),
+        (20, arena.max_y - 1),
+    )
+    arena.add_combatant(
+        Paladin(arena=arena, name="Patty", level=5, side="Humans"),
+        (24, arena.max_y - 1),
+    )
+    arena.add_combatant(
+        Warlock(arena=arena, name="Wendy", level=1, side="Humans"),
+        (22, arena.max_y - 1),
+    )
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
