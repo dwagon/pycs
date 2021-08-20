@@ -54,8 +54,10 @@ class Effect:
         return False
 
     ##########################################################################
-    def hook_additional_melee_damage(self) -> Optional[Tuple[str, int, DamageType]]:
-        """Addition damage from melee weapons"""
+    def hook_source_additional_melee_damage(
+        self,
+    ) -> Optional[Tuple[str, int, DamageType]]:
+        """Addition damage from melee weapons based on the owner of the effect"""
         return ("", 0, None)
 
 

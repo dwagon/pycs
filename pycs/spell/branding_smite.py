@@ -2,6 +2,7 @@
 
 from spells import SpellAction
 from constants import SpellType
+from constants import DamageType
 from effect import Effect
 
 
@@ -14,7 +15,7 @@ class Branding_Smite(SpellAction):
     strike. The attack deals an extra 2d6 radiant damage to the target,
     which becomes visible if it is invisible, and the target sheds dim
     light in a 5-foot radius and can’t become invisible until the spell
-    ends. """
+    ends."""
 
     ########################################################################
     def __init__(self, **kwargs):
@@ -34,15 +35,16 @@ class Branding_Smite(SpellAction):
     def cast(self, caster):
         """Do the spell"""
         caster.add_effect(BrandingSmiteEffect(cause=caster))
+        return True
 
     ########################################################################
     def pick_target(self, doer):
-        """ Who should we do the spell to """
+        """Who should we do the spell to"""
         return doer
 
     ########################################################################
     def heuristic(self, doer):
-        """ Should we do the spell """
+        """Should we do the spell"""
         if doer.has_effect("Branding Smite"):
             return 0
         return 1
@@ -52,12 +54,17 @@ class Branding_Smite(SpellAction):
 ##############################################################################
 ##############################################################################
 class BrandingSmiteEffect(Effect):
-    """ Branding Smite """
+    """Branding Smite"""
 
     ########################################################################
     def __init__(self, **kwargs):
         """Initialise"""
         super().__init__("Branding Smite", **kwargs)
+
+    ########################################################################
+    def hook_source_additional_melee_damage(self):
+        """More damage"""
+        return ("2d6", 0, DamageType.RADIANT)
 
 
 # EOF

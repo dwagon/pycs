@@ -344,7 +344,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dump_statistics(self) -> dict:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
-        print(f"{self.statistics=}")
         for name, dmg, _, crit in self.statistics:
             if name not in tmp:
                 tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
