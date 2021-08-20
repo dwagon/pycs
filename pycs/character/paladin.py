@@ -11,8 +11,10 @@ from constants import SpellType
 from constants import Stat
 from effect import Effect
 from spell.bless import Bless
+
 # from spell.branding_smite import Branding_Smite
 from spell.cure_wounds import Cure_Wounds
+
 # from spell.lesser_restoration import Lesser_Restoration
 # from spell.protection_from_poison import Protection_From_Poison
 from spell.sanctuary import Sanctuary
