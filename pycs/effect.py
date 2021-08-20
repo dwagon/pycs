@@ -1,4 +1,6 @@
 """ Handle Temporary effects """
+from typing import Tuple, Optional
+from constants import DamageType
 
 
 ##############################################################################
@@ -11,6 +13,7 @@ class Effect:
     def __init__(self, name, **kwargs):
         self.name = name
         self.cause = kwargs.get("cause")
+        self.source = kwargs.get("source")
 
     ##########################################################################
     def hook_attack_to_hit(self, target, rnge):  # pylint: disable=unused-argument
@@ -49,6 +52,11 @@ class Effect:
     def removal_after_being_attacked(self):
         """Do we remove the effect after being turned"""
         return False
+
+    ##########################################################################
+    def hook_additional_melee_damage(self) -> Optional[Tuple[str, int, DamageType]]:
+        """Addition damage from melee weapons"""
+        return ("", 0, None)
 
 
 # EOF

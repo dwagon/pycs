@@ -52,7 +52,7 @@ class GiantFrog(Monster):
         target = self.target
         if self.has_grappled == target and self._swallowed is None:
             print(f"{self} swallowed {target}")
-            target.add_effect(GiantFrogSwallowEffect())
+            target.add_effect(GiantFrogSwallowEffect(source=self))
             self.has_grappled = None
             self._swallowed = target
             target.remove_condition(Condition.GRAPPLED)
@@ -118,7 +118,13 @@ class GiantFrogSwallowEffect(Effect):
     ##########################################################################
     def hook_start_turn(self):
         dmg = int(dice.roll("2d4"))
-        self.target.hit(dmg, DamageType.ACID, self, False)
+        self.target.hit(
+            dmg=dmg,
+            dmg_type=DamageType.ACID,
+            source=self.source,
+            critical=False,
+            atkname="Frog Acid",
+        )
         print(f"{self.target} hurt by {dmg} acid from being swallowed by Giant Frog")
 
 

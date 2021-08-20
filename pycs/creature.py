@@ -12,6 +12,7 @@ from constants import MonsterType
 from constants import DamageType
 from constants import SpellType
 from constants import Stat
+from constants import Statistics
 
 
 ##############################################################################
@@ -207,11 +208,22 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         attck.perform_action(self)
 
     ##########################################################################
-    def hit(self, dmg: int, dmg_type: DamageType, source, critical: bool) -> None:
+    def hit(  # pylint: disable=too-many-arguments
+        self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
+    ) -> None:
         """We've been hit by source- take damage"""
-        print(f"{self} has taken {dmg} damage")
+        if dmg_type in self.vulnerable:
+            print(f"{self} is vulnerable to {dmg_type.value}")
+            dmg *= 2
+        if dmg_type in self.immunity:
+            print(f"{self} is immune to {dmg_type.value}")
+            dmg = 0
+        print(f"{self} has taken {dmg} damage ({dmg_type.value})")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
+
+        source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))
+
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
@@ -332,6 +344,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dump_statistics(self) -> dict:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
+        print(f"{self.statistics=}")
         for name, dmg, _, crit in self.statistics:
             if name not in tmp:
                 tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
