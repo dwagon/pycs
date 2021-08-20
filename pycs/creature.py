@@ -278,8 +278,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def fallen_unconscious(
         self,
-        dmg: int,
-        dmg_type: DamageType,
+        dmg: int,  # pylint: disable=unused-argument
+        dmg_type: DamageType,  # pylint: disable=unused-argument
         critical: bool,  # pylint: disable=unused-argument
     ) -> None:
         """Creature has fallen unconscious"""
@@ -373,8 +373,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def spell_available(
-        self, spell
-    ) -> bool:  # pylint: disable=unused-argument, no-self-use
+        self, spell  # pylint: disable=unused-argument
+    ) -> bool:  # pylint: disable=no-self-use
         """Spell casters should redefine this"""
         return False
 
@@ -428,7 +428,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
-            print(f"action {act=} {self.target=}")
             did_act = act.perform_action(self)
             if did_act:
                 return True

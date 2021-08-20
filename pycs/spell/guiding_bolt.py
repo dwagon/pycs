@@ -36,6 +36,7 @@ class Guiding_Bolt(AttackSpell):
     def cast(self, caster):
         """Do the spell"""
         caster.target.add_effect(GuidingBoltEffect(cause=caster))
+        return True
 
 
 ##############################################################################
