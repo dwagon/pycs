@@ -172,59 +172,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return None
 
     ##########################################################################
-    def pick_best_attack(self) -> Optional[Attack]:
-        """Return the best (most damage) attack for this range"""
-        if self.target is None:
-            return None
-        rnge = self.distance(self.target)
-        maxdmg = 0
-        attck = None
-        for atk in self.actions:
-            if not atk.is_available(self):
-                continue
-            if atk.range()[1] < rnge:  # Not in range
-                continue
-            mxd = atk.max_dmg(self.target)
-            # Treat disdvantage as having half damage - need to make this cleverer
-            if atk.has_disadvantage(self, self.target, rnge):
-                mxd /= 2
-            if mxd > maxdmg:
-                maxdmg = mxd
-                attck = atk
-        return attck
-
-    ##########################################################################
-    def pick_best_reaction(self, source) -> Optional[Action]:
-        """Return the best (most damage) reaction for this range"""
-        # Treat disdvantage as having half damage - need to make this cleverer
-        rnge = self.distance(source)
-        maxdmg = 0
-        attck = None
-        for atk in self.reactions:
-            if not atk.is_available(self):
-                continue
-            if atk.range()[1] < rnge:
-                continue
-            mxd = atk.max_dmg(source)
-            if atk.has_disadvantage(self, self.target, rnge):
-                mxd /= 2
-            if mxd > maxdmg:
-                maxdmg = mxd
-                attck = atk
-        return attck
-
-    ##########################################################################
-    def attack(self) -> None:
-        """Attack the target"""
-        if self.target is None:
-            return
-        attck = self.pick_best_attack()
-        if attck is None:
-            print(f"{self} has no attack")
-            return
-        attck.perform_action(self)
-
-    ##########################################################################
     def hit(  # pylint: disable=too-many-arguments
         self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
     ) -> None:
@@ -250,7 +197,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def react(self, source) -> None:
         """React to an incoming attack with a reaction"""
-        react = self.pick_best_reaction(source)
+        react = self.pick_action(typ=ActionCategory.REACTION, target=source)
         if react is not None:
             print(f"{self} reacts against {source}")
             react.perform_action(self)
@@ -411,7 +358,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def pick_action(self, typ=ActionCategory.ACTION) -> Action:
+    def pick_action(self, typ=ActionCategory.ACTION, target=None) -> Action:
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
@@ -435,7 +382,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return None
 
         action = actions[0].act
-        self.target = action.pick_target(self)
+        if target is None:
+            self.target = action.pick_target(self)
+        else:
+            self.target = target
         print(f"{self} is going to do {action} to {self.target}")
         return action
 

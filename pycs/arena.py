@@ -1,5 +1,6 @@
 """ Class defining the play area """
 import math
+import random
 from collections import defaultdict
 from collections import namedtuple
 from astar import AStar
@@ -71,9 +72,16 @@ class Arena(AStar):
             comb.turn()
 
     ##############################################################################
-    def add_combatant(self, comb, coords):
+    def add_combatant(self, comb, coords=None) -> None:
         """Add a combatant"""
         self.combatants.append(comb)
+        if coords is None:
+            while True:
+                rndx = random.randint(0, self.max_x - 1)
+                rndy = random.randint(0, self.max_y - 1)
+                if self[(rndx, rndy)] is None:
+                    coords = (rndx, rndy)
+                    break
         self[coords] = comb
         comb.coords = coords
 
