@@ -14,7 +14,7 @@ class Attack(Action):
     def perform_action(self, source):
         """Do the attack"""
         response = False
-        for atk in range(source.attacks_per_action):
+        for _ in range(source.attacks_per_action):
             success = self.do_attack(source)
             if success:
                 response = True
