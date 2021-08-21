@@ -488,10 +488,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             enemies = self.pick_closest_enemy()
             if enemies:
                 self.target = enemies[0]
-        print(f"{self} dashing")
-        self.moves = self.speed
-        self.options_this_turn.remove(ActionCategory.ACTION)
-        self.move_to_target(self.target, None)
+        if self.target:
+            print(f"{self} dashing")
+            self.moves = self.speed
+            self.options_this_turn.remove(ActionCategory.ACTION)
+            self.move_to_target(self.target, None)
 
     ##########################################################################
     def do_stuff(self, categ: ActionCategory, moveto=False) -> None:
