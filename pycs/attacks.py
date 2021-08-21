@@ -58,12 +58,6 @@ class MeleeAttack(Attack):
         return self.available
 
     ########################################################################
-    def pick_target(self, doer):
-        """Who are we going to hit"""
-        enemy = doer.pick_closest_enemy()[0]
-        return enemy
-
-    ########################################################################
     def heuristic(self, doer):
         """Should we perform this attack - yes if adjacent"""
         enemy = doer.pick_closest_enemy()
@@ -98,12 +92,6 @@ class RangedAttack(Attack):
                 self.available = False
 
         return super().perform_action(source)
-
-    ########################################################################
-    def pick_target(self, doer):
-        """Who are we going to hit"""
-        enemy = doer.pick_closest_enemy()[0]
-        return enemy
 
     ########################################################################
     def heuristic(self, doer):
