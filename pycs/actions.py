@@ -4,6 +4,7 @@ import dice
 from constants import ActionType
 from constants import Condition
 from constants import DamageType
+from constants import Statistics
 
 
 ##############################################################################
@@ -136,12 +137,19 @@ class Action:
                 f"{source} hit {target} (AC: {tmp_ac})"
                 f" with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
-            target.hit(dmg, self.dmg_type, source, crit_hit)
+            target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
                 self.side_effect(source=source, target=target)
-            source.statistics.append((self.name, dmg, self.dmg_type, crit_hit))
+            # If the source of the damage has a buff
+            for atkname, eff in source.effects.copy().items():
+                add_dmg = eff.hook_source_additional_melee_damage()
+                dmg = add_dmg[1]
+                if add_dmg[0]:
+                    dmg += int(dice.roll(add_dmg[0]))
+                if dmg:
+                    target.hit(dmg, add_dmg[2], source, critical=False, atkname=atkname)
         else:
-            source.statistics.append((self.name, 0, False, False))
+            source.statistics.append(Statistics(self.name, 0, None, False))
             print(f"{source} missed {target} with {self}")
         for name, eff in target.effects.copy().items():
             if eff.removal_after_being_attacked():
@@ -150,7 +158,7 @@ class Action:
         return True
 
     ########################################################################
-    def roll_dmg(self, source, victim, critical=False) -> int:
+    def roll_dmg(self, source, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
             dmg = (
@@ -161,12 +169,6 @@ class Action:
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         dmg += self.dmg_bonus(source)
-        if self.dmg_type in victim.vulnerable:
-            print(f"{self} is vulnerable to {self.dmg_type.value}")
-            dmg *= 2
-        if self.dmg_type in victim.immunity:
-            print(f"{self} is immune to {self.dmg_type.value}")
-            dmg = 0
         return dmg
 
     ########################################################################

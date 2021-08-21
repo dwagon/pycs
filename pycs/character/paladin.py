@@ -12,7 +12,7 @@ from constants import Stat
 from effect import Effect
 from spell.bless import Bless
 
-# from spell.branding_smite import Branding_Smite
+from spell.branding_smite import Branding_Smite
 from spell.cure_wounds import Cure_Wounds
 
 # from spell.lesser_restoration import Lesser_Restoration
@@ -45,11 +45,12 @@ class Paladin(Character):
                 "spellcast_bonus": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {
-                    LayOnHands: 3,
-                    SpellType.HEALING: 3,
+                    LayOnHands: 2,
+                    SpellType.HEALING: 2,
                     SpellType.BUFF: 2,
+                    Branding_Smite: 9,
                     ActionType.RANGED: 4,
-                    ActionType.MELEE: 5,
+                    ActionType.MELEE: 6,
                 }
                 # "immunity": DISEASE
             }
@@ -97,8 +98,7 @@ class Paladin(Character):
             # Add Action Channel Divinity : Sacred Weapon
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
-            pass
-        #            self.add_action(Branding_Smite())
+            self.add_action(Branding_Smite())
         #            self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
         self.add_action(

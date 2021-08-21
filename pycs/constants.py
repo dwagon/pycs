@@ -1,5 +1,6 @@
 """ Constants used everywhere """
 from enum import Enum
+from collections import namedtuple
 
 
 ##############################################################################
@@ -105,5 +106,11 @@ class Race(Enum):
     HUMAN = "Human"
     HALFORC = "Half-Orc"
 
+
+##############################################################################
+##############################################################################
+##############################################################################
+Damage = namedtuple("Damage", "hp type")
+Statistics = namedtuple("Statistics", "name damage damagetype critical")
 
 # EOF

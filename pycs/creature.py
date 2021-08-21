@@ -6,12 +6,13 @@ from collections import namedtuple
 import dice
 from actions import Action
 from attacks import Attack
+from spells import SpellAction
 from constants import ActionType
 from constants import Condition
 from constants import MonsterType
 from constants import DamageType
-from constants import SpellType
 from constants import Stat
+from constants import Statistics
 
 
 ##############################################################################
@@ -207,11 +208,22 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         attck.perform_action(self)
 
     ##########################################################################
-    def hit(self, dmg: int, dmg_type: DamageType, source, critical: bool) -> None:
+    def hit(  # pylint: disable=too-many-arguments
+        self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
+    ) -> None:
         """We've been hit by source- take damage"""
-        print(f"{self} has taken {dmg} damage")
+        if dmg_type in self.vulnerable:
+            print(f"{self} is vulnerable to {dmg_type.value}")
+            dmg *= 2
+        if dmg_type in self.immunity:
+            print(f"{self} is immune to {dmg_type.value}")
+            dmg = 0
+        print(f"{self} has taken {dmg} damage ({dmg_type.value}) from {atkname}")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
+
+        source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))
+
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
@@ -369,7 +381,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if act.is_available(self):
                 quality = act.heuristic(self)
                 possible_acts.append((quality, act))
-        print(f"{self} {possible_acts=}")
         return possible_acts
 
     ##########################################################################
@@ -384,21 +395,21 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
-        acttuple = namedtuple("acttuple", "quality random act")
+        acttuple = namedtuple("acttuple", "qual rnd heur pref act")
         for qual, act in self.possible_actions():
-            if isinstance(act, ActionType):
-                qual *= self.action_preference.get(act, 1)
-            elif isinstance(act, SpellType):
-                if self.spell_available(act):
-                    qual *= self.action_preference.get(act, 1)
-                else:
-                    qual = 0
+            if act.__class__ in self.action_preference:
+                pref = self.action_preference.get(act.__class__)
+            elif issubclass(act.__class__, SpellAction):
+                pref = self.action_preference.get(act.type, 1)
+            elif issubclass(act.__class__, Attack):
+                pref = self.action_preference.get(act.type, 1)
             else:
-                qual *= self.action_preference.get(act, 1)
-            if qual:
-                actions.append(acttuple(qual, random.random(), act))
+                print(f"Unsure what action {act} is")
+                pref = self.action_preference.get(act, 1)
+            actions.append(acttuple(qual * pref, random.random(), qual, pref, act))
         actions.sort(reverse=True)
-        print(f"{self} {actions=}")
+        for act in actions:
+            print(f"\t{act}")
         try:
             todo = actions[0].act
             self.target = todo.pick_target(self)
@@ -412,7 +423,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def start_turn(self):
         """Start the turn"""
-        for eff in self.effects.values():
+        for eff in self.effects.copy().values():
             eff.hook_start_turn()
 
     ##########################################################################
