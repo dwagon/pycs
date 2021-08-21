@@ -32,7 +32,7 @@ class SpellAction(Action):
     ########################################################################
     def modifier(self, attacker):
         """Attack modifier"""
-        return attacker.prof_bonus + attacker.stat_bonus(attacker.spellcast_bonus)
+        return attacker.spellcast_modifier
 
     ########################################################################
     def perform_action(self, source):
@@ -123,11 +123,6 @@ class AttackSpell(SpellAction):
         if saved:
             dmg = int(dmg / 2)
         return dmg
-
-    ########################################################################
-    def pick_target(self, doer):
-        """Who should we target"""
-        return doer.pick_closest_enemy()[0]
 
     ########################################################################
     def heuristic(self, doer):
