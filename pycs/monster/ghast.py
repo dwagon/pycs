@@ -87,7 +87,7 @@ class Ghast(Monster):
     def shortrepr(self):
         """What it looks like on the arena"""
         if self.is_alive():
-            return colors.red("G", bg="green", style="bold")
+            return colors.yellow("G", style="bold")
         return colors.green("G", bg="red")
 
 
