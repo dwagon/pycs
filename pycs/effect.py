@@ -21,9 +21,14 @@ class Effect:
         return {"bonus": 0}
 
     ##########################################################################
+    def hook_being_hit(self, dmg, dmgtype) -> int:  # pylint: disable=unused-argument
+        """We've been hit by an attack; return the new dmg"""
+        return dmg
+
+    ##########################################################################
     def hook_saving_throw(self, stat):  # pylint: disable=unused-argument
         """Modify the saving throw roll"""
-        return {"bonus": 0}
+        return {"bonus": 0, "advantage": False, "disadvantage": False}
 
     ##########################################################################
     def initial(self, target):

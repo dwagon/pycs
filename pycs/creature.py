@@ -8,6 +8,7 @@ from actions import Action
 from attacks import Attack
 from spells import SpellAction
 from constants import ActionType
+from constants import ActionCategory
 from constants import Condition
 from constants import MonsterType
 from constants import DamageType
@@ -31,7 +32,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.type = kwargs.get("type", MonsterType.HUMANOID)
         self.size = kwargs.get("size", "M")
         self.prof_bonus = kwargs.get("prof_bonus", 2)
-        self.spellcast_bonus = kwargs.get("spellcast_bonus")
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
             Stat.STR: kwargs["str"],
@@ -41,6 +41,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
+        if "spellcast_bonus" in kwargs:
+            self.spellcast_modifier = self.stat_bonus(kwargs.get("spellcast_bonus"))
+            self.spellcast_modifier += self.prof_bonus
+        else:
+            self.spellcast_modifier = 0
         self.action_preference = kwargs.get(
             "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
         )
@@ -57,12 +62,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.max_hp = self.hp
         self.has_grappled = None
         self.actions = []
+        self.bonus_actions = []
         self.reactions = []
         self.conditions = set()
         self.effects = {}
         self.target = None
         self.coords = None
         self.statistics = []
+        self.options_this_turn = []
 
     ##########################################################################
     def __repr__(self):
@@ -104,13 +111,26 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 f"{self} automatically failed {stat.value} saving throw as unconscious"
             )
             return False
-        save = int(dice.roll("d20")) + self.stat_bonus(stat)
-        for eff in self.effects.values():
-            save += eff.hook_saving_throw(stat)["bonus"]
+        effct = {"bonus": 0}
+        for name, eff in self.effects.items():
+            effct.update(eff.hook_saving_throw(stat))
+            print(f"{name} {effct=}")
+
+        if "advantage" in effct and effct["advantage"]:
+            save = max(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg = " with advantage"
+        elif "disadvantage" in effct and effct["disadvantage"]:
+            save = min(int(dice.roll("d20")), int(dice.roll("d20")))
+            msg = " with disadvantage"
+        else:
+            save = int(dice.roll("d20"))
+            msg = ""
+
+        save += effct["bonus"] + self.stat_bonus(stat)
         if save >= dc:
-            print(f"{self} made {stat.value} saving throw: {save} vs DC {dc}")
+            print(f"{self} made {stat.value} saving throw: {save} vs DC {dc} {msg}")
             return True
-        print(f"{self} failed {stat.value} saving throw: {save} vs DC {dc}")
+        print(f"{self} failed {stat.value} saving throw: {save} vs DC {dc} {msg}")
         return False
 
     ##########################################################################
@@ -121,23 +141,20 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return init
 
     ##########################################################################
-    def move_to_target(self, act: Action) -> None:
+    def move_to_target(self, target, rnge) -> None:
         """Move closer to the target - until we are in range of our action"""
-        if not self.target:
-            return
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
             return
         if self.moves:
-            print(f"{self} move to {self.target}")
+            print(f"{self} move to {target}")
         for _ in range(self.moves):
-            if act:
-                rnge, _ = act.range()
-                # Within range - don't move
-                dist = self.distance(self.target)
-                if dist <= rnge:
-                    print(f"{self.target} is within range of {act}")
-                    return
+            # Within range - don't move
+            dist = self.distance(target)
+            if rnge and dist <= rnge:
+                print(f"{target} is within range")
+                return
+
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
@@ -265,6 +282,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.actions.append(action)
 
     ##########################################################################
+    def add_bonus_action(self, action: Action) -> None:
+        """Add a bonus action to the creature"""
+        self.bonus_actions.append(action)
+
+    ##########################################################################
     def add_reaction(self, action: Action) -> None:
         """Add an reaction to the creature"""
         self.reactions.append(action)
@@ -308,12 +330,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.type == typ
 
     ##########################################################################
-    def check_end_effects(self):
+    def end_turn(self):
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
+        print(self.arena)
 
     ##########################################################################
     def remove_effect(self, name):
@@ -330,15 +353,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Add an effect"""
         self.effects[effect.name] = effect
         effect.initial(self)
-
-    ##########################################################################
-    def check_start_effects(self):
-        """Are there any effects for the start of the turn"""
-        for creat in self.arena.combatants:
-            if creat == self:
-                creat.start_turn()
-                continue
-            creat.start_others_turn(self)
 
     ##########################################################################
     def dump_statistics(self) -> dict:
@@ -373,11 +387,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.distance(self, target)
 
     ##########################################################################
-    def possible_actions(self) -> list:
+    def possible_actions(self, typ=ActionCategory.ACTION) -> list:
         """What are all the things we can do this turn and how good do they
         feel about happening"""
         possible_acts = []
-        for act in self.actions:
+        if typ == ActionCategory.ACTION:
+            from_actions = self.actions
+        elif typ == ActionCategory.BONUS:
+            from_actions = self.bonus_actions
+        elif typ == ActionCategory.REACTION:
+            from_actions = self.reactions
+        for act in from_actions:
             if act.is_available(self):
                 quality = act.heuristic(self)
                 possible_acts.append((quality, act))
@@ -391,12 +411,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def pick_action(self) -> Action:
+    def pick_action(self, typ=ActionCategory.ACTION) -> Action:
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
-        acttuple = namedtuple("acttuple", "qual rnd heur pref act")
-        for qual, act in self.possible_actions():
+        acttuple = namedtuple("acttuple", "qual heur pref act")
+        for qual, act in self.possible_actions(typ):
             if act.__class__ in self.action_preference:
                 pref = self.action_preference.get(act.__class__)
             elif issubclass(act.__class__, SpellAction):
@@ -406,25 +426,36 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             else:
                 print(f"Unsure what action {act} is")
                 pref = self.action_preference.get(act, 1)
-            actions.append(acttuple(qual * pref, random.random(), qual, pref, act))
+            actions.append(acttuple(qual * pref + random.random(), qual, pref, act))
         actions.sort(reverse=True)
+
         for act in actions:
             print(f"\t{act}")
-        try:
-            todo = actions[0].act
-            self.target = todo.pick_target(self)
-            print(f"{self} is going to do {todo} to {self.target}")
-        except IndexError:
-            todo = None
-            self.target = None
-            print(f"{self} has no target within range")
-        return todo
+        if not actions:
+            return None
+
+        action = actions[0].act
+        self.target = action.pick_target(self)
+        print(f"{self} is going to do {action} to {self.target}")
+        return action
 
     ##########################################################################
     def start_turn(self):
         """Start the turn"""
+        # These are all the things we can do this turn
+        self.options_this_turn = [
+            ActionCategory.ACTION,
+            ActionCategory.BONUS,
+            ActionCategory.REACTION,
+        ]
+        self.moves = self.speed
         for eff in self.effects.copy().values():
             eff.hook_start_turn()
+
+        for creat in self.arena.combatants:
+            if creat == self:
+                continue
+            creat.start_others_turn(self)
 
     ##########################################################################
     def start_others_turn(self, creat):
@@ -434,73 +465,79 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def move(self, act: Action):
         """Do a move"""
         if self.target and self.moves:
-            self.move_to_target(act)
+            if act:
+                rnge, _ = act.range()
+            else:
+                rnge = None
+            self.move_to_target(self.target, rnge)
 
     ##########################################################################
     def action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
             did_act = act.perform_action(self)
-            if did_act:
+            if did_act is None or did_act:
                 return True
         return False
 
     ##########################################################################
-    def dash(self, act: Action) -> None:
+    def dash(self) -> None:
         """Do a dash action"""
         # Dash if we aren't in range yet
         if not self.target:
             enemies = self.pick_closest_enemy()
             if enemies:
                 self.target = enemies[0]
-        print(f"{self} dashing")
-        self.moves = self.speed
-        self.move_to_target(act)
+        if self.target:
+            print(f"{self} dashing")
+            self.moves = self.speed
+            self.options_this_turn.remove(ActionCategory.ACTION)
+            self.move_to_target(self.target, None)
 
     ##########################################################################
-    def do_stuff(self) -> None:
+    def do_stuff(self, categ: ActionCategory, moveto=False) -> None:
         """All the doing bits"""
         if self.has_condition(Condition.PARALYZED):
             return
         if self.state != "OK":
             return
+        if categ not in self.options_this_turn:
+            return
 
         # What are we going to do this turn
-        act = self.pick_action()
+        act = self.pick_action(categ)
+        print(f"{self} going to {categ.value}: {act}")
+
         if act is None:
-            victim = self.pick_closest_enemy()
-            if victim:
-                self.target = victim[0]
-            print(f"{self} now going toward {self.target}")
+            victims = self.pick_closest_enemy()
+            if victims:
+                self.target = victims[0]
+
         # Move closer to target
-        self.move(act)
-
-        # Now that we have moved is there something we can do
-        if act is None:
-            act = self.pick_action()
-
-        # Do something, otherwise keep moving
-        if not self.action(act):
-            self.dash(act)
-
-        # Move to next target if needed
-        if self.target and self.target.state != "OK":
-            victim = self.pick_closest_enemy()
-            if victim:
-                self.target = victim[0]
+        if moveto:
             self.move(act)
 
-        print(self.arena)
+        # Do the action
+        if act:
+            did_act = self.action(act)
+            if did_act:
+                print(f"Using up {categ}")
+                self.options_this_turn.remove(categ)
 
     ##########################################################################
     def turn(self):
         """Have a go"""
         print()
         self.report()
-        self.check_start_effects()
-        self.moves = self.speed
-        self.do_stuff()
-        self.check_end_effects()
+        self.start_turn()
+        self.do_stuff(ActionCategory.BONUS)
+        self.do_stuff(ActionCategory.ACTION, moveto=True)
+        self.do_stuff(ActionCategory.BONUS)
+        self.do_stuff(ActionCategory.ACTION, moveto=True)
+        if ActionCategory.ACTION in self.options_this_turn:
+            self.dash()
+        print(f"{self.options_this_turn=}")
+        self.end_turn()
 
 
 # EOF

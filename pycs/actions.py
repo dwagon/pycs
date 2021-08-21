@@ -39,7 +39,10 @@ class Action:
     ########################################################################
     def pick_target(self, doer):
         """Who are we going to do the action to"""
-        print(f"{self.__class__.__name__}.pick_target({doer=}) - needs to be replaced")
+        enemy = doer.pick_closest_enemy()
+        if enemy:
+            return enemy[0]
+        return None
 
     ########################################################################
     def heuristic(self, doer):  # pylint: disable=unused-argument, no-self-use
