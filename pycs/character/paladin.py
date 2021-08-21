@@ -45,11 +45,12 @@ class Paladin(Character):
                 "spellcast_bonus": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {
-                    LayOnHands: 3,
-                    SpellType.HEALING: 3,
+                    LayOnHands: 2,
+                    SpellType.HEALING: 2,
                     SpellType.BUFF: 2,
+                    Branding_Smite: 9,
                     ActionType.RANGED: 4,
-                    ActionType.MELEE: 5,
+                    ActionType.MELEE: 6,
                 }
                 # "immunity": DISEASE
             }
