@@ -395,17 +395,21 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
-        acttuple = namedtuple("acttuple", "quality random preference act")
+        acttuple = namedtuple("acttuple", "qual rnd heur pref act")
         for qual, act in self.possible_actions():
-            if issubclass(act.__class__, SpellAction):
+            if act.__class__ in self.action_preference:
+                pref = self.action_preference.get(act.__class__)
+            elif issubclass(act.__class__, SpellAction):
                 pref = self.action_preference.get(act.type, 1)
             elif issubclass(act.__class__, Attack):
                 pref = self.action_preference.get(act.type, 1)
             else:
+                print(f"Unsure what action {act} is")
                 pref = self.action_preference.get(act, 1)
-            actions.append(acttuple(qual * pref, random.random(), pref, act))
+            actions.append(acttuple(qual * pref, random.random(), qual, pref, act))
         actions.sort(reverse=True)
-        print(f"{self} {actions=}")
+        for act in actions:
+            print(f"\t{act}")
         try:
             todo = actions[0].act
             self.target = todo.pick_target(self)
