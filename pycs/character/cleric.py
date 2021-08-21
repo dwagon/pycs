@@ -2,6 +2,7 @@
 import colors
 from attacks import MeleeAttack
 from actions import Action
+from effect import Effect
 from spell.aid import Aid
 from spell.bless import Bless
 from spell.cure_wounds import Cure_Wounds
@@ -85,7 +86,7 @@ class Cleric(Character):
             self.add_action(Aid())
             self.add_action(Lesser_Restoration())
             self.add_action(Enhance_Ability())
-            self.add_action(Spiritual_Weapon())
+            self.add_bonus_action(Spiritual_Weapon())
 
     ##########################################################################
     def report(self):
@@ -152,12 +153,24 @@ class TurnUndead(Action):
             if source.arena.distance(source, und) < 30 / 5:
                 if und.saving_throw(Stat.WIS, 10 + source.spellcast_modifier):
                     print(f"{und} has been turned by {source}")
-                    und.add_effect("turned", self.recover)
+                    und.add_effect(TurnedUndeadEffect())
 
     ##########################################################################
     def recover(self, undead):  # pylint: disable=unused-argument
         """Did we recover from being turned"""
         return False
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TurnedUndeadEffect(Effect):
+    """Still to do"""
+
+    ########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Turned", **kwargs)
 
 
 # EOF

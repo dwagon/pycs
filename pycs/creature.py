@@ -57,6 +57,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.max_hp = self.hp
         self.has_grappled = None
         self.actions = []
+        self.bonus_actions = []
         self.reactions = []
         self.conditions = set()
         self.effects = {}
@@ -263,6 +264,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def add_action(self, action: Action) -> None:
         """Add an action to the creature"""
         self.actions.append(action)
+
+    ##########################################################################
+    def add_bonus_action(self, action: Action) -> None:
+        """Add a bonus action to the creature"""
+        self.bonus_actions.append(action)
 
     ##########################################################################
     def add_reaction(self, action: Action) -> None:
