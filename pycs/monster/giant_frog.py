@@ -65,6 +65,13 @@ class GiantFrog(Monster):
             self.has_grappled = target
 
     ##########################################################################
+    def report(self):
+        """Additional reporting"""
+        super().report()
+        if self._swallowed:
+            print(f"| Swallowed: {self._swallowed}")
+
+    ##########################################################################
     def frog_bite(self, actor):  # pylint: disable=unused-argument
         """When is it good to bite"""
         if self.has_grappled:
