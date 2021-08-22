@@ -182,6 +182,7 @@ class LayOnHands(Action):
             source.target.remove_condition(Condition.POISONED)
         print(f"{source} lays on hands to {source.target} to heal them")
         chp = min(source.lay_on_hands, source.target.max_hp - source.target.hp)
+        source.target.heal("", chp)
         source.lay_on_hands -= source.target.heal(0, chp)
 
     ########################################################################
