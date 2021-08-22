@@ -37,8 +37,10 @@ class SpellAction(Action):
     ########################################################################
     def perform_action(self, source):
         """Cast the spell"""
-        print(f"{source} is casting {self.name}")
+        if not source.spell_available(self):
+            return False
         source.cast(self)
+        print(f"{source} is casting {self.name}")
         return self.cast(source)
 
     ########################################################################

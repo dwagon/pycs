@@ -390,7 +390,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.target = action.pick_target(self)
         else:
             self.target = target
-        print(f"{self} is going to do {action} to {self.target}")
         return action
 
     ##########################################################################
@@ -430,7 +429,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.move_to_target(self.target, rnge)
 
     ##########################################################################
-    def action(self, act: Action) -> bool:
+    def do_action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
             did_act = act.perform_action(self)
@@ -472,7 +471,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         # Do the action
         if act:
-            did_act = self.action(act)
+            print(
+                f"{self} is going to do {act} to {self.target} as a {categ.value} action"
+            )
+            did_act = self.do_action(act)
             if did_act:
                 self.options_this_turn.remove(categ)
 

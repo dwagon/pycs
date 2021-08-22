@@ -36,9 +36,11 @@ class Bless(SpellAction):
     def heuristic(self, doer):
         """Should we do the spell"""
         # The more applicable targets the more likely we should do it
+        if not doer.spell_available(self):
+            return 0
         close = 0
         for targ in doer.arena.my_side(doer.side):
-            if doer.distance(targ) <= 30 / 5:
+            if doer.distance(targ) <= self.range()[0]:
                 if doer.has_effect("Bless"):
                     continue
                 close += 1

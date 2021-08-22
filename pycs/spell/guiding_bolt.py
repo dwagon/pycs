@@ -38,6 +38,13 @@ class Guiding_Bolt(AttackSpell):
         caster.target.add_effect(GuidingBoltEffect(cause=caster))
         return True
 
+    ###########################################################################
+    def heuristic(self, doer):
+        """Should we do the spell"""
+        if not doer.spell_available(self):
+            return 0
+        return 0
+
 
 ##############################################################################
 ##############################################################################

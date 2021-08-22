@@ -51,6 +51,8 @@ class Shield_Of_Faith(spells.SpellAction):
     ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
+        if not doer.spell_available(self):
+            return 0
         if self.pick_target(doer):
             return 1
         return 0

@@ -79,7 +79,7 @@ class Cleric(Character):
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
         self.add_action(Healing_Word())
-        self.add_action(Shield_Of_Faith())
+        self.add_bonus_action(Shield_Of_Faith())
         if level >= 2:
             self.add_action(TurnUndead())
         if level >= 3:
@@ -107,8 +107,11 @@ class Cleric(Character):
     def cast(self, spell):
         """Cast a spell"""
         if spell.level == 0:
-            return
+            return True
+        if not self.spell_available(spell):
+            return False
         self.spell_slots[spell.level] -= 1
+        return True
 
     ##########################################################################
     def shortrepr(self):
