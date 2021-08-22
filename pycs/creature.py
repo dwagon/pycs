@@ -112,9 +112,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             )
             return False
         effct = {"bonus": 0}
-        for name, eff in self.effects.items():
+        for _, eff in self.effects.items():
             effct.update(eff.hook_saving_throw(stat))
-            print(f"{name} {effct=}")
 
         if "advantage" in effct and effct["advantage"]:
             save = max(int(dice.roll("d20")), int(dice.roll("d20")))
@@ -398,15 +397,15 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def start_turn(self):
         """Start the turn"""
         # These are all the things we can do this turn
-        if self.has_condition(Condition.PARALYZED):
-            self.options_this_turn = []
-        if self.state != "OK":
-            self.options_this_turn = []
         self.options_this_turn = [
             ActionCategory.ACTION,
             ActionCategory.BONUS,
             ActionCategory.REACTION,
         ]
+        if self.has_condition(Condition.PARALYZED):
+            self.options_this_turn = []
+        if self.state != "OK":
+            self.options_this_turn = []
         self.moves = self.speed
         for eff in self.effects.copy().values():
             eff.hook_start_turn()
