@@ -87,36 +87,18 @@ def combat_test():
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
 
-    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"), (0, 0))
-    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"), (2, 0))
-    arena.add_combatant(
-        GiantFrog(arena=arena, name="Giant Frog", side="Monsters"), (18, 0)
-    )
-    arena.add_combatant(
-        Skeleton(arena=arena, name="Skeleton", side="Monsters"), (16, 0)
-    )
-    arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"), (14, 0))
+    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
+    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
+    arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
+    arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
+    arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"))
 
-    arena.add_combatant(
-        Barbarian(arena=arena, name="Barbara", level=1, side="Humans"),
-        (18, arena.max_y - 1),
-    )
-    arena.add_combatant(
-        Cleric(arena=arena, name="Charlise", level=3, side="Humans"),
-        (16, arena.max_y - 1),
-    )
-    arena.add_combatant(
-        Fighter(arena=arena, name="Frank", level=2, side="Humans"),
-        (20, arena.max_y - 1),
-    )
-    arena.add_combatant(
-        Paladin(arena=arena, name="Patty", level=5, side="Humans"),
-        (24, arena.max_y - 1),
-    )
-    arena.add_combatant(
-        Warlock(arena=arena, name="Wendy", level=1, side="Humans"),
-        (22, arena.max_y - 1),
-    )
+    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=1, side="Humans"))
+    arena.add_combatant(Barbarian(arena=arena, name="Betty", level=2, side="Humans"))
+    arena.add_combatant(Cleric(arena=arena, name="Charlise", level=3, side="Humans"))
+    arena.add_combatant(Fighter(arena=arena, name="Frank", level=2, side="Humans"))
+    arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
+    arena.add_combatant(Warlock(arena=arena, name="Wendy", level=1, side="Humans"))
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():

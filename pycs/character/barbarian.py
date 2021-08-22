@@ -72,7 +72,7 @@ class Barbarian(Character):
         )
         self.add_bonus_action(BarbarianRage())
         if level >= 2:
-            self.add_effect(BarbarianDangerSenseEffect)
+            self.add_effect(BarbarianDangerSenseEffect())
 
     ##########################################################################
     def report(self):

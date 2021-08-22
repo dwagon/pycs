@@ -193,16 +193,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
-            if self.reactions:
-                self.react(source)
+            self.react(source)
 
     ##########################################################################
     def react(self, source) -> None:
         """React to an incoming attack with a reaction"""
+        if ActionCategory.REACTION not in self.options_this_turn:
+            return
         react = self.pick_action(typ=ActionCategory.REACTION, target=source)
         if react is not None:
             print(f"{self} reacts against {source}")
             react.perform_action(self)
+            self.options_this_turn.remove(ActionCategory.REACTION)
 
     ##########################################################################
     def has_condition(self, cond) -> bool:
@@ -364,8 +366,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """What are we going to do this turn based on individual action_preference"""
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
-        acttuple = namedtuple("acttuple", "qual heur pref act")
-        for qual, act in self.possible_actions(typ):
+        acttuple = namedtuple("acttuple", "qual rnd heur pref act")
+        for heur, act in self.possible_actions(typ):
             if act.__class__ in self.action_preference:
                 pref = self.action_preference.get(act.__class__)
             elif issubclass(act.__class__, SpellAction):
@@ -375,7 +377,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             else:
                 print(f"Unsure what action {act} is")
                 pref = self.action_preference.get(act, 1)
-            actions.append(acttuple(qual * pref + random.random(), qual, pref, act))
+            if heur * pref != 0:
+                actions.append(acttuple(heur * pref, random.random(), heur, pref, act))
         actions.sort(reverse=True)
 
         for act in actions:
@@ -395,6 +398,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def start_turn(self):
         """Start the turn"""
         # These are all the things we can do this turn
+        if self.has_condition(Condition.PARALYZED):
+            self.options_this_turn = []
+        if self.state != "OK":
+            self.options_this_turn = []
         self.options_this_turn = [
             ActionCategory.ACTION,
             ActionCategory.BONUS,
@@ -449,16 +456,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def do_stuff(self, categ: ActionCategory, moveto=False) -> None:
         """All the doing bits"""
-        if self.has_condition(Condition.PARALYZED):
-            return
-        if self.state != "OK":
-            return
         if categ not in self.options_this_turn:
             return
 
         # What are we going to do this turn
         act = self.pick_action(categ)
-        print(f"{self} going to {categ.value}: {act}")
 
         if act is None:
             victims = self.pick_closest_enemy()
@@ -473,7 +475,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if act:
             did_act = self.action(act)
             if did_act:
-                print(f"Using up {categ}")
                 self.options_this_turn.remove(categ)
 
     ##########################################################################
@@ -488,7 +489,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.do_stuff(ActionCategory.ACTION, moveto=True)
         if ActionCategory.ACTION in self.options_this_turn:
             self.dash()
-        print(f"{self.options_this_turn=}")
         self.end_turn()
 
 
