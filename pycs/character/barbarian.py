@@ -158,6 +158,10 @@ class BarbarianRageEffect(Effect):
         return dmg
 
     ########################################################################
+    def hook_source_additional_melee_damage(self):
+        return "", 2, None
+
+    ########################################################################
     def hook_saving_throw(self, stat):
         """Advantage on strength"""
         eff = super().hook_saving_throw(stat)
