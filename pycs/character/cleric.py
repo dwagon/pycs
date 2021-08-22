@@ -145,6 +145,11 @@ class TurnUndead(Action):
         super().__init__(name, **kwargs)
 
     ##########################################################################
+    def heuristic(self, doer):
+        """Should we do this"""
+        return 0  # Not finished yet
+
+    ##########################################################################
     def perform_action(self, source):
         """Do the action"""
         undead = [

@@ -94,7 +94,7 @@ class Action:
             msg_0 = ""
         msg = f"{source} rolled {to_hit_roll}{msg_0}"
 
-        if to_hit_roll == 20:
+        if to_hit_roll >= source.critical:
             crit_hit = True
         if to_hit_roll == 1:
             crit_miss = True

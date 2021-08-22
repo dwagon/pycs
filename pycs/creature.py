@@ -31,6 +31,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
         self.size = kwargs.get("size", "M")
+        self.critical = kwargs.get("critical", 20)
         self.prof_bonus = kwargs.get("prof_bonus", 2)
         self.side = kwargs["side"]  # Mandatory
         self.stats = {
@@ -374,7 +375,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             elif issubclass(act.__class__, Attack):
                 pref = self.action_preference.get(act.type, 1)
             else:
-                print(f"Unsure what action {act} is")
                 pref = self.action_preference.get(act, 1)
             if heur * pref != 0:
                 actions.append(acttuple(heur * pref, random.random(), heur, pref, act))
