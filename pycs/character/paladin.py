@@ -137,7 +137,10 @@ class Paladin(Character):
     ########################################################################
     def cast(self, spell):
         """Cast a spell"""
+        if not self.spell_available(spell):
+            return False
         self.spell_slots[spell.level] -= 1
+        return True
 
     ########################################################################
     def report(self):

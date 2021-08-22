@@ -30,6 +30,8 @@ class Spiritual_Weapon(spells.SpellAction):
     ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
+        if not doer.spell_available(self):
+            return 0
         return 0
 
 

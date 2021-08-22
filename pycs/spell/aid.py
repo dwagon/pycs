@@ -28,6 +28,8 @@ class Aid(SpellAction):
     def heuristic(self, doer):
         """Should we do the spell
         the more people it can effect the more we should do it"""
+        if not doer.spell_available(self):
+            return 0
         close = 0
         for targ in doer.arena.my_side(doer.side):
             if doer.distance(targ) <= 30 / 5:

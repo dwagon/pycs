@@ -36,6 +36,8 @@ class Cure_Wounds(spells.SpellAction):
     ########################################################################
     def heuristic(self, doer):
         """Should we cast this"""
+        if not doer.spell_available(self):
+            return 0
         return spells.healing_heuristic(doer, self)
 
 

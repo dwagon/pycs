@@ -30,6 +30,8 @@ class Lesser_Restoration(spells.SpellAction):
     ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
+        if not doer.spell_available(self):
+            return 0
         return 0
 
 

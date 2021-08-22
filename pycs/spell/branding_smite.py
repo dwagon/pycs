@@ -45,6 +45,8 @@ class Branding_Smite(SpellAction):
     ########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
+        if not doer.spell_available(self):
+            return 0
         if doer.has_effect("Branding Smite"):
             return 0
         return 1
