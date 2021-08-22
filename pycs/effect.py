@@ -61,8 +61,13 @@ class Effect:
     ##########################################################################
     def hook_source_additional_melee_damage(
         self,
-    ) -> Optional[Tuple[str, int, DamageType]]:
-        """Addition damage from melee weapons based on the owner of the effect"""
+    ) -> Optional[Tuple[str, int, Optional[DamageType]]]:
+        """Addition damage from melee weapons based on the owner of the effect
+        Return:
+        * Dice Damage
+        * Damage Bonus
+        * Damage Type. If DamageType is None, use the existing damage type of the attack
+        """
         return ("", 0, None)
 
 

@@ -116,6 +116,19 @@ class Action:
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
+    def buff_attack_damage(self, source, target) -> None:
+        """Calculate the attack damage from buffs"""
+        for atkname, eff in source.effects.copy().items():
+            if self.type == ActionType.MELEE:
+                dice_dmg, dmg, dmg_type = eff.hook_source_additional_melee_damage()
+                if dmg_type is None:
+                    dmg_type = self.dmg_type
+                if dice_dmg:
+                    dmg += int(dice.roll(dice_dmg))
+                if dmg:
+                    target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
+
+    ########################################################################
     def do_attack(self, source) -> bool:
         """Do the attack from {source}"""
         target = source.target
@@ -136,21 +149,15 @@ class Action:
 
         if to_hit > tmp_ac and not crit_miss:
             dmg = self.roll_dmg(source, target, crit_hit)
-            print(
-                f"{source} hit {target} (AC: {tmp_ac})"
-                f" with {self} for {dmg} hp {self.dmg_type.value} damage"
-            )
             target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
                 self.side_effect(source=source, target=target)
             # If the source of the damage has a buff
-            for atkname, eff in source.effects.copy().items():
-                add_dmg = eff.hook_source_additional_melee_damage()
-                dmg = add_dmg[1]
-                if add_dmg[0]:
-                    dmg += int(dice.roll(add_dmg[0]))
-                if dmg:
-                    target.hit(dmg, add_dmg[2], source, critical=False, atkname=atkname)
+            self.buff_attack_damage(source, target)
+            print(
+                f"{source} hit {target} (AC: {tmp_ac})"
+                f" with {self} for {dmg} hp {self.dmg_type.value} damage"
+            )
         else:
             source.statistics.append(Statistics(self.name, 0, None, False))
             print(f"{source} missed {target} with {self}")
@@ -172,16 +179,6 @@ class Action:
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         dmg += self.dmg_bonus(source)
-        return dmg
-
-    ########################################################################
-    def max_dmg(self, victim) -> int:
-        """What is the most damage this attack can do"""
-        dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
-        if self.dmg_type in victim.vulnerable:
-            dmg *= 2
-        if self.dmg_type in victim.immunity:
-            dmg = 0
         return dmg
 
     ########################################################################
