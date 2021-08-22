@@ -55,24 +55,24 @@ class Paladin(Character):
                 # "immunity": DISEASE
             }
         )
-        if level == 1:
+        if level >= 1:
             kwargs["hp"] = 14
             kwargs["ac"] = 18
             self.spell_slots = {}
-        if level == 2:
+        if level >= 2:
             kwargs["hp"] = 20
             kwargs["ac"] = 19  # Defense fighting style
             self.spell_slots = {1: 2}
-        if level == 3:
+        if level >= 3:
             kwargs["hp"] = 28
             self.spell_slots = {1: 3}
             self.lay_on_hands = 15
             self.channel_divinity = 1
-        if level == 4:
+        if level >= 4:
             kwargs["hp"] = 36
             kwargs["str"] = 19
             self.lay_on_hands = 20
-        if level == 5:
+        if level >= 5:
             # Prof Bonus = 3
             kwargs["attacks_per_action"] = 2
             kwargs["hp"] = 44

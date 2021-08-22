@@ -5,6 +5,7 @@ from effect import Effect
 from attacks import MeleeAttack
 from constants import DamageType
 from constants import ActionType
+from constants import ActionCategory
 from .character import Character
 
 
@@ -17,6 +18,7 @@ class Fighter(Character):
     def __init__(self, level=1, **kwargs):
         self.level = level
         self.second_wind = 1
+        self.action_surge = 1
         kwargs.update(
             {
                 "str": 16,
@@ -28,26 +30,28 @@ class Fighter(Character):
                 "ac": 18,
             }
         )
-        if level == 1:
+        if level >= 1:
             kwargs["hp"] = 12
             # Fighting Style: Dueling
-        elif level == 2:
-            # Action Surge
+        if level >= 2:
             kwargs["hp"] = 20
-        elif level == 3:
+        if level >= 3:
             kwargs["hp"] = 28
             # Martial Archetype: Champion
-        elif level == 4:
+            # Critical on 19 or 20
+            kwargs["critical"] = 19
+        if level >= 4:
             kwargs["hp"] = 36
             kwargs["str"] = 18
-        elif level == 5:
+        if level >= 5:
             kwargs["str"] = 18
             kwargs["hp"] = 44
             kwargs["attacks_per_action"] = 2
-        if level >= 3:
-            # Critical on 19 or 20
-            kwargs["critical"] = 19
+
         super().__init__(**kwargs)
+
+        if level >= 2:
+            self.add_action(ActionSurge())
 
         self.add_action(
             MeleeAttack(
@@ -98,6 +102,40 @@ class SecondWind(Action):
         if doer.max_hp - doer.hp > 10:
             return 1
         return 0
+
+    ##########################################################################
+    def pick_target(self, doer):
+        """Only applies to self"""
+        return doer
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class ActionSurge(Action):
+    """Starting at 2nd level, you can push yourself beyond your normal
+    limits for a moment. On your turn, you can take one additional
+    action on top of your regular action and a possible bonus action."""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        """initialise"""
+        kwargs["action_cost"] = 0
+        super().__init__("Action Surge", **kwargs)
+        self.type = ActionType.BUFF
+
+    ##########################################################################
+    def perform_action(self, source):
+        """Do the action"""
+        source.action_surge = 0
+        source.options_this_turn.append(ActionCategory.ACTION)
+
+    ##########################################################################
+    def heuristic(self, doer):
+        """Should we do this"""
+        if not doer.action_surge:
+            return 0
+        return 1
 
     ##########################################################################
     def pick_target(self, doer):

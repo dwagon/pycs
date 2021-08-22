@@ -93,9 +93,9 @@ def combat_test():
     arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
     arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"))
 
-    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=1, side="Humans"))
+    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=3, side="Humans"))
-    arena.add_combatant(Fighter(arena=arena, name="Frank", level=2, side="Humans"))
+    arena.add_combatant(Fighter(arena=arena, name="Frank", level=5, side="Humans"))
     arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
     arena.add_combatant(Warlock(arena=arena, name="Wendy", level=1, side="Humans"))
     arena.do_initiative()

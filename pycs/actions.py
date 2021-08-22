@@ -19,6 +19,7 @@ class Action:
         self.available = True
         self.type = ActionType.UNKNOWN
         self.side_effect = kwargs.get("side_effect")
+        self.action_cost = kwargs.get("action_cost", 1)
         self.dmg = kwargs.get("dmg", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
 
