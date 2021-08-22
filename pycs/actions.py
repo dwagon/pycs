@@ -182,16 +182,6 @@ class Action:
         return dmg
 
     ########################################################################
-    def max_dmg(self, victim) -> int:
-        """What is the most damage this attack can do"""
-        dmg = int(dice.roll_max(self.dmg[0])) + self.dmg[1]
-        if self.dmg_type in victim.vulnerable:
-            dmg *= 2
-        if self.dmg_type in victim.immunity:
-            dmg = 0
-        return dmg
-
-    ########################################################################
     def has_disadvantage(
         self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
     ) -> bool:
