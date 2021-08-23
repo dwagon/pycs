@@ -182,8 +182,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if dmg_type in self.immunity:
             print(f"{self} is immune to {dmg_type.value}")
             dmg = 0
+        if dmg_type in self.resistant:
+            print(f"{self} is restant to {dmg_type.value}")
+            dmg /= 2
         for eff in self.effects.values():
             dmg = eff.hook_being_hit(dmg, dmg_type)
+        dmg = int(dmg)
         print(f"{self} has taken {dmg} damage ({dmg_type.value}) from {atkname}")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
@@ -473,9 +477,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if act:
             msg = f"{self} is going to do {act} to"
             if self.target == self:
-                print(f"{msg} self as a {categ.value} action")
+                print(f"{msg} self as a {categ.value}")
             else:
-                print(f"{msg} {self.target} as a {categ.value} action")
+                print(f"{msg} {self.target} as a {categ.value}")
             did_act = self.do_action(act)
             if did_act and act.action_cost:
                 self.options_this_turn.remove(categ)
