@@ -35,6 +35,7 @@ class MeleeAttack(Attack):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
+        self.use_stat = kwargs.get("use_stat", Stat.STR)
         self.type = ActionType.MELEE
 
     ########################################################################
@@ -45,12 +46,12 @@ class MeleeAttack(Attack):
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=no-self-use
         """The melee attack modifier"""
-        return attacker.prof_bonus + attacker.stat_bonus(Stat.STR)
+        return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
         """The melee damage bonus modifier"""
-        return attacker.stat_bonus(Stat.STR)
+        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def is_available(self, owner):
@@ -79,6 +80,7 @@ class RangedAttack(Attack):
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
         self.l_range = int(kwargs.get("l_range", 999) / 5)
+        self.use_stat = kwargs.get("use_stat", Stat.DEX)
         self.type = ActionType.RANGED
         self.ammo = kwargs.get("ammo", None)
 
@@ -114,12 +116,12 @@ class RangedAttack(Attack):
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=no-self-use
         """The melee attack modifier"""
-        return attacker.prof_bonus + attacker.stat_bonus(Stat.DEX)
+        return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
         """The melee damage bonus modifier"""
-        return attacker.stat_bonus(Stat.DEX)
+        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def range(self):

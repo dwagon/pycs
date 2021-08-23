@@ -54,7 +54,7 @@ class Ghoul(Monster):
         )
 
     ##########################################################################
-    def se_ghoul_claws(self, source, target):
+    def se_ghoul_claws(self, source, target, dmg):
         """Implement Side Effect of Ghoul Claws"""
         svth = target.saving_throw(Stat.CON, 10)
         if not svth:
