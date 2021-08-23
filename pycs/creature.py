@@ -273,6 +273,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         critical: bool,  # pylint: disable=unused-argument
     ) -> None:
         """Creature has fallen unconscious"""
+        if self.state == "UNCONSCIOUS":
+            return
         self.hp = 0
         self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)
