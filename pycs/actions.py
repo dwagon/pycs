@@ -152,7 +152,8 @@ class Action:
             dmg = self.roll_dmg(source, target, crit_hit)
             target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
-                self.side_effect(source=source, target=target)
+                self.side_effect(source=source, target=target, dmg=dmg)
+
             # If the source of the damage has a buff
             self.buff_attack_damage(source, target)
             print(
