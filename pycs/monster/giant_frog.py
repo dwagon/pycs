@@ -86,6 +86,7 @@ class GiantFrog(Monster):
             self._swallowed.remove_condition(Condition.BLINDED)
             self._swallowed.remove_effect("Giant Frog Swallow")
             print(f"{self._swallowed} escapes from being swallowed by {self.name}")
+            self._swallowed = None
         super().fallen_unconscious(dmg, dmg_type, critical)
 
     ##########################################################################
