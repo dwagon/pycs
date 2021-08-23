@@ -7,6 +7,7 @@ from monster.goblin import Goblin
 from monster.ghoul import Ghoul
 from monster.ghast import Ghast
 from monster.giant_frog import GiantFrog
+from monster.wraith import Wraith
 
 from character.barbarian import Barbarian
 from character.cleric import Cleric
@@ -92,6 +93,7 @@ def combat_test():
     arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
     arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
     arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"))
+    arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=3, side="Humans"))
