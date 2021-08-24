@@ -2,11 +2,12 @@
 from collections import defaultdict
 from prettytable import PrettyTable
 
-from monster.skeleton import Skeleton
-from monster.goblin import Goblin
-from monster.ghoul import Ghoul
 from monster.ghast import Ghast
+from monster.ghoul import Ghoul
 from monster.giant_frog import GiantFrog
+from monster.goblin import Goblin
+from monster.skeleton import Skeleton
+from monster.troll import Troll
 from monster.violet_fungus import VioletFungus
 from monster.wraith import Wraith
 
@@ -96,6 +97,7 @@ def combat_test():
     arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"))
     arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
+    arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=4, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=3, side="Humans"))

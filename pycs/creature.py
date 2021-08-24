@@ -7,11 +7,12 @@ import dice
 from actions import Action
 from attacks import Attack
 from spells import SpellAction
-from constants import ActionType
 from constants import ActionCategory
+from constants import ActionType
 from constants import Condition
-from constants import MonsterType
 from constants import DamageType
+from constants import MonsterSize
+from constants import MonsterType
 from constants import Stat
 from constants import Statistics
 
@@ -30,7 +31,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
-        self.size = kwargs.get("size", "M")
+        self.size = kwargs.get("size", MonsterSize.MEDIUM)
         self.critical = kwargs.get("critical", 20)
         self.prof_bonus = kwargs.get("prof_bonus", 2)
         self.side = kwargs["side"]  # Mandatory
@@ -91,6 +92,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         chp = min(chp, self.max_hp - self.hp)
         self.hp += chp
         print(f"{self} cured of {chp} hp")
+        if self.state == "UNCONSCIOUS":
+            self.state = "OK"
+            print(f"{self} regained consciousness")
         return chp
 
     ##########################################################################
@@ -417,12 +421,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         for creat in self.arena.combatants:
             if creat == self:
+                creat.hook_start_turn()
                 continue
             creat.start_others_turn(self)
 
     ##########################################################################
     def start_others_turn(self, creat):
-        """Hook for anothing creature starting a turn near me"""
+        """Hook for another creature starting a turn near me"""
+
+    ##########################################################################
+    def hook_start_turn(self):
+        """Hook for us starting a turn"""
 
     ##########################################################################
     def move(self, act: Action):
