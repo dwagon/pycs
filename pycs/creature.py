@@ -418,12 +418,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         for creat in self.arena.combatants:
             if creat == self:
+                creat.hook_start_turn()
                 continue
             creat.start_others_turn(self)
 
     ##########################################################################
     def start_others_turn(self, creat):
-        """Hook for anothing creature starting a turn near me"""
+        """Hook for another creature starting a turn near me"""
+
+    ##########################################################################
+    def hook_start_turn(self):
+        """Hook for us starting a turn"""
 
     ##########################################################################
     def move(self, act: Action):
