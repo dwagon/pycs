@@ -182,8 +182,12 @@ class Action:
                 + self.dmg[1]
             )
         else:
-            dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+            dmg = int(dice.roll(self.dmg[0]))
+            print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+            dmg += self.dmg[1]
+            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
         dmg += self.dmg_bonus(source)
+        print(f"Adding bonus of {self.dmg_bonus(source)} -> {dmg}")
         return max(dmg, 0)
 
     ########################################################################
