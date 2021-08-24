@@ -41,6 +41,8 @@ class Troll(Monster):
         its turn. If the troll takes acid or fire damage, this trait doesn't
         function at the start of the troll's next turn. The troll dies only
         if it starts its turn with 0 hit points and doesn't regenerate."""
+        if self.state != "OK":  # Substitute for fire and acid
+            return
         if self.hp < self.max_hp:
             self.heal("", 10)
 
