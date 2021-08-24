@@ -92,6 +92,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         chp = min(chp, self.max_hp - self.hp)
         self.hp += chp
         print(f"{self} cured of {chp} hp")
+        if self.state == "UNCONSCIOUS":
+            self.state = "OK"
+            print(f"{self} regained consciousness")
         return chp
 
     ##########################################################################
