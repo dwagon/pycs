@@ -105,7 +105,15 @@ class MonsterType(Enum):
     """What sort of Monster is it"""
 
     BEAST = "beast"
+    CELESTIAL = "celestial"
+    CONSTRUCT = "construct"
+    DRAGON = "dragon"
+    ELEMENTAL = "elemental"
+    FEY = "fey"
+    FIEND = "fiend"
+    GIANT = "giant"
     HUMANOID = "humanoid"
+    PLANT = "plant"
     UNDEAD = "undead"
 
 
