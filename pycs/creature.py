@@ -7,11 +7,12 @@ import dice
 from actions import Action
 from attacks import Attack
 from spells import SpellAction
-from constants import ActionType
 from constants import ActionCategory
+from constants import ActionType
 from constants import Condition
-from constants import MonsterType
 from constants import DamageType
+from constants import MonsterSize
+from constants import MonsterType
 from constants import Stat
 from constants import Statistics
 
@@ -30,7 +31,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
-        self.size = kwargs.get("size", "M")
+        self.size = kwargs.get("size", MonsterSize.MEDIUM)
         self.critical = kwargs.get("critical", 20)
         self.prof_bonus = kwargs.get("prof_bonus", 2)
         self.side = kwargs["side"]  # Mandatory
