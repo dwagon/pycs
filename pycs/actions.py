@@ -19,9 +19,12 @@ class Action:
         self.available = True
         self.type = ActionType.UNKNOWN
         self.side_effect = kwargs.get("side_effect")
+        self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.action_cost = kwargs.get("action_cost", 1)
         self.dmg = kwargs.get("dmg", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
+        self.attack_modifier = kwargs.get("attack_modifier", None)
+        self.damage_modifier = kwargs.get("damage_modifier", None)
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument
@@ -181,7 +184,7 @@ class Action:
         else:
             dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         dmg += self.dmg_bonus(source)
-        return dmg
+        return max(dmg, 0)
 
     ########################################################################
     def has_disadvantage(
