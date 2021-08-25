@@ -25,18 +25,27 @@ class Mass_Healing_Word(SpellAction):
         the more people it can effect the more we should do it"""
         if not doer.spell_available(self):
             return 0
-        return 0
+        suitable = 0
+        for creat in doer.pick_closest_friends():
+            if creat.hp < creat.max_hp:
+                suitable += 1
+        return int(suitable / 2)
 
     ##########################################################################
     def pick_target(self, doer):
         """Who should we do the spell to"""
-        # Pick three people near where we are
-        # TO DO - better this to move to where we can get 3 peeps
         return doer
 
     ##########################################################################
     def cast(self, caster):
         """Do the spell"""
+        cured = 6
+        for creat in caster.pick_closest_friends():
+            if creat.hp < creat.max_hp:
+                cured -= 1
+                creat.heal("1d4", self.modifier(caster))
+            if cured <= 0:
+                break
         return True
 
 
