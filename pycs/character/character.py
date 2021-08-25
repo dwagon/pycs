@@ -10,6 +10,7 @@ class Character(Creature):
 
     def __init__(self, **kwargs):
         self.race = kwargs.get("race", Race.HUMAN)
+        self.level = kwargs.get("level", 1)
         if "prof_bonus" not in kwargs:
             profb = int((kwargs.get("level", 1) - 1) / 4) + 2
             kwargs.update({"prof_bonus": profb})

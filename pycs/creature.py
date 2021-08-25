@@ -25,7 +25,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def __init__(self, arena, **kwargs):
         self.arena = arena
-        self.vulnerable = kwargs.get("level", 0)
+        self.vulnerable = kwargs.get("vulnerable", [])
         self.name = kwargs.get("name", self.__class__.__name__)
         self.ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
         self.speed = int(kwargs.get("speed", 30) / 5)
