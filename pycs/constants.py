@@ -81,6 +81,7 @@ class SpellType(Enum):
     """What sort of spell is it"""
 
     BUFF = "buff"
+    CONTROL = "control"
     HEALING = "healing"
     MELEE = "melee"
     RANGED = "ranged"
