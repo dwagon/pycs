@@ -41,15 +41,6 @@ class TestCreature(unittest.TestCase):
     ########################################################################
     def test_stat(self):  # NFI why this doesn't work
         """Test stats"""
-        k0 = list(self.creat.stats.keys())[0]
-        print(f"{k0=} {k0 in self.creat.stats=}")
-        print(f"{type(k0)=} {type(Stat.STR)=}")
-        print(f"{k0.value == Stat.STR.value=}")
-        print(f"{k0.name == Stat.STR.name=}")
-        print(f"{hash(k0)=}")
-        print(f"{hash(Stat.STR)=}")
-        print(f"{k0 == Stat.STR=}")
-        print(f"{Stat.STR in self.creat.stats=}")
         self.assertEqual(self.creat.stats[Stat.CON], 11)
         self.assertEqual(self.creat.stat_bonus(Stat.STR), -2)
 
@@ -72,7 +63,7 @@ class TestCreature(unittest.TestCase):
 ##############################################################################
 ##############################################################################
 class TestSpellCaster(unittest.TestCase):
-    """Tests for spell caster ."""
+    """Tests for spell caster"""
 
     ########################################################################
     def setUp(self):
