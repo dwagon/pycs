@@ -75,7 +75,7 @@ class HoldPersonEffect(Effect):
     ###########################################################################
     def removal_end_of_its_turn(self, victim):
         """Do we save"""
-        svth = victim.target.saving_throw(Stat.WIS, self.caster.spellcast_save)
+        svth = victim.saving_throw(Stat.WIS, self.caster.spellcast_save)
         if svth:
             victim.remove_condition(Condition.PARALYZED)
             return True
