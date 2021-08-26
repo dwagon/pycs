@@ -13,6 +13,7 @@ class Effect:
     def __init__(self, name, **kwargs):
         self.name = name
         self.cause = kwargs.get("cause")
+        self.caster = kwargs.get("caster")
         self.source = kwargs.get("source")
 
     ##########################################################################

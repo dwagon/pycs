@@ -25,9 +25,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def __init__(self, arena, **kwargs):
         self.arena = arena
-        self.vulnerable = kwargs.get("level", 0)
+        self.vulnerable = kwargs.get("vulnerable", [])
         self.name = kwargs.get("name", self.__class__.__name__)
-        self.ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
+        self._ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
@@ -43,11 +43,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
-        if "spellcast_bonus" in kwargs:
-            self.spellcast_modifier = self.stat_bonus(kwargs.get("spellcast_bonus"))
-            self.spellcast_modifier += self.prof_bonus
-        else:
-            self.spellcast_modifier = 0
+        self.spellcast_bonus_stat = kwargs.get("spellcast_bonus_stat")
         self.action_preference = kwargs.get(
             "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
         )
@@ -72,6 +68,24 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.coords = None
         self.statistics = []
         self.options_this_turn = []
+
+    ##########################################################################
+    @property
+    def spellcast_save(self):
+        """Saving throw DC vs spells from this creature"""
+        if self.spellcast_bonus_stat is None:
+            return 0
+        return 8 + self.stat_bonus(self.spellcast_bonus_stat) + self.prof_bonus
+
+    ##########################################################################
+    @property
+    def ac(self):
+        """The armour class"""
+        tmp = self._ac
+        for _, eff in self.effects.items():
+            mod = eff.hook_ac_modifier(self)["bonus"]
+            tmp += mod
+        return tmp
 
     ##########################################################################
     def __repr__(self):

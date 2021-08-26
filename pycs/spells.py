@@ -32,7 +32,7 @@ class SpellAction(Action):
     ########################################################################
     def modifier(self, attacker):
         """Attack modifier"""
-        return attacker.spellcast_modifier
+        return attacker.stat_bonus(attacker.spellcast_bonus_stat) + attacker.prof_bonus
 
     ########################################################################
     def perform_action(self, source):

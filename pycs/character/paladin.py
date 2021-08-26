@@ -42,7 +42,7 @@ class Paladin(Character):
                 "int": 8,
                 "wis": 12,
                 "cha": 14,
-                "spellcast_bonus": Stat.CHA,
+                "spellcast_bonus_stat": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {
                     LayOnHands: 2,

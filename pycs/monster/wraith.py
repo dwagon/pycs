@@ -77,7 +77,7 @@ class Wraith(Monster):
 
     ##########################################################################
     def shortrepr(self):
-        """What a skeleton looks like on the arena"""
+        """What a wraith looks like on the arena"""
         if self.is_alive():
             return colors.red("W")
         return colors.green("W", bg="red")

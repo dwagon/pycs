@@ -4,14 +4,18 @@ from attacks import MeleeAttack
 from actions import Action
 from effect import Effect
 from spell.aid import Aid
+from spell.beacon_of_hope import Beacon_Of_Hope
 from spell.bless import Bless
 from spell.cure_wounds import Cure_Wounds
+from spell.enhance_ability import Enhance_Ability
 from spell.guiding_bolt import Guiding_Bolt
 from spell.healing_word import Healing_Word
+from spell.hold_person import Hold_Person
 from spell.lesser_restoration import Lesser_Restoration
-from spell.enhance_ability import Enhance_Ability
+from spell.mass_healing_word import Mass_Healing_Word
 from spell.sacred_flame import Sacred_Flame
 from spell.shield_of_faith import Shield_Of_Faith
+from spell.spirit_guardians import Spirit_Guardians
 from spell.spiritual_weapon import Spiritual_Weapon
 from constants import DamageType
 from constants import MonsterType
@@ -29,6 +33,7 @@ class Cleric(Character):
 
     ##########################################################################
     def __init__(self, level=1, **kwargs):
+        self.level = level
         kwargs.update(
             {
                 "str": 14,
@@ -38,7 +43,7 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
-                "spellcast_bonus": Stat.WIS,
+                "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
                     TurnUndead: 4,
@@ -60,11 +65,11 @@ class Cleric(Character):
             self.spell_slots = {1: 4, 2: 2}
             kwargs["hp"] = 24
         elif level == 4:
+            kwargs["hp"] = 31
             self.spell_slots = {1: 4, 2: 3}
         elif level == 5:
+            kwargs["hp"] = 38
             self.spell_slots = {1: 4, 2: 3, 3: 2}
-        elif level == 6:
-            self.spell_slots = {1: 4, 2: 3, 3: 3}
         super().__init__(**kwargs)
         self.add_action(
             MeleeAttack(
@@ -78,15 +83,22 @@ class Cleric(Character):
         self.add_action(Cure_Wounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
-        self.add_action(Healing_Word())
+        self.add_bonus_action(Healing_Word())
         self.add_bonus_action(Shield_Of_Faith())
         if level >= 2:
             self.add_action(TurnUndead())
         if level >= 3:
             self.add_action(Aid())
-            self.add_action(Lesser_Restoration())
+            self.add_action(Lesser_Restoration())  # Life Domain freebie
             self.add_action(Enhance_Ability())
-            self.add_bonus_action(Spiritual_Weapon())
+            self.add_bonus_action(Spiritual_Weapon())  # Life Domain freebie
+            self.add_action(Hold_Person())
+        if level >= 4:
+            self.stats[Stat.WIS] = 18
+        if level >= 5:
+            self.add_action(Beacon_Of_Hope())  # Life Domain freebie
+            self.add_bonus_action(Mass_Healing_Word())
+            self.add_action(Spirit_Guardians())
 
     ##########################################################################
     def report(self):
@@ -137,7 +149,12 @@ class TurnUndead(Action):
     30 feet of you. It also can’t take reactions. For its action, it
     can use only the Dash action or try to escape from an effect that
     prevents it from moving. If there’s nowhere to move, the creature
-    can use the Dodge action"""
+    can use the Dodge action
+
+    Starting at 5th level, when an undead fails its saving throw against
+    your Turn Undead feature, the creature is instantly destroyed if
+    its challenge rating is at or below a certain threshold, as shown
+    in the Destroy Undead table."""
 
     ##########################################################################
     def __init__(self, **kwargs):
