@@ -1,13 +1,13 @@
 """ Warlock """
 import colors
-from attacks import MeleeAttack
-from attacks import RangedAttack
-from spells import AttackSpell
-from constants import ActionType
-from constants import DamageType
-from constants import SpellType
-from constants import Stat
-from .character import Character
+from pycs.attacks import MeleeAttack
+from pycs.attacks import RangedAttack
+from pycs.spells import AttackSpell
+from pycs.constants import ActionType
+from pycs.constants import DamageType
+from pycs.constants import SpellType
+from pycs.constants import Stat
+from pycs.characters import Character
 
 
 ##############################################################################

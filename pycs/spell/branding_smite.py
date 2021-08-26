@@ -1,9 +1,9 @@
 """https://www.dndbeyond.com/spells/branding-smite"""
 
-from spells import SpellAction
-from constants import SpellType
-from constants import DamageType
-from effect import Effect
+from pycs.spells import SpellAction
+from pycs.constants import SpellType
+from pycs.constants import DamageType
+from pycs.effect import Effect
 
 
 ##############################################################################

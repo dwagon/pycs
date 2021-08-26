@@ -1,11 +1,13 @@
 """https://www.dndbeyond.com/spells/cure-wounds"""
 
-import spells
-from constants import SpellType
+from pycs.spells import SpellAction
+from pycs.spells import pick_heal_target
+from pycs.spells import healing_heuristic
+from pycs.constants import SpellType
 
 
 ##############################################################################
-class Cure_Wounds(spells.SpellAction):
+class Cure_Wounds(SpellAction):
     """A creature you touch regains a number of hit points equal to 1d8
     + your spellcasting ability modifier. This spell has no effect on
     undead or constructs."""
@@ -31,14 +33,14 @@ class Cure_Wounds(spells.SpellAction):
     ########################################################################
     def pick_target(self, doer):
         """Who should we target"""
-        return spells.pick_heal_target(doer)
+        return pick_heal_target(doer)
 
     ########################################################################
     def heuristic(self, doer):
         """Should we cast this"""
         if not doer.spell_available(self):
             return 0
-        return spells.healing_heuristic(doer, self)
+        return healing_heuristic(doer, self)
 
 
 # EOF

@@ -1,12 +1,12 @@
 """ Ghoul Monster Class """
 import colors
-from effect import Effect
-from attacks import MeleeAttack
-from constants import DamageType
-from constants import Condition
-from constants import Stat
-from constants import MonsterType
-from .monster import Monster
+from pycs.effect import Effect
+from pycs.attacks import MeleeAttack
+from pycs.constants import DamageType
+from pycs.constants import Condition
+from pycs.constants import Stat
+from pycs.constants import MonsterType
+from pycs.monsters import Monster
 
 
 ##############################################################################

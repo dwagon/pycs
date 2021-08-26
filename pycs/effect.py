@@ -1,6 +1,6 @@
 """ Handle Temporary effects """
 from typing import Tuple, Optional
-from constants import DamageType
+from pycs.constants import DamageType
 
 
 ##############################################################################

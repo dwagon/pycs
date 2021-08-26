@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/spiritual-weapon"""
 
-import spells
-from constants import SpellType
+from pycs.spells import SpellAction
+from pycs.constants import SpellType
 
 
 ##############################################################################
-class Spiritual_Weapon(spells.SpellAction):
+class Spiritual_Weapon(SpellAction):
     """A shimmering field appears and surrounds a creature of your
     choice within range, granting it a +2 bonus to AC for the duration.
     """

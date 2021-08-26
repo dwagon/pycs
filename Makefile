@@ -92,3 +92,7 @@ venv:
 	python3 -m venv venv
 	venv/bin/pip install -r requirements_dev.txt
 	venv/bin/pip install -r requirements.txt
+
+pex:
+	./venv/bin/python3 -m pip install pex
+	./venv/bin/python3 ./setup.py bdist_pex --pex-args '-vv'

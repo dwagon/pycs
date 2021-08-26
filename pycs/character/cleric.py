@@ -1,28 +1,28 @@
 """ Cleric """
 import colors
-from attacks import MeleeAttack
-from actions import Action
-from effect import Effect
-from spell.aid import Aid
-from spell.beacon_of_hope import Beacon_Of_Hope
-from spell.bless import Bless
-from spell.cure_wounds import Cure_Wounds
-from spell.enhance_ability import Enhance_Ability
-from spell.guiding_bolt import Guiding_Bolt
-from spell.healing_word import Healing_Word
-from spell.hold_person import Hold_Person
-from spell.lesser_restoration import Lesser_Restoration
-from spell.mass_healing_word import Mass_Healing_Word
-from spell.sacred_flame import Sacred_Flame
-from spell.shield_of_faith import Shield_Of_Faith
-from spell.spirit_guardians import Spirit_Guardians
-from spell.spiritual_weapon import Spiritual_Weapon
-from constants import DamageType
-from constants import MonsterType
-from constants import SpellType
-from constants import Stat
-from constants import ActionType
-from .character import Character
+from pycs.attacks import MeleeAttack
+from pycs.actions import Action
+from pycs.effect import Effect
+from pycs.spell.aid import Aid
+from pycs.spell.beacon_of_hope import Beacon_Of_Hope
+from pycs.spell.bless import Bless
+from pycs.spell.cure_wounds import Cure_Wounds
+from pycs.spell.enhance_ability import Enhance_Ability
+from pycs.spell.guiding_bolt import Guiding_Bolt
+from pycs.spell.healing_word import Healing_Word
+from pycs.spell.hold_person import Hold_Person
+from pycs.spell.lesser_restoration import Lesser_Restoration
+from pycs.spell.mass_healing_word import Mass_Healing_Word
+from pycs.spell.sacred_flame import Sacred_Flame
+from pycs.spell.shield_of_faith import Shield_Of_Faith
+from pycs.spell.spirit_guardians import Spirit_Guardians
+from pycs.spell.spiritual_weapon import Spiritual_Weapon
+from pycs.constants import DamageType
+from pycs.constants import MonsterType
+from pycs.constants import SpellType
+from pycs.constants import Stat
+from pycs.constants import ActionType
+from pycs.characters import Character
 
 
 ##############################################################################

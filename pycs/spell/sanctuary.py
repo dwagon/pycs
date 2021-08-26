@@ -1,7 +1,7 @@
 """https://www.dndbeyond.com/spells/sanctuary"""
 
-from spells import SpellAction
-from constants import SpellType
+from pycs.spells import SpellAction
+from pycs.constants import SpellType
 
 
 ##############################################################################

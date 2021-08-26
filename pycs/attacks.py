@@ -1,8 +1,8 @@
 """ Handle Attacks """
 import dice
-from actions import Action
-from constants import ActionType
-from constants import Stat
+from pycs.actions import Action
+from pycs.constants import ActionType
+from pycs.constants import Stat
 
 
 ##############################################################################

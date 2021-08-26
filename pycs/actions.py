@@ -1,10 +1,10 @@
 """ Handle non-attack Actions """
 from typing import Tuple
 import dice
-from constants import ActionType
-from constants import Condition
-from constants import DamageType
-from constants import Statistics
+from pycs.constants import ActionType
+from pycs.constants import Condition
+from pycs.constants import DamageType
+from pycs.constants import Statistics
 
 
 ##############################################################################

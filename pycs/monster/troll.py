@@ -1,11 +1,11 @@
 """ Troll Monster Class """
 import colors
-from actions import Action
-from attacks import MeleeAttack
-from constants import DamageType
-from constants import MonsterSize
-from constants import MonsterType
-from .monster import Monster
+from pycs.actions import Action
+from pycs.attacks import MeleeAttack
+from pycs.constants import DamageType
+from pycs.constants import MonsterSize
+from pycs.constants import MonsterType
+from pycs.monsters import Monster
 
 
 ##############################################################################

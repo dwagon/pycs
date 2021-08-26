@@ -1,7 +1,7 @@
 """ Base Player character """
-from creature import Creature
-from spells import SpellAction
-from constants import Race
+from pycs.creature import Creature
+from pycs.spells import SpellAction
+from pycs.constants import Race
 
 
 ##############################################################################
