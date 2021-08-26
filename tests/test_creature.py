@@ -6,9 +6,10 @@
 import unittest
 from unittest.mock import Mock
 from pycs.creature import Creature
-from pycs.constants import Stat
-from pycs.constants import Condition
-from pycs.constants import MonsterType
+from pycs.constant import Stat
+from pycs.constant import Condition
+from pycs.constant import MonsterType
+from pycs.effect import Effect
 
 
 ##############################################################################
@@ -24,15 +25,16 @@ class TestCreature(unittest.TestCase):
             "str": 6,
             "int": 7,
             "dex": 8,
-            "wis": 9,
+            "wis": 18,
             "con": 11,
             "cha": 15,
             "side": "a",
             "hp": 3,
+            "ac": 11,
             "type": MonsterType.UNDEAD,
+            "spellcast_bonus_stat": Stat.WIS,
         }
         self.creat = Creature(self.arena, **kwargs)
-        print(self.creat.stats)
 
     ########################################################################
     def tearDown(self):
@@ -59,44 +61,26 @@ class TestCreature(unittest.TestCase):
         self.assertTrue(self.creat.is_type(MonsterType.UNDEAD))
         self.assertFalse(self.creat.is_type(MonsterType.HUMANOID))
 
-
-##############################################################################
-##############################################################################
-class TestSpellCaster(unittest.TestCase):
-    """Tests for spell caster"""
-
     ########################################################################
-    def setUp(self):
-        """Set up test fixtures, if any."""
-        self.arena = Mock(max_x=21, max_y=21)
-        kwargs = {
-            "str": 6,
-            "int": 7,
-            "dex": 8,
-            "wis": 18,
-            "con": 11,
-            "cha": 15,
-            "side": "a",
-            "hp": 3,
-            "spellcast_bonus_stat": Stat.WIS,
-        }
-        self.cleric = Creature(self.arena, **kwargs)
-
-    ########################################################################
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-
-    ########################################################################
-    def xtest_stuff(self):
-        """test"""
-        assert isinstance(self.cleric.stats, dict)
-        assert len(self.cleric.stats), 6
-
-    ########################################################################
-    def xtest_spellcast_details(self):
+    def test_spellcast_details(self):
         """Spell cast details"""
-        self.assertEqual(self.cleric.spellcast_bonus_stat, Stat.WIS)
-        self.assertEqual(self.cleric.spellcast_save, 14)
+        self.assertEqual(self.creat.spellcast_bonus_stat, Stat.WIS)
+        self.assertEqual(self.creat.spellcast_save, 14)
+
+    ########################################################################
+    def test_ac(self):
+        """Test AC calculations"""
+        self.assertEqual(self.creat.ac, 11)
+        self.creat.add_effect(MockACEffect("AC Effect"))
+        self.assertEqual(self.creat.ac, 9)
+
+
+############################################################################
+class MockACEffect(Effect):
+    """Test AC modification"""
+
+    def hook_ac_modifier(self, target):
+        return {"bonus": -2}
 
 
 # EOF
