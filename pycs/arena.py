@@ -4,7 +4,7 @@ import random
 from collections import defaultdict
 from collections import namedtuple
 from astar import AStar
-from pycs.constants import Stat
+from pycs.constant import Stat
 
 
 ##############################################################################
