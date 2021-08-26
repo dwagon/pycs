@@ -26,7 +26,7 @@ class Warlock(Character):
                 "cha": 16,
                 "ac": 13,
                 "hp": 10,
-                "spellcast_bonus": Stat.CHA,
+                "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {
                     SpellType.RANGED: 5,
                     SpellType.MELEE: 3,

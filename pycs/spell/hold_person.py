@@ -1,6 +1,10 @@
 """https://www.dndbeyond.com/spells/hold-person"""
 
+from constants import Condition
+from constants import MonsterType
 from constants import SpellType
+from constants import Stat
+from effect import Effect
 from spells import SpellAction
 
 
@@ -16,7 +20,7 @@ class Hold_Person(SpellAction):
     ##########################################################################
     def __init__(self, **kwargs):
         name = "Hold Person"
-        kwargs.update({"reach": 60, "level": 2, "type": SpellType.CONTROL})
+        kwargs.update({"reach": 60, "level": 2, "type": SpellType.RANGED})
         super().__init__(name, **kwargs)
 
     ##########################################################################
@@ -24,19 +28,58 @@ class Hold_Person(SpellAction):
         """Should we do the spell"""
         if not doer.spell_available(self):
             return 0
+        for enemy in doer.pick_closest_enemy():
+            if not enemy.is_type(MonsterType.HUMANOID):
+                continue
+            if doer.distance(enemy) > self.range()[0]:
+                continue
+            return 2
         return 0
 
     ##########################################################################
     def pick_target(self, doer):
         """Who should we do the spell to"""
-        # Pick three people near where we are
-        # TO DO - better this to move to where we can get 3 peeps
-        return doer
+        for enemy in doer.pick_closest_enemy():
+            if not enemy.is_type(MonsterType.HUMANOID):
+                continue
+            if doer.distance(enemy) > self.range()[0]:
+                continue
+            return enemy
+        return None
 
     ##########################################################################
     def cast(self, caster):
         """Do the spell"""
+        svth = caster.target.saving_throw(Stat.WIS, caster.spellcast_save)
+        if svth:
+            caster.target.add_effect(HoldPersonEffect(caster=caster))
         return True
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class HoldPersonEffect(Effect):
+    """Hold Person Effect"""
+
+    ###########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Hold Person", **kwargs)
+
+    ###########################################################################
+    def initial(self, target):
+        """Initial effects of Hold Person"""
+        target.add_condition(Condition.PARALYZED)
+
+    ###########################################################################
+    def removal_end_of_its_turn(self, victim):
+        """Do we save"""
+        svth = victim.target.saving_throw(Stat.WIS, self.caster.spellcast_save)
+        if svth:
+            victim.remove_condition(Condition.PARALYZED)
+            return True
+        return False
 
 
 # EOF

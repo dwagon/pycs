@@ -33,6 +33,7 @@ class Cleric(Character):
 
     ##########################################################################
     def __init__(self, level=1, **kwargs):
+        self.level = level
         kwargs.update(
             {
                 "str": 14,
@@ -42,7 +43,7 @@ class Cleric(Character):
                 "wis": 16,
                 "cha": 13,
                 "ac": 18,
-                "spellcast_bonus": Stat.WIS,
+                "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
                     TurnUndead: 4,
