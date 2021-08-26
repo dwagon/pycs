@@ -1,26 +1,26 @@
 """ Paladin """
 import colors
-from actions import Action
-from attacks import MeleeAttack
-from attacks import RangedAttack
-from constants import ActionType
-from constants import Condition
-from constants import DamageType
-from constants import Race
-from constants import SpellType
-from constants import Stat
-from effect import Effect
-from spell.bless import Bless
+from pycs.actions import Action
+from pycs.attacks import MeleeAttack
+from pycs.attacks import RangedAttack
+from pycs.constants import ActionType
+from pycs.constants import Condition
+from pycs.constants import DamageType
+from pycs.constants import Race
+from pycs.constants import SpellType
+from pycs.constants import Stat
+from pycs.effect import Effect
+from pycs.spell.bless import Bless
 
-from spell.branding_smite import Branding_Smite
-from spell.cure_wounds import Cure_Wounds
+from pycs.spell.branding_smite import Branding_Smite
+from pycs.spell.cure_wounds import Cure_Wounds
 
-# from spell.lesser_restoration import Lesser_Restoration
-# from spell.protection_from_poison import Protection_From_Poison
-from spell.sanctuary import Sanctuary
-from spell.shield_of_faith import Shield_Of_Faith
+# from pycs.spell.lesser_restoration import Lesser_Restoration
+# from pycs.spell.protection_from_poison import Protection_From_Poison
+from pycs.spell.sanctuary import Sanctuary
+from pycs.spell.shield_of_faith import Shield_Of_Faith
 
-from .character import Character
+from pycs.characters import Character
 
 
 ##############################################################################

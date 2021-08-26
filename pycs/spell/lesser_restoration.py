@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/lesser-restoration"""
 
-import spells
-from constants import SpellType
+from pycs.spells import SpellAction
+from pycs.constants import SpellType
 
 
 ##############################################################################
-class Lesser_Restoration(spells.SpellAction):
+class Lesser_Restoration(SpellAction):
     """You touch a creature and can end either one disease or one
     condition afflicting it. The condition can be blinded, deafened,
     paralyzed, or poisoned."""

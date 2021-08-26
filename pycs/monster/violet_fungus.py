@@ -1,10 +1,10 @@
 """ https://www.dndbeyond.com/monsters/violet-fungus """
 import colors
-from attacks import MeleeAttack
-from constants import DamageType
-from constants import MonsterType
-from constants import Condition
-from .monster import Monster
+from pycs.attacks import MeleeAttack
+from pycs.constants import DamageType
+from pycs.constants import MonsterType
+from pycs.constants import Condition
+from pycs.monsters import Monster
 
 
 ##############################################################################

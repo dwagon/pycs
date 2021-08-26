@@ -1,8 +1,8 @@
 """https://www.dndbeyond.com/spells/aid"""
 
-from constants import SpellType
-from effect import Effect
-from spells import SpellAction
+from pycs.constants import SpellType
+from pycs.effect import Effect
+from pycs.spells import SpellAction
 
 
 ##############################################################################

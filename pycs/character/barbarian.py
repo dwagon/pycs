@@ -1,13 +1,13 @@
 """ Barbarian """
 import colors
-from actions import Action
-from attacks import MeleeAttack
-from attacks import RangedAttack
-from constants import ActionType
-from constants import DamageType
-from constants import Stat
-from effect import Effect
-from .character import Character
+from pycs.actions import Action
+from pycs.attacks import MeleeAttack
+from pycs.attacks import RangedAttack
+from pycs.constants import ActionType
+from pycs.constants import DamageType
+from pycs.constants import Stat
+from pycs.effect import Effect
+from pycs.characters import Character
 
 
 ##############################################################################

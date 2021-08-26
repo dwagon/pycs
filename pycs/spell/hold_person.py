@@ -1,11 +1,11 @@
 """https://www.dndbeyond.com/spells/hold-person"""
 
-from constants import Condition
-from constants import MonsterType
-from constants import SpellType
-from constants import Stat
-from effect import Effect
-from spells import SpellAction
+from pycs.constants import Condition
+from pycs.constants import MonsterType
+from pycs.constants import SpellType
+from pycs.constants import Stat
+from pycs.effect import Effect
+from pycs.spells import SpellAction
 
 
 ##############################################################################

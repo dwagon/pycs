@@ -1,7 +1,7 @@
 """ Handle non-attack Actions """
 from collections import namedtuple
 import dice
-from actions import Action
+from pycs.actions import Action
 
 
 ##############################################################################

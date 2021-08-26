@@ -1,12 +1,12 @@
 """ Fighter """
 import colors
-from actions import Action
-from effect import Effect
-from attacks import MeleeAttack
-from constants import DamageType
-from constants import ActionType
-from constants import ActionCategory
-from .character import Character
+from pycs.actions import Action
+from pycs.effect import Effect
+from pycs.attacks import MeleeAttack
+from pycs.constants import DamageType
+from pycs.constants import ActionType
+from pycs.constants import ActionCategory
+from pycs.characters import Character
 
 
 ##############################################################################

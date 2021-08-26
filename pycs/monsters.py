@@ -1,5 +1,5 @@
 """ Base Monster Class """
-from creature import Creature
+from pycs.creature import Creature
 
 
 ##############################################################################

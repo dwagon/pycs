@@ -4,17 +4,17 @@ import random
 from typing import Optional
 from collections import namedtuple
 import dice
-from actions import Action
-from attacks import Attack
-from spells import SpellAction
-from constants import ActionCategory
-from constants import ActionType
-from constants import Condition
-from constants import DamageType
-from constants import MonsterSize
-from constants import MonsterType
-from constants import Stat
-from constants import Statistics
+from pycs.actions import Action
+from pycs.attacks import Attack
+from pycs.spells import SpellAction
+from pycs.constants import ActionCategory
+from pycs.constants import ActionType
+from pycs.constants import Condition
+from pycs.constants import DamageType
+from pycs.constants import MonsterSize
+from pycs.constants import MonsterType
+from pycs.constants import Stat
+from pycs.constants import Statistics
 
 
 ##############################################################################

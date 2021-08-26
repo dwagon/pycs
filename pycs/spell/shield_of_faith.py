@@ -1,12 +1,12 @@
 """https://www.dndbeyond.com/spells/shield-of-faith"""
 
-from effect import Effect
-import spells
-from constants import SpellType
+from pycs.effect import Effect
+from pycs.spells import SpellAction
+from pycs.constants import SpellType
 
 
 ##############################################################################
-class Shield_Of_Faith(spells.SpellAction):
+class Shield_Of_Faith(SpellAction):
     """A shimmering field appears and surrounds a creature of your
     choice within range, granting it a +2 bonus to AC for the duration.
     """

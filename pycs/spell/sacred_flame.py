@@ -1,9 +1,9 @@
 """ https://www.dndbeyond.com/spells/sacred-flame"""
 
-from spells import AttackSpell
-from constants import DamageType
-from constants import Stat
-from constants import SpellType
+from pycs.spells import AttackSpell
+from pycs.constants import DamageType
+from pycs.constants import Stat
+from pycs.constants import SpellType
 
 
 ##############################################################################

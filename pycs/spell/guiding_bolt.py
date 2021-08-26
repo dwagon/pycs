@@ -1,9 +1,9 @@
 """ https://www.dndbeyond.com/spells/guiding-bolt"""
 
-from spells import AttackSpell
-from constants import DamageType
-from constants import SpellType
-from effect import Effect
+from pycs.spells import AttackSpell
+from pycs.constants import DamageType
+from pycs.constants import SpellType
+from pycs.effect import Effect
 
 
 ##############################################################################

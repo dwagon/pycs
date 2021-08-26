@@ -1,7 +1,7 @@
 """https://www.dndbeyond.com/spells/mass-healing-word"""
 
-from constants import SpellType
-from spells import SpellAction
+from pycs.constants import SpellType
+from pycs.spells import SpellAction
 
 
 ##############################################################################
