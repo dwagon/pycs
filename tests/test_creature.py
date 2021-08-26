@@ -5,10 +5,11 @@
 
 import unittest
 from unittest.mock import Mock
-from pycs.creature import Creature
-from pycs.constant import Stat
 from pycs.constant import Condition
 from pycs.constant import MonsterType
+from pycs.constant import Stat
+from pycs.creature import Creature
+from pycs.creature import DamageType
 from pycs.effect import Effect
 
 
@@ -29,7 +30,7 @@ class TestCreature(unittest.TestCase):
             "con": 11,
             "cha": 15,
             "side": "a",
-            "hp": 3,
+            "hp": 30,
             "ac": 11,
             "type": MonsterType.UNDEAD,
             "spellcast_bonus_stat": Stat.WIS,
@@ -72,7 +73,74 @@ class TestCreature(unittest.TestCase):
         """Test AC calculations"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_effect(MockACEffect("AC Effect"))
+        self.assertTrue(self.creat.has_effect("AC Effect"))
         self.assertEqual(self.creat.ac, 9)
+        self.creat.remove_effect("AC Effect")
+        self.assertFalse(self.creat.has_effect("AC Effect"))
+
+    ########################################################################
+    def test_heal(self):
+        """Test creature healing"""
+        self.assertEqual(self.creat.max_hp, 30)
+        self.assertEqual(self.creat.hp, 30)
+        self.creat.hp = 10
+        healed = self.creat.heal("", 9)
+        self.assertEqual(healed, 9)
+        self.assertEqual(self.creat.hp, 19)
+        healed = self.creat.heal("d4", 0)
+        self.assertLessEqual(healed, 4)
+        self.assertGreaterEqual(healed, 1)
+        self.assertEqual(self.creat.hp, 19 + healed)
+        healed = self.creat.heal("d4", 99)
+        self.assertEqual(self.creat.hp, self.creat.max_hp)
+
+    ########################################################################
+    def test_hit(self):
+        """Test creature hurting"""
+        self.creat.hp = 30
+        self.creat.hit(
+            5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack"
+        )
+        self.assertEqual(self.creat.hp, 25)
+        # Vulnerable = twice damaage
+        self.creat.vulnerable.append(DamageType.PIERCING)
+        self.creat.hit(
+            5,
+            dmg_type=DamageType.PIERCING,
+            source=Mock(),
+            critical=False,
+            atkname="attack",
+        )
+        self.assertEqual(self.creat.hp, 15)
+        # Immunity = no damage
+        self.creat.immunity.append(DamageType.FIRE)
+        self.creat.hit(
+            5,
+            dmg_type=DamageType.FIRE,
+            source=Mock(),
+            critical=False,
+            atkname="attack",
+        )
+        self.assertEqual(self.creat.hp, 15)
+        # Resistant = half damage
+        self.creat.resistant.append(DamageType.NECROTIC)
+        self.creat.hit(
+            10,
+            dmg_type=DamageType.NECROTIC,
+            source=Mock(),
+            critical=False,
+            atkname="attack",
+        )
+        self.assertEqual(self.creat.hp, 10)
+        self.creat.hit(
+            25,
+            dmg_type=DamageType.ACID,
+            source=Mock(),
+            critical=False,
+            atkname="attack",
+        )
+        self.assertEqual(self.creat.state, "UNCONSCIOUS")
+        self.assertEqual(self.creat.hp, 0)
 
 
 ############################################################################
