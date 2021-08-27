@@ -50,7 +50,7 @@ class TestCreature(unittest.TestCase):
     ########################################################################
     def test_condition(self):
         """Test conditions"""
-        self.assertFalse(self.creat.has_condition(Condition.PRONE))
+        self.assertFalse(self.creat.has_condition(Condition.PRONE, Condition.BLINDED))
         self.creat.add_condition(Condition.PRONE)
         self.assertTrue(self.creat.has_condition(Condition.PRONE))
         self.creat.remove_condition(Condition.PRONE)

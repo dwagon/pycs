@@ -229,9 +229,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.options_this_turn.remove(ActionCategory.REACTION)
 
     ##########################################################################
-    def has_condition(self, cond) -> bool:
+    def has_condition(self, *conditions: list) -> bool:
         """Do we have a condition"""
-        return cond in self.conditions
+        for cond in conditions:
+            if cond in self.conditions:
+                return True
+        return False
 
     ##########################################################################
     def remove_condition(self, cond) -> None:
@@ -402,6 +405,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 pref = self.action_preference.get(act, 1)
             if heur * pref != 0:
                 actions.append(acttuple(heur * pref, random.random(), heur, pref, act))
+            else:
+                print(f"\tNot happening {heur=},  {pref=},  {act=}")
         actions.sort(reverse=True)
 
         for act in actions:
