@@ -200,13 +200,16 @@ class Action:
 
     ########################################################################
     def has_advantage(
-        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
-    ) -> bool:
+        self, source, target, rnge: int
+    ) -> bool:  # pylint: disable=no-self-use
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_advantage_against():
+                return True
+        for _, eff in source.effects.items():
+            if eff.hook_gives_advantage(target):
                 return True
         return False
 
