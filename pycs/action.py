@@ -159,7 +159,7 @@ class Action:
             )
         else:
             source.statistics.append(Statistics(self.name, 0, None, False))
-            print(f"{source} missed {target} with {self}")
+            print(f"{source} missed {target} (AC: {target.ac}) with {self}")
         for name, eff in target.effects.copy().items():
             if eff.removal_after_being_attacked():
                 print(f"{name} removed from {target}")
@@ -178,10 +178,13 @@ class Action:
         else:
             dmg = int(dice.roll(self.dmg[0]))
             print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
-            dmg += self.dmg[1]
-            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg += self.dmg_bonus(source)
-        print(f"Adding bonus of {self.dmg_bonus(source)} -> {dmg}")
+            if self.dmg[1]:
+                dmg += self.dmg[1]
+                print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        dmg_bon = self.dmg_bonus(source)
+        if dmg_bon:
+            dmg += dmg_bon
+            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
         return max(dmg, 0)
 
     ########################################################################
