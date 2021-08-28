@@ -76,7 +76,7 @@ class Fireball(AttackSpell):
 
     ##########################################################################
     def heuristic(self, doer):
-        """Do the spell"""
+        """Should we do the spell"""
         if not doer.spell_available(self):
             return 0
         if self.pick_target(doer):
