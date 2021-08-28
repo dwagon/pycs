@@ -14,7 +14,7 @@ class Effect:
         self.name = name
         self.cause = kwargs.get("cause")
         self.caster = kwargs.get("caster")
-        self.source = kwargs.get("source")
+        self.source = None  # Set when added to a creature
 
     ##########################################################################
     def hook_attack_to_hit(self, target, rnge):  # pylint: disable=unused-argument
@@ -52,6 +52,11 @@ class Effect:
     ##########################################################################
     def hook_gives_advantage_against(self):
         """Gives advantage against creature who has effect"""
+        return False
+
+    ##########################################################################
+    def hook_gives_advantage(self, target):  # pylint: disable=unused-argument
+        """Gives advantage for creature doing the attack"""
         return False
 
     ##########################################################################

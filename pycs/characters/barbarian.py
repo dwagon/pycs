@@ -3,11 +3,12 @@ import colors
 from pycs.action import Action
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
+from pycs.character import Character
+from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.character import Character
 
 
 ##############################################################################
@@ -100,6 +101,7 @@ class BarbarianRage(Action):
         """Initialise"""
         super().__init__("Barbarian Rage", **kwargs)
         self.type = ActionType.BUFF
+        self.category = ActionCategory.BONUS
 
     ########################################################################
     def pick_target(self, doer):

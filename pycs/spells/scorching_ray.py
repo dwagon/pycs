@@ -37,12 +37,15 @@ class Scorching_Ray(AttackSpell):
 
     ##########################################################################
     def cast(self, caster):
-        """Do the spell"""
-        targets = []
-        for enemy in caster.pick_closest_enemy():
-            if caster.distance(enemy) < self.range()[0]:
-                targets.append(enemy)
+        """Do the spell - reevaluate targets each ray in case the ray
+        has already killed the target"""
         for _ in range(3):
+            targets = []
+            for enemy in caster.pick_closest_enemy():
+                if caster.distance(enemy) < self.range()[0]:
+                    targets.append(enemy)
+            if not targets:
+                return
             target = random.choice(targets)
             print(f"Targeting {target} with Scorching Ray")
             to_hit, crit_hit, crit_miss = self.roll_to_hit(caster, target, 999)

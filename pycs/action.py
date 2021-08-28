@@ -172,17 +172,13 @@ class Action:
     def roll_dmg(self, source, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
-            dmg = (
-                int(dice.roll_max(self.dmg[0]))
-                + int(dice.roll(self.dmg[0]))
-                + self.dmg[1]
-            )
+            dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
         else:
             dmg = int(dice.roll(self.dmg[0]))
-            print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
-            if self.dmg[1]:
-                dmg += self.dmg[1]
-                print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        if self.dmg[1]:
+            dmg += self.dmg[1]
+            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
         dmg_bon = self.dmg_bonus(source)
         if dmg_bon:
             dmg += dmg_bon
@@ -200,13 +196,16 @@ class Action:
 
     ########################################################################
     def has_advantage(
-        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
-    ) -> bool:
+        self, source, target, rnge: int
+    ) -> bool:  # pylint: disable=no-self-use
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_advantage_against():
+                return True
+        for _, eff in source.effects.items():
+            if eff.hook_gives_advantage(target):
                 return True
         return False
 
