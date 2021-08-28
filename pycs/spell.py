@@ -113,18 +113,26 @@ class AttackSpell(SpellAction):
     ########################################################################
     def dmg_bonus(self, attacker):
         """No spell bonus to damage"""
-        return 0
+        return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
     def roll_dmg(self, source, victim, critical=False):
         """Special spell damage"""
         if self.style == "tohit":
             return super().roll_dmg(source, victim, critical)
+        dmg = int(dice.roll(self.dmg[0]))
+        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        if self.dmg[1]:
+            dmg += self.dmg[1]
+            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        dmg_bon = self.dmg_bonus(source)
+        if dmg_bon:
+            dmg += dmg_bon
+            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
         saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
-        dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
         if saved:
             dmg = int(dmg / 2)
-        return dmg
+        return max(dmg, 0)
 
     ########################################################################
     def heuristic(self, doer):
