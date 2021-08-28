@@ -325,6 +325,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def add_effect(self, effect):
         """Add an effect"""
         self.effects[effect.name] = effect
+        effect.source = self
         effect.initial(self)
 
     ##########################################################################
