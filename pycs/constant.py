@@ -86,7 +86,7 @@ class SpellType(Enum):
     MELEE = "melee"
     RANGED = "ranged"
     SAVE_HALF = "save_half"  # Style
-    SAVE_MISS = "save_miss"  # Style
+    SAVE_NONE = "save_none"  # Style
     TOHIT = "tohit"  # Style
 
 

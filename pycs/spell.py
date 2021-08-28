@@ -104,13 +104,10 @@ class AttackSpell(SpellAction):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
         self.level = kwargs.get("level", 99)
-        # Style is tohit or save;
-        #   "tohit" you need to roll to hit,
-        #   "save" you hit automatically but save on damage
-        self.style = kwargs.get("style", "tohit")
+        self.style = kwargs.get("style", SpellType.TOHIT)
         self.type = kwargs.get("type")
-        self.save_stat = kwargs.get("save_stat", "undef")
-        self.save_dc = kwargs.get("save_dc", 0)
+        self.save_stat = kwargs.get("save_stat")
+        self.save_dc = kwargs.get("save_dc")
 
     ########################################################################
     def dmg_bonus(self, attacker):
@@ -157,8 +154,7 @@ class AttackSpell(SpellAction):
     ########################################################################
     def roll_to_hit(self, source, target, rnge):
         """Special spell attack"""
-        assert self.style in ("tohit", "save")
-        if self.style == "tohit":
+        if self.style == SpellType.TOHIT:
             return super().roll_to_hit(source, target, rnge)
         return 999, False, False
 

@@ -23,7 +23,7 @@ class Sacred_Flame(AttackSpell):
             {
                 "type": SpellType.RANGED,
                 "reach": 60,
-                "style": SpellType.SAVE_MISS,
+                "style": SpellType.SAVE_NONE,
                 "save_stat": Stat.DEX,
                 "dmg": ("1d8", 0),
                 "dmg_type": DamageType.RADIANT,
