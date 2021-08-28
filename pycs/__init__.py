@@ -50,6 +50,7 @@ def win_report(stats, rounds):
 ##############################################################################
 def statistics_report(arena):
     """Dump the hit statistics at the end"""
+    # Damage Details
     tbl = PrettyTable()
     tbl.field_names = [
         "Name",
@@ -59,8 +60,6 @@ def statistics_report(arena):
         "Hit %",
         "Damage",
         "Crit %",
-        "HP",
-        "State",
     ]
     for creat in arena.combatants:
         tmp = creat.dump_statistics()
@@ -78,13 +77,26 @@ def statistics_report(arena):
                     int(100.0 * val["hits"] / (val["hits"] + val["misses"])),
                     val["dmg"],
                     crit_p,
-                    f"{creat.hp}/{creat.max_hp}",
-                    creat.state.title(),
                 ]
             )
     tbl.sortby = "Name"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
+    print(tbl)
+
+    # Participant details
+    tbl = PrettyTable()
+    tbl.field_names = ["Name", "HP", "State"]
+    for creat in arena.combatants:
+        tbl.add_row(
+            [
+                creat.name,
+                f"{creat.hp}/{creat.max_hp}",
+                creat.state.title(),
+            ]
+        )
+    tbl.sortby = "Name"
+    tbl.align["Name"] = "l"
     print(tbl)
 
 
