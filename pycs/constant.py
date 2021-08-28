@@ -139,6 +139,7 @@ class Race(Enum):
     """What race a character is"""
 
     HUMAN = "Human"
+    HALFELF = "Half-Elf"
     HALFORC = "Half-Orc"
 
 
