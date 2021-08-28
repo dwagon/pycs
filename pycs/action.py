@@ -147,7 +147,7 @@ class Action:
             f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
 
-        if to_hit > target.ac and not crit_miss:
+        if to_hit >= target.ac and not crit_miss:
             dmg = self.roll_dmg(source, target, crit_hit)
             target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
