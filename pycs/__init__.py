@@ -7,14 +7,15 @@ __version__ = "0.1.0"
 from collections import defaultdict
 from prettytable import PrettyTable
 
-from pycs.monsters.ghast import Ghast
-from pycs.monsters.ghoul import Ghoul
-from pycs.monsters.giant_frog import GiantFrog
-from pycs.monsters.goblin import Goblin
-from pycs.monsters.skeleton import Skeleton
-from pycs.monsters.troll import Troll
-from pycs.monsters.violet_fungus import VioletFungus
-from pycs.monsters.wraith import Wraith
+from pycs.monsters import Ghast
+from pycs.monsters import Ghoul
+from pycs.monsters import GiantFrog
+from pycs.monsters import Goblin
+from pycs.monsters import Kobold
+from pycs.monsters import Skeleton
+from pycs.monsters import Troll
+from pycs.monsters import VioletFungus
+from pycs.monsters import Wraith
 
 from pycs.characters.barbarian import Barbarian
 from pycs.characters.cleric import Cleric
@@ -115,10 +116,12 @@ def combat_test():
     arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
+    for i in range(10):
+        arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
 
-    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=4, side="Humans"))
+    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))
-    arena.add_combatant(Fighter(arena=arena, name="Frank", level=4, side="Humans"))
+    arena.add_combatant(Fighter(arena=arena, name="Frank", level=5, side="Humans"))
     arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
     arena.add_combatant(Warlock(arena=arena, name="Wendy", level=5, side="Humans"))
 
