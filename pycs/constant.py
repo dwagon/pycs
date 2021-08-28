@@ -85,6 +85,9 @@ class SpellType(Enum):
     HEALING = "healing"
     MELEE = "melee"
     RANGED = "ranged"
+    SAVE_HALF = "save_half"  # Style
+    SAVE_NONE = "save_none"  # Style
+    TOHIT = "tohit"  # Style
 
 
 ##############################################################################
@@ -139,6 +142,7 @@ class Race(Enum):
     """What race a character is"""
 
     HUMAN = "Human"
+    HALFELF = "Half-Elf"
     HALFORC = "Half-Orc"
 
 

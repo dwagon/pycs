@@ -2,6 +2,7 @@
 from collections import namedtuple
 import dice
 from pycs.action import Action
+from pycs.constant import SpellType
 
 
 ##############################################################################
@@ -18,6 +19,7 @@ class SpellAction(Action):
         self.cure_hp = kwargs.get("cure_hp")
         self.level = kwargs.get("level")
         self.concentration = kwargs.get("concentration")
+        self.target = None
 
     ########################################################################
     def is_type(self, *types):
@@ -61,7 +63,9 @@ def health_level_of_peers(doer):
     """Return the health levels of peers as percentage"""
     result = namedtuple("Result", "health id target")
     peers = [
-        result(100 * _.hp / _.max_hp, id(_), _) for _ in doer.arena.my_side(doer.side)
+        result(100 * _.hp / _.max_hp, id(_), _)
+        for _ in doer.arena.my_side(doer.side)
+        if _.max_hp != 0
     ]
     peers.sort()
     return peers[0]
@@ -103,28 +107,40 @@ class AttackSpell(SpellAction):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
         self.level = kwargs.get("level", 99)
-        # Style is tohit or save;
-        #   "tohit" you need to roll to hit,
-        #   "save" you hit automatically but save on damage
-        self.style = kwargs.get("style", "tohit")
+        self.style = kwargs.get("style", SpellType.TOHIT)
         self.type = kwargs.get("type")
-        self.save = kwargs.get("save", ("none", 999))
+        self.save_stat = kwargs.get("save_stat")
+        self.save_dc = kwargs.get("save_dc")
 
     ########################################################################
     def dmg_bonus(self, attacker):
         """No spell bonus to damage"""
-        return 0
+        return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
     def roll_dmg(self, source, victim, critical=False):
         """Special spell damage"""
-        if self.style == "tohit":
+        if self.style == SpellType.TOHIT:
             return super().roll_dmg(source, victim, critical)
-        saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
-        dmg = int(dice.roll(self.dmg[0])) + self.dmg[1]
+        dmg = int(dice.roll(self.dmg[0]))
+        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        if self.dmg[1]:
+            dmg += self.dmg[1]
+            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        dmg_bon = self.dmg_bonus(source)
+        if dmg_bon:
+            dmg += dmg_bon
+            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
+        dc = self.save_dc
+        if not dc:
+            dc = source.spellcast_save
+        saved = victim.saving_throw(stat=self.save_stat, dc=dc)
         if saved:
-            dmg = int(dmg / 2)
-        return dmg
+            if self.style == SpellType.SAVE_HALF:
+                dmg = int(dmg / 2)
+            if self.style == SpellType.SAVE_NONE:
+                dmg = 0
+        return max(dmg, 0)
 
     ########################################################################
     def heuristic(self, doer):
@@ -141,8 +157,7 @@ class AttackSpell(SpellAction):
     ########################################################################
     def roll_to_hit(self, source, target, rnge):
         """Special spell attack"""
-        assert self.style in ("tohit", "save")
-        if self.style == "tohit":
+        if self.style == SpellType.TOHIT:
             return super().roll_to_hit(source, target, rnge)
         return 999, False, False
 

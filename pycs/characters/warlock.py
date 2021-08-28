@@ -2,12 +2,22 @@
 import colors
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
-from pycs.spell import AttackSpell
+from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import DamageType
+from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.character import Character
+from pycs.spells import Burning_Hands
+from pycs.spells import Command
+from pycs.spells import Eldritch_Blast
+from pycs.spells import Fireball
+from pycs.spells import Frostbite
+from pycs.spells import Hellish_Rebuke
+from pycs.spells import Poison_Spray
+from pycs.spells import Scorching_Ray
+from pycs.spells import Shatter
+from pycs.spells import Thunderclap
 
 
 ##############################################################################
@@ -18,14 +28,14 @@ class Warlock(Character):
         self.level = level
         kwargs.update(
             {
-                "str": 9,
+                "str": 8,
                 "dex": 14,
-                "con": 15,
-                "int": 13,
+                "con": 14,
+                "int": 12,
                 "wis": 11,
-                "cha": 16,
+                "cha": 17,
                 "ac": 13,
-                "hp": 10,
+                "race": Race.HALFELF,
                 "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {
                     SpellType.RANGED: 5,
@@ -35,11 +45,51 @@ class Warlock(Character):
                 },
             }
         )
-        self.spell_slots = 1
+        if level == 1:
+            kwargs["hp"] = 10
+        if level == 2:
+            kwargs["hp"] = 17
+        if level == 3:
+            kwargs["hp"] = 24
+        if level == 4:
+            kwargs["hp"] = 31
+        if level == 5:
+            kwargs["hp"] = 38
+
         super().__init__(**kwargs)
+
+        if level >= 1:
+            self.spell_slots = 1
+            self.add_action(Eldritch_Blast())
+            self.add_action(Frostbite())
+            self.add_action(Poison_Spray())
+            self.add_action(Burning_Hands())
+            self.add_action(Hellish_Rebuke())
+        if level >= 2:
+            self.spell_slots = 2
+            self.add_action(Command())
+            # Agonizing Blast
+            # When you cast eldritch blast, add your Charisma modifier to the
+            # damage it deals on a hit.
+            # Armor of Shadows
+            # You can cast mage armor on yourself at will, without expending
+            # a spell slot or material components.
+            pass
+        if level >= 3:
+            self.add_action(Scorching_Ray())
+            # Pact Boon: Pact of the Blades
+            # Summon magical weapon
+            pass
+        if level >= 4:
+            self.add_action(Shatter())
+            self.add_action(Thunderclap())
+            self.stats[Stat.CHA] = 19
+        if level >= 5:
+            self.add_action(Fireball())
+
         self.add_action(
             MeleeAttack(
-                "Mace",
+                "Quarterstaff",
                 reach=5,
                 dmg=("1d6", 0),
                 dmg_type=DamageType.BLUDGEONING,
@@ -52,35 +102,6 @@ class Warlock(Character):
                 l_range=320,
                 dmg=("1d8", 0),
                 dmg_type=DamageType.PIERCING,
-            )
-        )
-        self.add_action(
-            AttackSpell(
-                "Eldritch Blast",
-                reach=120,
-                dmg=("1d10", 0),
-                level=0,
-                dmg_type=DamageType.FORCE,
-            )
-        )
-        self.add_action(
-            AttackSpell(
-                "Burning Hands",
-                style="save",
-                reach=15,
-                save=(Stat.DEX, 13),
-                dmg=("1d6", 0),
-                level=1,
-                dmg_type=DamageType.FIRE,
-            )
-        )
-        self.add_reaction(
-            AttackSpell(
-                "Hellish Rebuke",
-                reach=60,
-                dmg=("2d10", 0),
-                level=1,
-                dmg_type=DamageType.FIRE,
             )
         )
 

@@ -2,6 +2,7 @@
 
 from pycs.spell import SpellAction
 from pycs.constant import SpellType
+from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.effect import Effect
 
@@ -22,7 +23,7 @@ class Branding_Smite(SpellAction):
         name = "Branding Smite"
         kwargs.update(
             {
-                "casting": "bonus",
+                "category": ActionCategory.BONUS,
                 "concentration": True,
                 "reach": 0,
                 "level": 2,

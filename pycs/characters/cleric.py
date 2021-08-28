@@ -83,21 +83,21 @@ class Cleric(Character):
         self.add_action(Cure_Wounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
-        self.add_bonus_action(Healing_Word())
-        self.add_bonus_action(Shield_Of_Faith())
+        self.add_action(Healing_Word())
+        self.add_action(Shield_Of_Faith())
         if level >= 2:
             self.add_action(TurnUndead())
         if level >= 3:
             self.add_action(Aid())
             self.add_action(Lesser_Restoration())  # Life Domain freebie
             self.add_action(Enhance_Ability())
-            self.add_bonus_action(Spiritual_Weapon())  # Life Domain freebie
+            self.add_action(Spiritual_Weapon())  # Life Domain freebie
             self.add_action(Hold_Person())
         if level >= 4:
             self.stats[Stat.WIS] = 18
         if level >= 5:
             self.add_action(Beacon_Of_Hope())  # Life Domain freebie
-            self.add_bonus_action(Mass_Healing_Word())
+            self.add_action(Mass_Healing_Word())
             self.add_action(Spirit_Guardians())
 
     ##########################################################################

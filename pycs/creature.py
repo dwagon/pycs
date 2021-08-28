@@ -255,17 +255,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def add_action(self, action: Action) -> None:
         """Add an action to the creature"""
-        self.actions.append(action)
-
-    ##########################################################################
-    def add_bonus_action(self, action: Action) -> None:
-        """Add a bonus action to the creature"""
-        self.bonus_actions.append(action)
-
-    ##########################################################################
-    def add_reaction(self, action: Action) -> None:
-        """Add an reaction to the creature"""
-        self.reactions.append(action)
+        if action.category == ActionCategory.BONUS:
+            self.bonus_actions.append(action)
+        elif action.category == ActionCategory.REACTION:
+            self.reactions.append(action)
+        else:
+            self.actions.append(action)
 
     ##########################################################################
     def roll_hp(self) -> int:

@@ -2,6 +2,7 @@
 from typing import Tuple
 import dice
 from pycs.constant import ActionType
+from pycs.constant import ActionCategory
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import Statistics
@@ -18,6 +19,7 @@ class Action:
         self.name = name
         self.available = True
         self.type = ActionType.UNKNOWN
+        self.category = kwargs.get("category", ActionCategory.ACTION)
         self.side_effect = kwargs.get("side_effect")
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.action_cost = kwargs.get("action_cost", 1)
@@ -145,7 +147,7 @@ class Action:
             f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
 
-        if to_hit > target.ac and not crit_miss:
+        if to_hit >= target.ac and not crit_miss:
             dmg = self.roll_dmg(source, target, crit_hit)
             target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
@@ -159,7 +161,7 @@ class Action:
             )
         else:
             source.statistics.append(Statistics(self.name, 0, None, False))
-            print(f"{source} missed {target} with {self}")
+            print(f"{source} missed {target} (AC: {target.ac}) with {self}")
         for name, eff in target.effects.copy().items():
             if eff.removal_after_being_attacked():
                 print(f"{name} removed from {target}")
@@ -178,10 +180,13 @@ class Action:
         else:
             dmg = int(dice.roll(self.dmg[0]))
             print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
-            dmg += self.dmg[1]
-            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg += self.dmg_bonus(source)
-        print(f"Adding bonus of {self.dmg_bonus(source)} -> {dmg}")
+            if self.dmg[1]:
+                dmg += self.dmg[1]
+                print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        dmg_bon = self.dmg_bonus(source)
+        if dmg_bon:
+            dmg += dmg_bon
+            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
         return max(dmg, 0)
 
     ########################################################################

@@ -61,7 +61,7 @@ class Fighter(Character):
                 dmg_type=DamageType.PIERCING,
             )
         )
-        self.add_bonus_action(SecondWind())
+        self.add_action(SecondWind())
         self.add_effect(DuelingFightingStyle())
 
     ##########################################################################

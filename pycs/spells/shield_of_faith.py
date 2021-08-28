@@ -31,7 +31,6 @@ class Shield_Of_Faith(SpellAction):
         friend = self.pick_target(caster)
         if caster.distance(friend) > self.range()[0]:
             return False
-        print(f"{caster} casts Shield of Faith on {friend}")
         friend.add_effect(Shield_Of_Faith_Effect(cause=caster))
         return True
 
@@ -40,7 +39,9 @@ class Shield_Of_Faith(SpellAction):
         """Who gets the spell - person with the lowest AC"""
         targets = []
         for friend in doer.arena.my_side(doer.side):
-            if friend.has_effect("Shield of Faith"):
+            if friend.has_effect(self.name):
+                continue
+            if doer.distance(friend) > self.range()[0]:
                 continue
             targets.append((friend.ac, id(friend), friend))
         targets.sort()
