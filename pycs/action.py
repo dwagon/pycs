@@ -172,17 +172,13 @@ class Action:
     def roll_dmg(self, source, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
-            dmg = (
-                int(dice.roll_max(self.dmg[0]))
-                + int(dice.roll(self.dmg[0]))
-                + self.dmg[1]
-            )
+            dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
         else:
             dmg = int(dice.roll(self.dmg[0]))
-            print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
-            if self.dmg[1]:
-                dmg += self.dmg[1]
-                print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        if self.dmg[1]:
+            dmg += self.dmg[1]
+            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
         dmg_bon = self.dmg_bonus(source)
         if dmg_bon:
             dmg += dmg_bon
