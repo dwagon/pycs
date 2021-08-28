@@ -56,7 +56,7 @@ class Wraith(Monster):
                 "Life Drain",
                 use_stat=Stat.DEX,
                 reach=5,
-                dmg=("4d8", 3),
+                dmg=("4d8", 0),
                 dmg_type=DamageType.NECROTIC,
                 side_effect=self.life_drain,
             )
