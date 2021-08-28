@@ -21,7 +21,7 @@ class Attack(Action):
                 int(dice.roll(self.attacks_per_action[0])) + self.attacks_per_action[1]
             )
         elif isinstance(self.attacks_per_action, int):
-            apa *= source.attacks_per_action
+            apa = source.attacks_per_action
         if apa != 1:
             print(f"Doing {apa} attacks")
         for _ in range(apa):
