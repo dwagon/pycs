@@ -19,6 +19,7 @@ class SpellAction(Action):
         self.cure_hp = kwargs.get("cure_hp")
         self.level = kwargs.get("level")
         self.concentration = kwargs.get("concentration")
+        self.target = None
 
     ########################################################################
     def is_type(self, *types):
@@ -62,7 +63,9 @@ def health_level_of_peers(doer):
     """Return the health levels of peers as percentage"""
     result = namedtuple("Result", "health id target")
     peers = [
-        result(100 * _.hp / _.max_hp, id(_), _) for _ in doer.arena.my_side(doer.side)
+        result(100 * _.hp / _.max_hp, id(_), _)
+        for _ in doer.arena.my_side(doer.side)
+        if _.max_hp != 0
     ]
     peers.sort()
     return peers[0]
