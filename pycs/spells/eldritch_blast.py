@@ -15,7 +15,7 @@ class Eldritch_Blast(AttackSpell):
             {
                 "reach": 120,
                 "level": 0,
-                "style": "tohit",
+                "style": SpellType.TOHIT,
                 "type": SpellType.RANGED,
                 "dmg": ("1d10", 0),
                 "dmg_type": DamageType.FORCE,

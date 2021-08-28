@@ -2,6 +2,7 @@
 from collections import namedtuple
 import dice
 from pycs.action import Action
+from pycs.constant import SpellType
 
 
 ##############################################################################
@@ -119,7 +120,7 @@ class AttackSpell(SpellAction):
     ########################################################################
     def roll_dmg(self, source, victim, critical=False):
         """Special spell damage"""
-        if self.style == "tohit":
+        if self.style == SpellType.TOHIT:
             return super().roll_dmg(source, victim, critical)
         dmg = int(dice.roll(self.dmg[0]))
         print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
@@ -135,7 +136,10 @@ class AttackSpell(SpellAction):
             dc = source.spellcast_save
         saved = victim.saving_throw(stat=self.save_stat, dc=dc)
         if saved:
-            dmg = int(dmg / 2)
+            if self.style == SpellType.SAVE_HALF:
+                dmg = int(dmg / 2)
+            if self.style == SpellType.SAVE_NONE:
+                dmg = 0
         return max(dmg, 0)
 
     ########################################################################

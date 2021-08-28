@@ -24,9 +24,9 @@ class Guiding_Bolt(AttackSpell):
             {
                 "type": SpellType.RANGED,
                 "reach": 120,
-                "bonus": 5,
-                "dmg": ("4d6", 5),
+                "dmg": ("4d6", 0),
                 "dmg_type": DamageType.RADIANT,
+                "style": SpellType.TOHIT,
                 "level": 1,
             }
         )

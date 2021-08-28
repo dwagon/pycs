@@ -85,6 +85,9 @@ class SpellType(Enum):
     HEALING = "healing"
     MELEE = "melee"
     RANGED = "ranged"
+    SAVE_HALF = "save_half"  # Style
+    SAVE_MISS = "save_miss"  # Style
+    TOHIT = "tohit"  # Style
 
 
 ##############################################################################

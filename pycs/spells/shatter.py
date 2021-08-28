@@ -23,7 +23,7 @@ class Shatter(AttackSpell):
             {
                 "reach": 60,
                 "level": 2,
-                "style": "save",
+                "style": SpellType.SAVE_HALF,
                 "dmg": ("3d8", 0),
                 "dmg_type": DamageType.THUNDER,
                 "save_stat": Stat.CON,
