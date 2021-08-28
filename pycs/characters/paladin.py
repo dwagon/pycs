@@ -86,7 +86,7 @@ class Paladin(Character):
             self.lay_on_hands = 5
             self.add_action(Cure_Wounds())
             self.add_action(Bless())
-            self.add_bonus_action(Shield_Of_Faith())
+            self.add_action(Shield_Of_Faith())
             # Divine Smite
             # Starting at 2nd level, when you hit a creature with a melee weapon
             # attack, you can expend one spell slot to deal radiant damage to the
@@ -100,7 +100,7 @@ class Paladin(Character):
             # Add Action Channel Divinity : Sacred Weapon
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
-            self.add_bonus_action(Branding_Smite())
+            self.add_action(Branding_Smite())
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
         self.add_action(

@@ -2,6 +2,7 @@
 from typing import Tuple
 import dice
 from pycs.constant import ActionType
+from pycs.constant import ActionCategory
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import Statistics
@@ -18,6 +19,7 @@ class Action:
         self.name = name
         self.available = True
         self.type = ActionType.UNKNOWN
+        self.category = kwargs.get("category", ActionCategory.ACTION)
         self.side_effect = kwargs.get("side_effect")
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.action_cost = kwargs.get("action_cost", 1)

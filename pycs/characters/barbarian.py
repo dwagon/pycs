@@ -70,7 +70,7 @@ class Barbarian(Character):
                 dmg_type=DamageType.PIERCING,
             )
         )
-        self.add_bonus_action(BarbarianRage())
+        self.add_action(BarbarianRage())
         if level >= 2:
             self.add_effect(BarbarianDangerSenseEffect())
 
