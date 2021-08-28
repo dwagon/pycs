@@ -108,7 +108,8 @@ class AttackSpell(SpellAction):
         #   "save" you hit automatically but save on damage
         self.style = kwargs.get("style", "tohit")
         self.type = kwargs.get("type")
-        self.save = kwargs.get("save", ("none", 999))
+        self.save_stat = kwargs.get("save_stat", "undef")
+        self.save_dc = kwargs.get("save_dc", 0)
 
     ########################################################################
     def dmg_bonus(self, attacker):
@@ -129,7 +130,10 @@ class AttackSpell(SpellAction):
         if dmg_bon:
             dmg += dmg_bon
             print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
-        saved = victim.saving_throw(stat=self.save[0], dc=self.save[1])
+        dc = self.save_dc
+        if not dc:
+            dc = source.spellcast_save
+        saved = victim.saving_throw(stat=self.save_stat, dc=dc)
         if saved:
             dmg = int(dmg / 2)
         return max(dmg, 0)
