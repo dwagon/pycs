@@ -65,6 +65,11 @@ class Effect:
         return False
 
     ##########################################################################
+    def hook_d20(self, val, reason):  # pylint: disable=unused-argument
+        """We have rolled {val} on a d20 for {reason}"""
+        return val
+
+    ##########################################################################
     def hook_source_additional_melee_damage(
         self,
     ) -> Optional[Tuple[str, int, Optional[DamageType]]]:

@@ -137,13 +137,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             effct.update(eff.hook_saving_throw(stat, **kwargs))
 
         if "advantage" in effct and effct["advantage"]:
-            save = max(int(dice.roll("d20")), int(dice.roll("d20")))
+            save = max(self.rolld20("save"), self.rolld20("save"))
             msg = " with advantage"
         elif "disadvantage" in effct and effct["disadvantage"]:
-            save = min(int(dice.roll("d20")), int(dice.roll("d20")))
+            save = min(self.rolld20("save"), self.rolld20("save"))
             msg = " with disadvantage"
         else:
-            save = int(dice.roll("d20"))
+            save = self.rolld20("save")
             msg = ""
 
         save += effct["bonus"] + self.stat_bonus(stat)
@@ -156,7 +156,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def roll_initiative(self) -> int:
         """Roll initiative"""
-        init = dice.roll(f"d20+{self.stat_bonus(Stat.DEX)}")
+        init = self.rolld20("initiative")
+        init += self.stat_bonus(Stat.DEX)
         print(f"{self} rolled {init} for initiative")
         return init
 
@@ -511,6 +512,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             did_act = self.do_action(act)
             if did_act and act.action_cost:
                 self.options_this_turn.remove(categ)
+
+    ##########################################################################
+    def rolld20(self, reason):
+        """Roll a d20"""
+        d20 = int(dice.roll("d20"))
+        for _, eff in self.effects.items():
+            d20 = eff.hook_d20(d20, reason)
+        return d20
 
     ##########################################################################
     def turn(self):
