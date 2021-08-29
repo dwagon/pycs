@@ -50,7 +50,9 @@ class Hold_Person(SpellAction):
     ##########################################################################
     def cast(self, caster):
         """Do the spell"""
-        svth = caster.target.saving_throw(Stat.WIS, caster.spellcast_save)
+        svth = caster.target.saving_throw(
+            Stat.WIS, caster.spellcast_save, effect=Condition.PARALYZED
+        )
         if svth:
             caster.target.add_effect(HoldPersonEffect(caster=caster))
         return True
@@ -75,7 +77,9 @@ class HoldPersonEffect(Effect):
     ###########################################################################
     def removal_end_of_its_turn(self, victim):
         """Do we save"""
-        svth = victim.saving_throw(Stat.WIS, self.caster.spellcast_save)
+        svth = victim.saving_throw(
+            Stat.WIS, self.caster.spellcast_save, effect=Condition.PARALYZED
+        )
         if svth:
             victim.remove_condition(Condition.PARALYZED)
             return True

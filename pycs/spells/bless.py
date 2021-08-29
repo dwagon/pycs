@@ -88,9 +88,9 @@ class BlessEffect(Effect):
         eff.update({"bonus": int(dice.roll("d4"))})
         return eff
 
-    def hook_saving_throw(self, stat):
+    def hook_saving_throw(self, stat, **kwargs):
         """Mod saving throw"""
-        eff = super().hook_saving_throw(stat)
+        eff = super().hook_saving_throw(stat, **kwargs)
         eff.update({"bonus": int(dice.roll("d4"))})
         print(f"Bless adds {eff['bonus']} to saving throw")
         return eff

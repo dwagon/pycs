@@ -161,12 +161,12 @@ class BarbarianRageEffect(Effect):
 
     ########################################################################
     def hook_source_additional_melee_damage(self):
-        return "", 2, None
+        return ("", 2, None)
 
     ########################################################################
-    def hook_saving_throw(self, stat):
+    def hook_saving_throw(self, stat, **kwargs):
         """Advantage on strength"""
-        eff = super().hook_saving_throw(stat)
+        eff = super().hook_saving_throw(stat, **kwargs)
         if stat == Stat.STR:
             eff.update({"advantage": True})
         return eff

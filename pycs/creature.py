@@ -122,7 +122,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(self, stat: Stat, dc: int) -> bool:  # pylint: disable=invalid-name
+    def saving_throw(
+        self, stat: Stat, dc: int, **kwargs  # pylint: disable=invalid-name
+    ) -> bool:
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
         if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
@@ -132,7 +134,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return False
         effct = {"bonus": 0}
         for _, eff in self.effects.items():
-            effct.update(eff.hook_saving_throw(stat))
+            effct.update(eff.hook_saving_throw(stat, **kwargs))
 
         if "advantage" in effct and effct["advantage"]:
             save = max(int(dice.roll("d20")), int(dice.roll("d20")))
