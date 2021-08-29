@@ -4,9 +4,11 @@ import dice
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
 from pycs.character import Character
+from pycs.constant import ActionType
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import Race
+from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.spells import Absorb_Elements
@@ -36,6 +38,11 @@ class Ranger(Character):
                 "ac": 14,
                 "speed": 25,
                 "spellcast_bonus_stat": Stat.WIS,
+                "action_preference": {
+                    ActionType.RANGED: 5,
+                    SpellType.HEALING: 3,
+                    ActionType.MELEE: 2,
+                },
             }
         )
         if level >= 1:
