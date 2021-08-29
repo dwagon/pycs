@@ -98,6 +98,31 @@ class Ranger(Character):
         )
 
     ##########################################################################
+    def spell_available(self, spell):
+        """Do we have enough slots to cast a spell"""
+        if spell.level == 0:
+            return True
+        if self.spell_slots[spell.level] > 0:
+            return True
+        return False
+
+    ##########################################################################
+    def cast(self, spell):
+        """Cast a spell"""
+        if spell.level == 0:
+            return True
+        if not self.spell_available(spell):
+            return False
+        self.spell_slots[spell.level] -= 1
+        return True
+
+    ##########################################################################
+    def report(self):
+        """Character report"""
+        super().report()
+        print(f"| Spells: {self.spell_slots}")
+
+    ##########################################################################
     def shortrepr(self):
         """What a fighter looks like in the arena"""
         if self.is_alive():
@@ -126,7 +151,7 @@ class ColossusSlayer(Effect):
         self.used = False
 
     ########################################################################
-    def hook_source_additional_melee_damage(self):
+    def hook_source_additional_damage(self, attack):
         """+1d8 damage"""
         if not self.used:
             self.used = True
