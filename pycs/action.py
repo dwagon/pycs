@@ -108,7 +108,9 @@ class Action:
         msg += f" +{self.modifier(source)}"
         to_hit = to_hit_roll + modifier
         for name, eff in source.effects.items():
-            mod = eff.hook_attack_to_hit(target, rnge)["bonus"]
+            mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)[
+                "bonus"
+            ]
             if mod:
                 to_hit += mod
                 msg += f" (+{mod} from {name})"

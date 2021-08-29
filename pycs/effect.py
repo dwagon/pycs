@@ -17,7 +17,7 @@ class Effect:
         self.source = None  # Set when added to a creature
 
     ##########################################################################
-    def hook_attack_to_hit(self, target, rnge):  # pylint: disable=unused-argument
+    def hook_attack_to_hit(self, **kwargs) -> dict:  # pylint: disable=unused-argument
         """Modify the roll to hit on attacks"""
         return {"bonus": 0}
 
