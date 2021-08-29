@@ -127,14 +127,23 @@ class Action:
     def buff_attack_damage(self, source, target) -> None:
         """Calculate the attack damage from buffs"""
         for atkname, eff in source.effects.copy().items():
-            if self.type == ActionType.MELEE:
-                dice_dmg, dmg, dmg_type = eff.hook_source_additional_melee_damage()
-                if dmg_type is None:
-                    dmg_type = self.dmg_type
-                if dice_dmg:
-                    dmg += int(dice.roll(dice_dmg))
-                if dmg:
-                    target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
+            dice_dmg, dmg, dmg_type = eff.hook_source_additional_damage(self)
+            if dmg_type is None:
+                dmg_type = self.dmg_type
+            if dice_dmg:
+                dmg += int(dice.roll(dice_dmg))
+            if dmg:
+                target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
+
+        # If the target of the damage has a buff
+        for atkname, eff in target.effects.copy().items():
+            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(self)
+            if dmg_type is None:
+                dmg_type = self.dmg_type
+            if dice_dmg:
+                dmg += int(dice.roll(dice_dmg))
+            if dmg:
+                target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
 
     ########################################################################
     def do_attack(self, source) -> bool:
@@ -155,8 +164,9 @@ class Action:
             if self.side_effect:
                 self.side_effect(source=source, target=target, dmg=dmg)
 
-            # If the source of the damage has a buff
+            # If the target or source of the damage has a buff
             self.buff_attack_damage(source, target)
+
             print(
                 f"{source} hit {target} (AC: {target.ac})"
                 f" with {self} for {dmg} hp {self.dmg_type.value} damage"

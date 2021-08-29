@@ -160,8 +160,11 @@ class BarbarianRageEffect(Effect):
         return dmg
 
     ########################################################################
-    def hook_source_additional_melee_damage(self):
-        return ("", 2, None)
+    def hook_source_additional_damage(self, attack):
+        """Rage causes dangerous things"""
+        if issubclass(attack.__class__, MeleeAttack):
+            return ("", 2, None)
+        return ("", 0, None)
 
     ########################################################################
     def hook_saving_throw(self, stat, **kwargs):
