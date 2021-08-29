@@ -1,5 +1,6 @@
 """ https://www.dndbeyond.com/classes/ranger """
 import colors
+import dice
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
 from pycs.character import Character
@@ -38,8 +39,6 @@ class Ranger(Character):
             }
         )
         if level >= 1:
-            # Lucky
-            # Brave
             kwargs["hp"] = 11
         if level >= 2:
             kwargs["hp"] = 18
@@ -61,6 +60,7 @@ class Ranger(Character):
         super().__init__(**kwargs)
 
         self.add_effect(Brave())
+        self.add_effect(Lucky())
         if level >= 2:
             self.add_effect(ArcheryFightingStyle())
             self.add_action(Cure_Wounds())
@@ -165,6 +165,28 @@ class Brave(Effect):
         if kwargs.get("effect") == Condition.FRIGHTENED:
             eff["advantage"] = True
         return eff
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class Lucky(Effect):
+    """When you roll a 1 on the d20 for an attack roll, ability check,
+    or saving throw, you can reroll the die and must use the new roll."""
+
+    ########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Lucky", **kwargs)
+
+    ########################################################################
+    def hook_d20(self, val, reason):
+        """Reroll ones"""
+        if reason in ("attack", "ability", "save"):
+            if val == 1:
+                val = int(dice.roll("d20"))
+                print(f"Lucky - reroll 1 to {val}")
+        return val
 
 
 # EOF
