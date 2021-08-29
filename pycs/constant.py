@@ -143,6 +143,7 @@ class Race(Enum):
 
     HUMAN = "Human"
     HALFELF = "Half-Elf"
+    HALFLING = "Halfling"
     HALFORC = "Half-Orc"
 
 

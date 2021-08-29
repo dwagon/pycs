@@ -129,7 +129,7 @@ class RangedAttack(Attack):
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=no-self-use
-        """The melee attack modifier"""
+        """The ranged attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier
         return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
