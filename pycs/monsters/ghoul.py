@@ -56,7 +56,7 @@ class Ghoul(Monster):
     ##########################################################################
     def se_ghoul_claws(self, source, target, dmg):  # pylint: disable=unused-argument
         """Implement Side Effect of Ghoul Claws"""
-        svth = target.saving_throw(Stat.CON, 10)
+        svth = target.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if not svth:
             print(f"{target} got paralysed by {source}")
             target.add_effect(GhoulClawEffect())
@@ -106,7 +106,7 @@ class GhoulClawEffect(Effect):
     ##########################################################################
     def removal_end_of_its_turn(self, victim):
         """Do we rmove the effect"""
-        svth = victim.saving_throw(Stat.CON, 10)
+        svth = victim.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if svth:
             print(f"{victim} resisted Ghoul claws")
             return True

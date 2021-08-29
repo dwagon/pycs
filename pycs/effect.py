@@ -17,7 +17,7 @@ class Effect:
         self.source = None  # Set when added to a creature
 
     ##########################################################################
-    def hook_attack_to_hit(self, target, rnge):  # pylint: disable=unused-argument
+    def hook_attack_to_hit(self, **kwargs) -> dict:  # pylint: disable=unused-argument
         """Modify the roll to hit on attacks"""
         return {"bonus": 0}
 
@@ -27,7 +27,7 @@ class Effect:
         return dmg
 
     ##########################################################################
-    def hook_saving_throw(self, stat):  # pylint: disable=unused-argument
+    def hook_saving_throw(self, stat, **kwargs):  # pylint: disable=unused-argument
         """Modify the saving throw roll"""
         return {"bonus": 0, "advantage": False, "disadvantage": False}
 
@@ -63,6 +63,11 @@ class Effect:
     def removal_after_being_attacked(self):
         """Do we remove the effect after being turned"""
         return False
+
+    ##########################################################################
+    def hook_d20(self, val, reason):  # pylint: disable=unused-argument
+        """We have rolled {val} on a d20 for {reason}"""
+        return val
 
     ##########################################################################
     def hook_source_additional_melee_damage(

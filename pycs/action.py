@@ -90,13 +90,13 @@ class Action:
             balance += 1
 
         if balance < 0:
-            to_hit_roll = min(int(dice.roll("d20")), int(dice.roll("d20")))
+            to_hit_roll = min(source.rolld20("attack"), source.rolld20("attack"))
             msg_0 = " with disadvantage"
         elif balance > 0:
-            to_hit_roll = max(int(dice.roll("d20")), int(dice.roll("d20")))
+            to_hit_roll = max(source.rolld20("attack"), source.rolld20("attack"))
             msg_0 = " with advantage"
         else:
-            to_hit_roll = int(dice.roll("d20"))
+            to_hit_roll = source.rolld20("attack")
             msg_0 = ""
         msg = f"{source} rolled {to_hit_roll}{msg_0}"
 
@@ -108,7 +108,9 @@ class Action:
         msg += f" +{self.modifier(source)}"
         to_hit = to_hit_roll + modifier
         for name, eff in source.effects.items():
-            mod = eff.hook_attack_to_hit(target, rnge)["bonus"]
+            mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)[
+                "bonus"
+            ]
             if mod:
                 to_hit += mod
                 msg += f" (+{mod} from {name})"

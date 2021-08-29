@@ -82,15 +82,15 @@ class BlessEffect(Effect):
         """Initialise"""
         super().__init__("Bless", **kwargs)
 
-    def hook_attack_to_hit(self, target, rnge):
+    def hook_attack_to_hit(self, **kwargs):
         """Mod attack roll"""
-        eff = super().hook_attack_to_hit(target, rnge)
+        eff = super().hook_attack_to_hit(**kwargs)
         eff.update({"bonus": int(dice.roll("d4"))})
         return eff
 
-    def hook_saving_throw(self, stat):
+    def hook_saving_throw(self, stat, **kwargs):
         """Mod saving throw"""
-        eff = super().hook_saving_throw(stat)
+        eff = super().hook_saving_throw(stat, **kwargs)
         eff.update({"bonus": int(dice.roll("d4"))})
         print(f"Bless adds {eff['bonus']} to saving throw")
         return eff

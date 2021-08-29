@@ -58,7 +58,7 @@ class GiantFrog(Monster):
             target.remove_condition(Condition.GRAPPLED)
             return
 
-        svth = target.saving_throw(Stat.STR, 11)
+        svth = target.saving_throw(Stat.STR, 11, effect=Condition.GRAPPLED)
         if not svth:
             print(f"{target} to grappled by {self}")
             target.add_condition(Condition.GRAPPLED)

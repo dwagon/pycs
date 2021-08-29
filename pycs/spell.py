@@ -67,6 +67,8 @@ def health_level_of_peers(doer):
         for _ in doer.arena.my_side(doer.side)
         if _.max_hp != 0
     ]
+    if not peers:
+        return None
     peers.sort()
     return peers[0]
 
@@ -77,17 +79,19 @@ def healing_heuristic(doer, spell):
     if not doer.spell_available(spell):
         return 0
     peers = health_level_of_peers(doer)
-    # print(f"health of peers = {peers}")
-    if peers.health < 20:  # No one is less than 20% wounded
-        return 5
-    elif peers.health < 40:
-        return 4
-    elif peers.health < 60:
-        return 2
-    elif peers.health < 80:
-        return 1
-    else:
+    if not peers:
         return 0
+    # print(f"health of peers = {peers}")
+    ret = 0
+    if peers.health < 20:  # No one is less than 20% wounded
+        ret = 5
+    elif peers.health < 40:
+        ret = 4
+    elif peers.health < 60:
+        ret = 2
+    elif peers.health < 80:
+        ret = 1
+    return ret
 
 
 ##############################################################################
@@ -134,7 +138,7 @@ class AttackSpell(SpellAction):
         dc = self.save_dc
         if not dc:
             dc = source.spellcast_save
-        saved = victim.saving_throw(stat=self.save_stat, dc=dc)
+        saved = victim.saving_throw(stat=self.save_stat, dc=dc, effect="unknown")
         if saved:
             if self.style == SpellType.SAVE_HALF:
                 dmg = int(dmg / 2)

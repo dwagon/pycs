@@ -17,11 +17,12 @@ from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
 
-from pycs.characters.barbarian import Barbarian
-from pycs.characters.cleric import Cleric
-from pycs.characters.fighter import Fighter
-from pycs.characters.paladin import Paladin
-from pycs.characters.warlock import Warlock
+from pycs.characters import Barbarian
+from pycs.characters import Cleric
+from pycs.characters import Fighter
+from pycs.characters import Paladin
+from pycs.characters import Ranger
+from pycs.characters import Warlock
 
 from pycs.arena import Arena
 
@@ -123,6 +124,7 @@ def combat_test():
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))
     arena.add_combatant(Fighter(arena=arena, name="Frank", level=5, side="Humans"))
     arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
+    arena.add_combatant(Ranger(arena=arena, name="Renee", level=5, side="Humans"))
     arena.add_combatant(Warlock(arena=arena, name="Wendy", level=5, side="Humans"))
 
     arena.do_initiative()

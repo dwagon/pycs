@@ -112,7 +112,7 @@ class GhastStenchEffect(Effect):
         if self.immune:
             print(f"{target} is immune to the stench")
             return
-        svth = target.saving_throw(Stat.CON, 10)
+        svth = target.saving_throw(Stat.CON, 10, effect=Condition.POISONED)
         if not svth:
             print(f"{target} got poisoned by Ghast stench")
             target.add_condition(Condition.POISONED)
@@ -124,7 +124,7 @@ class GhastStenchEffect(Effect):
     def hook_start_turn(self):
         """Start turn"""
         if not self.immune:
-            svth = self.target.saving_throw(Stat.CON, 10)
+            svth = self.target.saving_throw(Stat.CON, 10, effect=Condition.POISONED)
             if svth:
                 print("Made saving throw - immune to Ghast stench")
                 self.target.remove_condition(Condition.POISONED)
@@ -148,7 +148,7 @@ class GhastClawEffect(Effect):
     ##########################################################################
     def removal_end_of_its_turn(self, victim):
         """Check to see if victim can recover from claws"""
-        svth = victim.saving_throw(Stat.CON, 10)
+        svth = victim.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if svth:
             print(f"{victim} no longer paralyzed")
             victim.remove_condition(Condition.PARALYZED)
