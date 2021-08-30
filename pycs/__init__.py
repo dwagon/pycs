@@ -7,16 +7,18 @@ __version__ = "0.1.0"
 from collections import defaultdict
 from prettytable import PrettyTable
 
-from pycs.monsters import Ghast
-from pycs.monsters import Ghoul
-from pycs.monsters import GiantFrog
+# from pycs.monsters import Ghast
+# from pycs.monsters import Ghoul
+# from pycs.monsters import GiantFrog
 from pycs.monsters import Goblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
-from pycs.monsters import Skeleton
+
+# from pycs.monsters import Skeleton
 from pycs.monsters import Troll
-from pycs.monsters import VioletFungus
-from pycs.monsters import Wraith
+
+# from pycs.monsters import VioletFungus
+# from pycs.monsters import Wraith
 
 from pycs.characters import Barbarian
 from pycs.characters import Cleric
