@@ -22,6 +22,7 @@ from pycs.characters import Cleric
 from pycs.characters import Fighter
 from pycs.characters import Paladin
 from pycs.characters import Ranger
+from pycs.characters import Rogue
 from pycs.characters import Warlock
 
 from pycs.arena import Arena
@@ -117,7 +118,7 @@ def combat_test():
     arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
-    for i in range(10):
+    for i in range(5):
         arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
@@ -125,6 +126,7 @@ def combat_test():
     arena.add_combatant(Fighter(arena=arena, name="Frank", level=5, side="Humans"))
     arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
     arena.add_combatant(Ranger(arena=arena, name="Renee", level=5, side="Humans"))
+    arena.add_combatant(Rogue(arena=arena, name="Rowena", level=5, side="Humans"))
     arena.add_combatant(Warlock(arena=arena, name="Wendy", level=5, side="Humans"))
 
     arena.do_initiative()

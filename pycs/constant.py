@@ -141,6 +141,7 @@ class MonsterSize(Enum):
 class Race(Enum):
     """What race a character is"""
 
+    ELF = "ELF"
     HUMAN = "Human"
     HALFELF = "Half-Elf"
     HALFLING = "Halfling"
