@@ -11,7 +11,8 @@ from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.spells import Absorb_Elements
+
+# from pycs.spells import Absorb_Elements
 from pycs.spells import Cure_Wounds
 from pycs.spells import Hunters_Mark
 from pycs.spells import Lesser_Restoration
@@ -74,7 +75,7 @@ class Ranger(Character):
             self.add_action(Hunters_Mark())
         if level >= 3:
             self.add_effect(ColossusSlayer())
-            self.add_action(Absorb_Elements())
+            # self.add_action(Absorb_Elements())
         if level >= 5:
             self.add_action(Lesser_Restoration())
 

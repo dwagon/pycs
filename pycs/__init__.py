@@ -7,15 +7,18 @@ __version__ = "0.1.0"
 from collections import defaultdict
 from prettytable import PrettyTable
 
-from pycs.monsters import Ghast
-from pycs.monsters import Ghoul
-from pycs.monsters import GiantFrog
+# from pycs.monsters import Ghast
+# from pycs.monsters import Ghoul
+# from pycs.monsters import GiantFrog
 from pycs.monsters import Goblin
 from pycs.monsters import Kobold
-from pycs.monsters import Skeleton
+from pycs.monsters import Orc
+
+# from pycs.monsters import Skeleton
 from pycs.monsters import Troll
-from pycs.monsters import VioletFungus
-from pycs.monsters import Wraith
+
+# from pycs.monsters import VioletFungus
+# from pycs.monsters import Wraith
 
 from pycs.characters import Barbarian
 from pycs.characters import Cleric
@@ -109,16 +112,19 @@ def combat_test():
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
 
-    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
-    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
-    arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
-    arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
-    arena.add_combatant(Goblin(arena=arena, name="Goblin", side="Monsters"))
-    arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
-    arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
+    # arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
+    # arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
+    # arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
+    # arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
+    # arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
+    # arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
-    for i in range(10):
+    for i in range(5):
         arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
+    for i in range(5):
+        arena.add_combatant(Orc(arena=arena, name=f"Orc{i}", side="Monsters"))
+    for i in range(5):
+        arena.add_combatant(Goblin(arena=arena, name=f"Goblin{i}", side="Monsters"))
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))

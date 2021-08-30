@@ -135,7 +135,7 @@ class ActionSurge(Action):
         """Should we do this"""
         if not doer.action_surge:
             return 0
-        return 1
+        return 0  # Doesn't work yet
 
     ##########################################################################
     def pick_target(self, doer):

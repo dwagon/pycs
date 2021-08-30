@@ -8,13 +8,16 @@ from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.spells import Burning_Hands
-from pycs.spells import Command
+
+# from pycs.spells import Burning_Hands
+# from pycs.spells import Command
 from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
-from pycs.spells import Frostbite
+
+# from pycs.spells import Frostbite
 from pycs.spells import Hellish_Rebuke
-from pycs.spells import Poison_Spray
+
+# from pycs.spells import Poison_Spray
 from pycs.spells import Scorching_Ray
 from pycs.spells import Shatter
 from pycs.spells import Thunderclap
@@ -61,25 +64,23 @@ class Warlock(Character):
         if level >= 1:
             self.spell_slots = 1
             self.add_action(Eldritch_Blast())
-            self.add_action(Frostbite())
-            self.add_action(Poison_Spray())
-            self.add_action(Burning_Hands())
+            # self.add_action(Frostbite())
+            # self.add_action(Poison_Spray())
+            # self.add_action(Burning_Hands())
             self.add_action(Hellish_Rebuke())
         if level >= 2:
             self.spell_slots = 2
-            self.add_action(Command())
+            # self.add_action(Command())
             # Agonizing Blast
             # When you cast eldritch blast, add your Charisma modifier to the
             # damage it deals on a hit.
             # Armor of Shadows
             # You can cast mage armor on yourself at will, without expending
             # a spell slot or material components.
-            pass
         if level >= 3:
             self.add_action(Scorching_Ray())
             # Pact Boon: Pact of the Blades
             # Summon magical weapon
-            pass
         if level >= 4:
             self.add_action(Shatter())
             self.add_action(Thunderclap())
