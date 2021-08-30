@@ -173,7 +173,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             # Within range - don't move
             dist = self.distance(target)
             if rnge and dist <= rnge:
-                print(f"{target} is within range")
                 return
 
             old_coords = self.coords
@@ -311,9 +310,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         critical: bool,  # pylint: disable=unused-argument
     ) -> None:
         """Creature has fallen unconscious"""
+        self.hp = 0
         if self.state == "UNCONSCIOUS":
             return
-        self.hp = 0
         self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)
         if self.has_grappled:
