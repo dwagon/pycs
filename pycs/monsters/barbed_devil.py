@@ -1,4 +1,6 @@
 """ https://www.dndbeyond.com/monsters/barbed-devil"""
+# TO DO: Implement Magic Reistance
+# TO DO: Implement Barbed Hide
 import colors
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
