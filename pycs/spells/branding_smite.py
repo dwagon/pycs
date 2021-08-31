@@ -50,7 +50,7 @@ class Branding_Smite(SpellAction):
             return 0
         if doer.has_effect("Branding Smite"):
             return 0
-        return 1
+        return 12  # 2d6
 
 
 ##############################################################################

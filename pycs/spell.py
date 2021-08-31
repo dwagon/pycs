@@ -60,10 +60,10 @@ class SpellAction(Action):
 
 ##############################################################################
 def health_level_of_peers(doer):
-    """Return the health levels of peers as percentage"""
+    """Return the health levels (missing hp) of peers"""
     result = namedtuple("Result", "health id target")
     peers = [
-        result(100 * _.hp / _.max_hp, id(_), _)
+        result(_.max_hp - _.hp, id(_), _)
         for _ in doer.arena.my_side(doer.side)
         if _.max_hp != 0
     ]
@@ -82,16 +82,7 @@ def healing_heuristic(doer, spell):
     if not peers:
         return 0
     # print(f"health of peers = {peers}")
-    ret = 0
-    if peers.health < 20:  # No one is less than 20% wounded
-        ret = 5
-    elif peers.health < 40:
-        ret = 4
-    elif peers.health < 60:
-        ret = 2
-    elif peers.health < 80:
-        ret = 1
-    return ret
+    return peers.health
 
 
 ##############################################################################

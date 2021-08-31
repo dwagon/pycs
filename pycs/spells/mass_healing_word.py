@@ -28,7 +28,7 @@ class Mass_Healing_Word(SpellAction):
         suitable = 0
         for creat in doer.pick_closest_friends():
             if creat.hp < creat.max_hp:
-                suitable += 1
+                suitable += 4
         return int(suitable / 2)
 
     ##########################################################################

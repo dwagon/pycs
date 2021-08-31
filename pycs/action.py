@@ -185,6 +185,17 @@ class Action:
         return True
 
     ########################################################################
+    def max_dmg(self, source) -> int:
+        """Return the max possible damage of the attack - used to calculate desirable action"""
+        dmg = int(dice.roll_max(self.dmg[0]))
+        if self.dmg[1]:
+            dmg += self.dmg[1]
+        dmg_bon = self.dmg_bonus(source)
+        if dmg_bon:
+            dmg += dmg_bon
+        return max(dmg, 0)
+
+    ########################################################################
     def roll_dmg(self, source, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:

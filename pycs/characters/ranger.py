@@ -139,7 +139,8 @@ class RangersRangedAttack(RangedAttack):
 
     ########################################################################
     def heuristic(self, doer):
-        """Should we perform this attack - no if adjacent, yes if in range, middling if at long range"""
+        """Should we perform this attack - no if adjacent, yes if in range,
+        middling if at long range"""
         enemies = doer.pick_closest_enemy()
         if not enemies:
             return 0
@@ -149,11 +150,7 @@ class RangersRangedAttack(RangedAttack):
         dist = doer.distance(enemies[0])
         if dist <= 1:
             return 0
-        if dist < self.l_range:
-            return 1 + len(hmark)
-        if dist < self.s_range:
-            return 2 + len(hmark)
-        return 0
+        return self.max_dmg(doer) + len(hmark)
 
     ########################################################################
     def pick_target(self, doer):

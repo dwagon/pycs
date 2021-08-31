@@ -35,7 +35,7 @@ class Aid(SpellAction):
             if doer.distance(targ) <= 30 / 5:
                 if doer.has_effect("Aid"):
                     continue
-                close += 1
+                close += 5
         return close
 
     ##########################################################################

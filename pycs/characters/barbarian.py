@@ -112,7 +112,7 @@ class BarbarianRage(Action):
     def heuristic(self, doer):
         if doer.has_effect("Rage"):
             return 0
-        return 2
+        return 10
 
     ########################################################################
     def perform_action(self, source):

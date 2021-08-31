@@ -43,7 +43,7 @@ class Bless(SpellAction):
             if doer.distance(targ) <= self.range()[0]:
                 if doer.has_effect("Bless"):
                     continue
-                close += 1
+                close += 2
         return close
 
     ###########################################################################

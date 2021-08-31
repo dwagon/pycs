@@ -45,7 +45,7 @@ class Hunters_Mark(SpellAction):
         for enemy in doer.pick_closest_enemy():
             if doer.distance(enemy) > self.range()[0]:
                 continue
-            return 1
+            return 6
         print("No enemy in range")
         return 0
 

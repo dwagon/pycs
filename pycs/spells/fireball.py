@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/spells/fireball"""
 
 from collections import defaultdict
+import dice
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import SpellType
@@ -80,7 +81,10 @@ class Fireball(AttackSpell):
         if not doer.spell_available(self):
             return 0
         if self.pick_target(doer):
-            return 2 * self._num_enemy - 3 * self._num_friend
+            return (
+                int(dice.roll_max("8d6")) * self._num_enemy
+                - int(dice.roll_max("8d6")) * self._num_friend
+            )
         return 0
 
 

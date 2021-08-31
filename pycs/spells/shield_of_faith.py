@@ -55,7 +55,7 @@ class Shield_Of_Faith(SpellAction):
         if not doer.spell_available(self):
             return 0
         if self.pick_target(doer):
-            return 1
+            return 5
         return 0
 
 
