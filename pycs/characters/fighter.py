@@ -99,9 +99,7 @@ class SecondWind(Action):
         """Should we do this"""
         if not doer.second_wind:
             return 0
-        if doer.max_hp - doer.hp > 10:
-            return 1
-        return 0
+        return doer.max_hp - doer.hp
 
     ##########################################################################
     def pick_target(self, doer):

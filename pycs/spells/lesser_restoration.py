@@ -62,7 +62,7 @@ class Lesser_Restoration(SpellAction):
             return 0
         if self.pick_target(doer) is None:
             return 0
-        return 2
+        return 10
 
 
 # EOF

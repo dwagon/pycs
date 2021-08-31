@@ -33,7 +33,7 @@ class Hold_Person(SpellAction):
                 continue
             if doer.distance(enemy) > self.range()[0]:
                 continue
-            return 2
+            return 10
         return 0
 
     ##########################################################################

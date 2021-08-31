@@ -72,7 +72,7 @@ class Scorching_Ray(AttackSpell):
         for enemy in doer.pick_closest_enemy():
             if doer.distance(enemy) < self.range()[0]:
                 targets += 1
-        return min(3, targets)
+        return min(3, targets) * 12
 
 
 # EOF

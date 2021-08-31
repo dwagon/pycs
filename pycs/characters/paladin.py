@@ -196,12 +196,8 @@ class LayOnHands(Action):
             return 0
         friend = friends[0]
         if friend.has_condition(Condition.POISONED):
-            return 3
-        if friend.hp < friend.max_hp / 2:
-            return 3
-        if friend.hp < friend.max_hp:
-            return 1
-        return 0
+            return 10
+        return friend.max_hp - friend.hp
 
     ########################################################################
     def pick_target(self, doer):

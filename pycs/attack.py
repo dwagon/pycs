@@ -79,7 +79,7 @@ class MeleeAttack(Attack):
         if not enemy:
             return 0
         if doer.distance(enemy[0]) <= 1:
-            return 2
+            return self.max_dmg(doer)
         return 0
 
 
@@ -121,11 +121,7 @@ class RangedAttack(Attack):
         dist = doer.distance(enemy[0])
         if dist <= 1:
             return 0
-        if dist < self.l_range:
-            return 1
-        if dist < self.s_range:
-            return 2
-        return 0
+        return self.max_dmg(doer)
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=no-self-use

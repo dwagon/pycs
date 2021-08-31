@@ -66,7 +66,7 @@ class BDMeleeAttack(MeleeAttack):
         """Should we do the action"""
         enemy = doer.pick_closest_enemy()
         if enemy and doer.distance(enemy[0]) <= 1:
-            return 1
+            return 10
         return 0
 
     ##########################################################################
@@ -106,7 +106,7 @@ class BDRangedAttack(RangedAttack):
             return 0
         if doer.distance(enemy[0]) <= 1:
             return 0
-        return 1
+        return 10
 
     ##########################################################################
     def pick_target(self, doer):
