@@ -89,7 +89,7 @@ class Ranger(Character):
             )
         )
         self.add_action(
-            RangedAttack(
+            RangersRangedAttack(
                 "Longbow",
                 s_range=150,
                 l_range=600,
@@ -129,6 +129,45 @@ class Ranger(Character):
         if self.is_alive():
             return colors.blue("R", bg="green")
         return colors.blue("R", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class RangersRangedAttack(RangedAttack):
+    """Prioritise the creature with a hunters mark"""
+
+    ########################################################################
+    def heuristic(self, doer):
+        """Should we perform this attack - no if adjacent, yes if in range, middling if at long range"""
+        enemies = doer.pick_closest_enemy()
+        if not enemies:
+            return 0
+        if not self.available:
+            return 0
+        hmark = [_ for _ in enemies if _.has_effect("Hunters Mark")]
+        dist = doer.distance(enemies[0])
+        if dist <= 1:
+            return 0
+        if dist < self.l_range:
+            return 1 + len(hmark)
+        if dist < self.s_range:
+            return 2 + len(hmark)
+        return 0
+
+    ########################################################################
+    def pick_target(self, doer):
+        """Who are we doing this to - the target with hunters mark or the
+        closest"""
+        enemies = doer.pick_closest_enemy()
+        if not enemies:
+            return 0
+        if not self.available:
+            return 0
+        hmark = [_ for _ in enemies if _.has_effect("Hunters Mark")]
+        if hmark:
+            return hmark[0]
+        return enemies[0]
 
 
 ##############################################################################
