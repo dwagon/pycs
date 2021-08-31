@@ -8,6 +8,7 @@ from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import Stat
+from pycs.effect import Effect
 
 
 ##############################################################################
@@ -46,18 +47,17 @@ class Rogue(Character):
 
         super().__init__(**kwargs)
 
+        self.sneak_attack_dmg = "1d6"
         if level >= 2:
-            pass
-            # Sneak Attack
+            self.add_effect(SneakAttack())
         if level >= 3:
-            # Cunning Action
-            # Rogueish Archetype
-            pass
+            self.sneak_attack_dmg = "2d6"
+            self.add_action(CunningAction())
         if level >= 4:
             pass
         if level >= 5:
+            self.sneak_attack_dmg = "3d6"
             self.add_action(UncannyDodge())
-            pass
 
         self.add_action(
             MeleeAttack(
@@ -105,6 +105,83 @@ class UncannyDodge(Action):
         """Half damage"""
         print("Using uncanny dodge to reduce damage")
         return int(kwargs.get("dmg") / 2)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class CunningAction(Action):
+    """You can take a bonus action on each of your turns to take the
+    Dash, Disengage, or Hide action."""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Cunning Action", **kwargs)
+        self.category = ActionCategory.BONUS
+
+    ##########################################################################
+    def heuristic(self, doer):
+        """Should we do this"""
+        return 0
+        # Don't know how to implement this yet
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class SneakAttack(Effect):
+    """Beginning at 1st level, you know how to strike subtly and exploit
+    a foe’s distraction. Once per turn, you can deal an extra 1d6 damage
+    to one creature you hit with an attack if you have advantage on the
+    attack roll. The attack must use a finesse or a ranged weapon.
+
+    You don’t need advantage on the attack roll if another enemy of the
+    target is within 5 feet of it, that enemy isn’t incapacitated, and
+    you don’t have disadvantage on the attack roll.
+
+    The amount of the extra damage increases as you gain levels in this
+    class, as shown in the Sneak Attack column of the Rogue table."""
+
+    ########################################################################
+    def __init__(self, **kwargs):
+        """Initialise"""
+        super().__init__("Sneak Attack", **kwargs)
+        self._used_this_turn = False
+
+    ########################################################################
+    def hook_start_turn(self):
+        """Start the turn"""
+        self._used_this_turn = False
+
+    ########################################################################
+    def hook_source_additional_damage(self, attack, source, target):
+        """Do the sneak attack"""
+        if self._used_this_turn:
+            return ("", 0, None)
+
+        if target.state != "OK":
+            return ("", 0, None)
+
+        allies_adjacent = False
+        allies = [_ for _ in target.pick_closest_enemy() if _ != source]
+        if allies:
+            if allies[0].distance(target) <= 1:
+                allies_adjacent = True
+                print(f"Ally {allies[0]} adjacent to {target}")
+
+        rnge = source.distance(target)
+        if allies_adjacent and attack.has_disadvantage(source, target, rnge):
+            print("but it doesn't matter as we have disadvantage")
+            allies_adjacent = False
+
+        if not allies_adjacent:
+            if not attack.has_advantage(source, target, rnge):
+                return ("", 0, None)
+            else:
+                print("We have advantage on attack")
+        self._used_this_turn = True
+        return (self.source.sneak_attack_dmg, 0, None)
 
 
 # EOF
