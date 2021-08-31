@@ -204,7 +204,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} is immune to {dmg_type.value}")
             dmg = 0
         if dmg_type in self.resistant:
-            print(f"{self} is restant to {dmg_type.value}")
+            print(f"{self} is resistant to {dmg_type.value}")
             dmg /= 2
         for eff in self.effects.values():
             dmg = eff.hook_being_hit(dmg, dmg_type)
