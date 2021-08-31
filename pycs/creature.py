@@ -374,7 +374,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
-            print(f"|  Temp Effects: {', '.join(self.effects)}")
+            print(f"|  Effects: {', '.join(self.effects)}")
 
     ##########################################################################
     def distance(self, target) -> int:
@@ -429,7 +429,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if heur * pref != 0:
                 actions.append(acttuple(heur * pref, random.random(), heur, pref, act))
             else:
-                print(f"\tNot happening {heur=},  {pref=},  {act=}")
+                print(f"\t{typ.value} Not {heur=},  {pref=},  {act=}")
         actions.sort(reverse=True)
 
         for act in actions:

@@ -1,4 +1,4 @@
-""" Handle Temporary effects """
+""" Handle Effects """
 from typing import Tuple, Optional
 from pycs.constant import DamageType
 
@@ -7,7 +7,7 @@ from pycs.constant import DamageType
 ##############################################################################
 ##############################################################################
 class Effect:
-    """Temporary effects"""
+    """Effects"""
 
     ##########################################################################
     def __init__(self, name, **kwargs):
