@@ -71,7 +71,7 @@ class Effect:
 
     ##########################################################################
     def hook_source_additional_damage(
-        self, attack  # pylint: disable=unused-argument
+        self, attack, source, target  # pylint: disable=unused-argument
     ) -> Optional[Tuple[str, int, Optional[DamageType]]]:
         """Addition damage from melee weapons based on the owner of the effect
         Return:
@@ -83,7 +83,7 @@ class Effect:
 
     ##########################################################################
     def hook_target_additional_damage(
-        self, attack  # pylint: disable=unused-argument
+        self, attack, source, target  # pylint: disable=unused-argument
     ) -> Optional[Tuple[str, int, Optional[DamageType]]]:
         """Addition damage from melee weapons based on the target of the effect
         Return:

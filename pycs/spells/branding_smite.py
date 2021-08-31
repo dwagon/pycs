@@ -65,7 +65,7 @@ class BrandingSmiteEffect(Effect):
         super().__init__("Branding Smite", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(self, attack):
+    def hook_source_additional_damage(self, attack, source, target):
         """More damage"""
         return ("2d6", 0, DamageType.RADIANT)
 

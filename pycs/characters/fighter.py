@@ -156,7 +156,7 @@ class DuelingFightingStyle(Effect):
         super().__init__("Dueling Fighting Style", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(self, attack):
+    def hook_source_additional_damage(self, attack, source, target):
         """2 more damage"""
         if issubclass(attack.__class__, MeleeAttack):
             return ("", 2, None)

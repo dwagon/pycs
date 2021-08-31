@@ -77,7 +77,7 @@ class HuntersMarkEffect(Effect):
         super().__init__("Hunters Mark", **kwargs)
 
     ##########################################################################
-    def hook_target_additional_damage(self, _):
+    def hook_target_additional_damage(self, _, source, target):
         """More daamage"""
         return ("1d6", 0, None)
 
