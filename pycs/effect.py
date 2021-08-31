@@ -1,4 +1,4 @@
-""" Handle Temporary effects """
+""" Handle Effects """
 from typing import Tuple, Optional
 from pycs.constant import DamageType
 
@@ -7,7 +7,7 @@ from pycs.constant import DamageType
 ##############################################################################
 ##############################################################################
 class Effect:
-    """Temporary effects"""
+    """Effects"""
 
     ##########################################################################
     def __init__(self, name, **kwargs):
@@ -71,7 +71,7 @@ class Effect:
 
     ##########################################################################
     def hook_source_additional_damage(
-        self, attack  # pylint: disable=unused-argument
+        self, attack, source, target  # pylint: disable=unused-argument
     ) -> Optional[Tuple[str, int, Optional[DamageType]]]:
         """Addition damage from melee weapons based on the owner of the effect
         Return:

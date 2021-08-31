@@ -191,7 +191,7 @@ class ColossusSlayer(Effect):
         self.used = False
 
     ########################################################################
-    def hook_source_additional_damage(self, attack):
+    def hook_source_additional_damage(self, attack, source, target):
         """+1d8 damage"""
         if not self.used:
             self.used = True

@@ -196,6 +196,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
     ) -> None:
         """We've been hit by source- take damage"""
+        dmg = self.react_predmg(dmg, dmg_type, source, critical)
         if dmg_type in self.vulnerable:
             print(f"{self} is vulnerable to {dmg_type.value}")
             dmg *= 2
@@ -217,17 +218,35 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
-            self.react(source)
+            self.react_postdmg(source)
 
     ##########################################################################
-    def react(self, source) -> None:
+    def react_predmg(self, dmg: int, dmg_type: DamageType, source, critical: bool):
+        """About to take damage - do we have a reaction that can alter the damage"""
+        if ActionCategory.REACTION not in self.options_this_turn:
+            return dmg
+        react = self.pick_action(
+            typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg"
+        )
+        if react is not None:
+            print(f"{self} reacts against {source}")
+            dmg = react.hook_predmg(
+                dmg=dmg, dmg_type=dmg_type, source=source, critical=critical
+            )
+            self.options_this_turn.remove(ActionCategory.REACTION)
+        return dmg
+
+    ##########################################################################
+    def react_postdmg(self, source) -> None:
         """React to an incoming attack with a reaction"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return
-        react = self.pick_action(typ=ActionCategory.REACTION, target=source)
+        react = self.pick_action(
+            typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg"
+        )
         if react is not None:
             print(f"{self} reacts against {source}")
-            react.perform_action(self)
+            react.hook_postdmg(self)
             self.options_this_turn.remove(ActionCategory.REACTION)
 
     ##########################################################################
@@ -355,7 +374,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
-            print(f"|  Temp Effects: {', '.join(self.effects)}")
+            print(f"|  Effects: {', '.join(self.effects)}")
 
     ##########################################################################
     def distance(self, target) -> int:
@@ -387,12 +406,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def pick_action(self, typ=ActionCategory.ACTION, target=None) -> Action:
-        """What are we going to do this turn based on individual action_preference"""
+    def pick_action(
+        self, typ=ActionCategory.ACTION, target=None, need_hook=None
+    ) -> Action:
+        """What are we going to do this turn based on individual action_preference
+        If {need_hook} is set then the action must define that hook to be in contention
+        """
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
         acttuple = namedtuple("acttuple", "qual rnd heur pref act")
         for heur, act in self.possible_actions(typ):
+            if need_hook and not hasattr(act, need_hook):
+                continue
             if act.__class__ in self.action_preference:
                 pref = self.action_preference.get(act.__class__)
             elif issubclass(act.__class__, SpellAction):
@@ -404,7 +429,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if heur * pref != 0:
                 actions.append(acttuple(heur * pref, random.random(), heur, pref, act))
             else:
-                print(f"\tNot happening {heur=},  {pref=},  {act=}")
+                print(f"\t{typ.value} Not {heur=},  {pref=},  {act=}")
         actions.sort(reverse=True)
 
         for act in actions:
