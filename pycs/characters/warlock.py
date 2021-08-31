@@ -8,8 +8,8 @@ from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.spells import Burning_Hands
 
-# from pycs.spells import Burning_Hands
 # from pycs.spells import Command
 from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
@@ -66,7 +66,7 @@ class Warlock(Character):
             self.add_action(Eldritch_Blast())
             # self.add_action(Frostbite())
             # self.add_action(Poison_Spray())
-            # self.add_action(Burning_Hands())
+            self.add_action(Burning_Hands())
             self.add_action(Hellish_Rebuke())
         if level >= 2:
             self.spell_slots = 2

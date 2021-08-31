@@ -4,8 +4,8 @@ from .aid import Aid
 # from .absorb_elements import Absorb_Elements
 from .beacon_of_hope import Beacon_Of_Hope
 from .bless import Bless
+from .burning_hands import Burning_Hands
 
-# from .burning_hands import Burning_Hands
 # from .command import Command
 from .cure_wounds import Cure_Wounds
 from .eldritch_blast import Eldritch_Blast
@@ -35,7 +35,7 @@ __all__ = [
     # "Absorb_Elements",
     "Beacon_Of_Hope",
     "Bless",
-    # "Burning_Hands",
+    "Burning_Hands",
     # "Command",
     "Cure_Wounds",
     "Eldritch_Blast",
