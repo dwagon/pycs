@@ -18,7 +18,7 @@ from pycs.monsters import Orc
 from pycs.monsters import Troll
 
 # from pycs.monsters import VioletFungus
-# from pycs.monsters import Wraith
+from pycs.monsters import Wraith
 
 from pycs.characters import Barbarian
 from pycs.characters import Cleric
@@ -118,7 +118,7 @@ def combat_test():
     # arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
     # arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
     # arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
-    # arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
+    arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
     for i in range(5):
         arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
