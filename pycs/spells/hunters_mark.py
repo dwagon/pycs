@@ -62,7 +62,7 @@ class Hunters_Mark(SpellAction):
     ##########################################################################
     def cast(self, caster):
         """Do the spell"""
-        self.target.add_effect(HuntersMarkEffect())
+        self.target.add_effect(HuntersMarkEffect(caster=caster))
 
 
 ##############################################################################
@@ -77,9 +77,11 @@ class HuntersMarkEffect(Effect):
         super().__init__("Hunters Mark", **kwargs)
 
     ##########################################################################
-    def hook_target_additional_damage(self, _):
-        """More daamage"""
-        return ("1d6", 0, None)
+    def hook_target_additional_damage(self, _, source, target):
+        """More damage"""
+        if source == self.caster:
+            return ("1d6", 0, None)
+        return ("", 0, None)
 
 
 # EOF
