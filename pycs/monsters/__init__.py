@@ -1,4 +1,5 @@
 """ Monsters """
+from .barbed_devil import BarbedDevil
 from .ghast import Ghast
 from .ghoul import Ghoul
 from .giant_frog import GiantFrog
@@ -12,6 +13,7 @@ from .wraith import Wraith
 from .zombie import Zombie
 
 __all__ = [
+    "BarbedDevil",
     "Ghast",
     "Ghoul",
     "GiantFrog",

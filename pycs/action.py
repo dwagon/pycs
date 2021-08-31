@@ -137,7 +137,9 @@ class Action:
 
         # If the target of the damage has a buff
         for atkname, eff in target.effects.copy().items():
-            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(self)
+            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(
+                self, source, target
+            )
             if dmg_type is None:
                 dmg_type = self.dmg_type
             if dice_dmg:

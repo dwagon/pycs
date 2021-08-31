@@ -10,6 +10,7 @@ from prettytable import PrettyTable
 # from pycs.monsters import Ghast
 # from pycs.monsters import Ghoul
 # from pycs.monsters import GiantFrog
+from pycs.monsters import BarbedDevil
 from pycs.monsters import Goblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
@@ -112,6 +113,7 @@ def combat_test():
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
 
+    arena.add_combatant(BarbedDevil(arena=arena, name="Barbed Devil", side="Monsters"))
     # arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
     # arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
     # arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
