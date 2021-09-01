@@ -29,13 +29,15 @@ class Hunters_Mark(SpellAction):
         name = "Hunters Mark"
         kwargs.update(
             {
-                "reach": 90,
-                "level": 1,
-                "type": SpellType.BUFF,
                 "category": ActionCategory.BONUS,
+                "concentration": SpellType.CONCENTRATION,
+                "level": 1,
+                "reach": 90,
+                "type": SpellType.BUFF,
             }
         )
         super().__init__(name, **kwargs)
+        self._victim = None
 
     ##########################################################################
     def heuristic(self, doer):
@@ -45,6 +47,8 @@ class Hunters_Mark(SpellAction):
         for enemy in doer.pick_closest_enemy():
             if doer.distance(enemy) > self.range()[0]:
                 continue
+            if enemy.has_effect("Hunters Mark"):
+                return 0
             return 6
         print("No enemy in range")
         return 0
@@ -63,6 +67,15 @@ class Hunters_Mark(SpellAction):
     def cast(self, caster):
         """Do the spell"""
         self.target.add_effect(HuntersMarkEffect(caster=caster))
+        self._victim = self.target
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
+        if self._victim:
+            print(f"Removing Hunters Mark from {self._victim}")
+            self._victim.remove_effect("Hunters Mark")
+            self._victim = None
 
 
 ##############################################################################

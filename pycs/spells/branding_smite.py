@@ -24,10 +24,10 @@ class Branding_Smite(SpellAction):
         kwargs.update(
             {
                 "category": ActionCategory.BONUS,
-                "concentration": True,
                 "reach": 0,
                 "level": 2,
                 "type": SpellType.BUFF,
+                "concentration": SpellType.CONCENTRATION,
             }
         )
         super().__init__(name, **kwargs)
@@ -51,6 +51,11 @@ class Branding_Smite(SpellAction):
         if doer.has_effect("Branding Smite"):
             return 0
         return 12  # 2d6
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
+        self.caster.remove_effect("Branding Smite")
 
 
 ##############################################################################

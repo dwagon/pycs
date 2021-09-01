@@ -17,7 +17,7 @@ class Shield_Of_Faith(SpellAction):
         kwargs.update(
             {
                 "casting": "bonus",
-                "concentration": True,
+                "concentration": SpellType.CONCENTRATION,
                 "reach": 60,
                 "level": 1,
                 "type": SpellType.BUFF,
@@ -32,6 +32,7 @@ class Shield_Of_Faith(SpellAction):
         if caster.distance(friend) > self.range()[0]:
             return False
         friend.add_effect(Shield_Of_Faith_Effect(cause=caster))
+        self.target = friend
         return True
 
     ###########################################################################
@@ -57,6 +58,11 @@ class Shield_Of_Faith(SpellAction):
         if self.pick_target(doer):
             return 5
         return 0
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
+        self.target.remove_effect("Shield of Faith")
 
 
 ##############################################################################

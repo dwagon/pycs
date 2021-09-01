@@ -27,9 +27,10 @@ class Bless(SpellAction):
                 "reach": 30,
                 "level": 1,
                 "type": SpellType.BUFF,
-                "concentration": True,
+                "concentration": SpellType.CONCENTRATION,
             }
         )
+        self._effected = []
         super().__init__(name, **kwargs)
 
     ###########################################################################
@@ -62,9 +63,16 @@ class Bless(SpellAction):
             targets -= 1
             print(f"{friend} is now Blessed")
             friend.add_effect(BlessEffect(cause=caster))
+            self._effected.append(friend)
             if targets <= 0:
                 break
         return True
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
+        for pers in self._effected:
+            pers.remove_effect("Bless")
 
     ###########################################################################
     def bless_result(self):

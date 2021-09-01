@@ -36,7 +36,14 @@ class Enhance_Ability(SpellAction):
     ##########################################################################
     def __init__(self, **kwargs):
         name = "Enhance Ability"
-        kwargs.update({"reach": 0, "level": 2, "type": SpellType.BUFF})
+        kwargs.update(
+            {
+                "reach": 0,
+                "level": 2,
+                "type": SpellType.BUFF,
+                "concentration": SpellType.CONCENTRATION,
+            }
+        )
         super().__init__(name, **kwargs)
 
     ##########################################################################
@@ -55,6 +62,10 @@ class Enhance_Ability(SpellAction):
     def cast(self, caster):
         """Do the spell"""
         return True
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
 
 
 # EOF
