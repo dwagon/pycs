@@ -27,7 +27,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.arena = arena
         self.vulnerable = kwargs.get("vulnerable", [])
         self.name = kwargs.get("name", self.__class__.__name__)
-        self._ac = kwargs.get("ac", 10)  # pylint: disable=invalid-name
+        self._ac = kwargs.get("ac", 10)
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
@@ -68,6 +68,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.coords = None
         self.statistics = []
         self.options_this_turn = []
+        self.concentration = None
 
     ##########################################################################
     @property
@@ -212,6 +213,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"{self} has taken {dmg} damage ({dmg_type.value}) from {atkname}")
         self.hp -= dmg
         print(f"{self} now has {self.hp} HP")
+        if dmg and self.concentration:
+            svth = self.saving_throw(Stat.CON, max(10, int(dmg / 2)))
+            if not svth:
+                print(f"{self} failed concentration save")
+                self.remove_concentration()
 
         source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))
 
@@ -313,6 +319,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = 0
         if self.state == "UNCONSCIOUS":
             return
+        print(f"{self} has fallen unconscious")
+        self.remove_concentration()
         self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)
         if self.has_grappled:
@@ -371,6 +379,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"| {self.name} @ {self.coords}")
         print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
         print(f"|  AC: {self.ac}")
+        if self.concentration:
+            print(f"|  Concentration: {self.concentration}")
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
@@ -536,6 +546,22 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             did_act = self.do_action(act)
             if did_act and act.action_cost:
                 self.options_this_turn.remove(categ)
+
+    ##########################################################################
+    def add_concentration(self, spell):
+        """Start a new concentration spell"""
+        if self.concentration:
+            print(f"{self} removing {self.concentration} as casting {spell}")
+            self.remove_concentration()
+        self.concentration = spell
+
+    ##########################################################################
+    def remove_concentration(self):
+        """Stop concentrating on a  spell"""
+        if not self.concentration:
+            return
+        self.concentration.end_concentration()
+        self.concentration = None
 
     ##########################################################################
     def rolld20(self, reason):

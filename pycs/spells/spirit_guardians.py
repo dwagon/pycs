@@ -25,7 +25,14 @@ class Spirit_Guardians(SpellAction):
     ##########################################################################
     def __init__(self, **kwargs):
         name = "Spirit Guardians"
-        kwargs.update({"reach": 15, "level": 3, "type": SpellType.RANGED})
+        kwargs.update(
+            {
+                "reach": 15,
+                "level": 3,
+                "type": SpellType.RANGED,
+                "concentration": SpellType.CONCENTRATION,
+            }
+        )
         super().__init__(name, **kwargs)
 
     ##########################################################################
@@ -47,6 +54,10 @@ class Spirit_Guardians(SpellAction):
     def cast(self, caster):
         """Do the spell"""
         return True
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
 
 
 # EOF

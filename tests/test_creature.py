@@ -9,10 +9,12 @@ from pycs.constant import Condition
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.attack import MeleeAttack
 from pycs.creature import DamageType
 from pycs.effect import Effect
 
 
+##############################################################################
 ##############################################################################
 ##############################################################################
 class TestCreature(unittest.TestCase):
@@ -93,6 +95,24 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(self.creat.hp, 19 + healed)
         healed = self.creat.heal("d4", 99)
         self.assertEqual(self.creat.hp, self.creat.max_hp)
+
+    ########################################################################
+    def test_add_action(self):
+        """test add_action"""
+        self.creat.add_action(MeleeAttack("alpha"))
+        self.creat.add_action(MeleeAttack("beta"))
+        act = self.creat.pick_attack_by_name("alpha")
+        self.assertEqual(act.name, "alpha")
+        act = self.creat.pick_attack_by_name("foo")
+        self.assertIsNone(act)
+
+    ########################################################################
+    def test_is_alive(self):
+        """is_alive testing"""
+        self.creat.hp = 10
+        self.assertTrue(self.creat.is_alive())
+        self.creat.hp = 0
+        self.assertFalse(self.creat.is_alive())
 
     ########################################################################
     def test_hit(self):

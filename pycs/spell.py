@@ -19,6 +19,7 @@ class SpellAction(Action):
         self.cure_hp = kwargs.get("cure_hp")
         self.level = kwargs.get("level")
         self.concentration = kwargs.get("concentration")
+        self.caster = None
         self.target = None
 
     ########################################################################
@@ -43,7 +44,13 @@ class SpellAction(Action):
             return False
         source.cast(self)
         print(f"{source} is casting {self.name}")
-        return self.cast(source)
+        self.caster = source
+        if self.concentration and self.caster.concentration:
+            self.caster.remove_concentration()
+        result = self.cast(source)
+        if self.concentration:
+            source.add_concentration(self)
+        return result
 
     ########################################################################
     def heuristic(self, doer):
@@ -81,7 +88,6 @@ def healing_heuristic(doer, spell):
     peers = health_level_of_peers(doer)
     if not peers:
         return 0
-    # print(f"health of peers = {peers}")
     return peers.health
 
 
@@ -170,6 +176,10 @@ class AttackSpell(SpellAction):
     def cast(self, caster):
         """Cast the attack spell - overwrite if required"""
         return self.do_attack(caster)
+
+    ##########################################################################
+    def end_concentration(self):
+        """What happens when we stop concentrating"""
 
 
 # EOF
