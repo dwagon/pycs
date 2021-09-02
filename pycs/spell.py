@@ -153,7 +153,7 @@ class AttackSpell(SpellAction):
             return 0
         if doer.distance(pot_target[0]) > self.range()[1]:
             return 0
-        return 2
+        return self.max_dmg(doer)
 
     ########################################################################
     def roll_to_hit(self, source, target, rnge):
