@@ -1,20 +1,22 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
 import random
-from typing import Optional
+from collections import defaultdict
 from collections import namedtuple
+from typing import Optional
 import dice
 from pycs.action import Action
 from pycs.attack import Attack
-from pycs.spell import SpellAction
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
+from pycs.constant import Damage
 from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.constant import Statistics
+from pycs.spell import SpellAction
 
 
 ##############################################################################
@@ -69,6 +71,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.statistics = []
         self.options_this_turn = []
         self.concentration = None
+        self.damage_this_turn = []
+        self.damage_last_turn = []
 
     ##########################################################################
     @property
@@ -220,6 +224,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 self.remove_concentration()
 
         source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))
+        self.damage_this_turn.append(Damage(dmg, dmg_type))
 
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
@@ -385,6 +390,25 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
             print(f"|  Effects: {', '.join(self.effects)}")
+        if self.damage_this_turn:
+            print(f"|  Damage This Turn: {self.damage_summary(self.damage_this_turn)}")
+        if self.damage_last_turn:
+            print(f"|  Damage Last Turn: {self.damage_summary(self.damage_last_turn)}")
+
+    ##########################################################################
+    def damage_summary(self, dmglist):
+        """Summarise damage"""
+        if not dmglist:
+            return "None"
+        taken = defaultdict(int)
+        for tkn in dmglist:
+            if tkn.hp:
+                taken[tkn.type] += tkn.hp
+        output = []
+        for typ, val in taken.items():
+            output.append(f"{val} x {typ.value}")
+
+        return ", ".join(output)
 
     ##########################################################################
     def distance(self, target) -> int:
@@ -463,6 +487,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             ActionCategory.BONUS,
             ActionCategory.REACTION,
         ]
+        self.damage_last_turn = self.damage_this_turn
+        self.damage_this_turn = []
         if self.has_condition(Condition.PARALYZED):
             self.options_this_turn = []
         if self.state != "OK":
