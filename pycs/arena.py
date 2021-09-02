@@ -179,15 +179,6 @@ class Arena(AStar):
         return [_ for _ in self.combatants if _.is_alive() and _.side == side]
 
     ##############################################################################
-    def remaining_participants(self):
-        """Who is still standing"""
-        sides = defaultdict(list)
-        for participant in self.combatants:
-            if participant.is_alive():
-                sides[participant.side].append(participant)
-        return sides
-
-    ##############################################################################
     def remaining_participants_count(self):
         """How many are still standing"""
         sides = defaultdict(int)
