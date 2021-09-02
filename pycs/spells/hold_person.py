@@ -29,6 +29,7 @@ class Hold_Person(SpellAction):
             }
         )
         super().__init__(name, **kwargs)
+        self._victim = None
 
     ##########################################################################
     def heuristic(self, doer):
@@ -62,14 +63,17 @@ class Hold_Person(SpellAction):
         )
         if svth:
             caster.target.add_effect(HoldPersonEffect(caster=caster))
-        self.target = caster.target
+        self._victim = caster.target
         return True
 
     ##########################################################################
     def end_concentration(self):
         """What happens when we stop concentrating"""
-        print(f"Removing Hold Person form {self.target}")
-        self.target.remove_effect("Hold Person")
+        # They could have saved in the meantime
+        if self._victim.has_effect("Hold Person"):
+            print(f"Removing Hold Person from {self._victim}")
+            self._victim.remove_effect("Hold Person")
+        self._victim = None
 
 
 ##############################################################################

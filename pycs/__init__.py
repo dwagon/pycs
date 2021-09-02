@@ -6,19 +6,18 @@ __version__ = "0.1.0"
 
 from collections import defaultdict
 from prettytable import PrettyTable
+import colors
 
-# from pycs.monsters import Ghast
-# from pycs.monsters import Ghoul
-# from pycs.monsters import GiantFrog
+from pycs.monsters import Ghast
+from pycs.monsters import Ghoul
+from pycs.monsters import GiantFrog
 from pycs.monsters import BarbedDevil
 from pycs.monsters import Goblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
-
-# from pycs.monsters import Skeleton
+from pycs.monsters import Skeleton
 from pycs.monsters import Troll
-
-# from pycs.monsters import VioletFungus
+from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
 
 from pycs.characters import Barbarian
@@ -108,6 +107,22 @@ def statistics_report(arena):
 
 
 ##############################################################################
+def participant_report(arena):
+    """Report on participants"""
+    sides = defaultdict(list)
+    for part in arena.combatants:
+        sides[part.side].append(part)
+    for side in sides:
+        output = []
+        for creat in sides[side]:
+            if creat.is_alive():
+                output.append(colors.green(creat))
+            else:
+                output.append(colors.red(creat))
+        print(f"{side}: {', '.join(output)}")
+
+
+##############################################################################
 def combat_test():
     """Run through a combat"""
     turn = 0
@@ -115,18 +130,18 @@ def combat_test():
     arena = Arena(max_x=40, max_y=20)
 
     arena.add_combatant(BarbedDevil(arena=arena, name="Barbed Devil", side="Monsters"))
-    # arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
-    # arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
-    # arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
-    # arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
-    # arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
+    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
+    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
+    arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
+    arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
+    arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
-    for i in range(5):
+    for i in range(3):
         arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
-    for i in range(5):
+    for i in range(3):
         arena.add_combatant(Orc(arena=arena, name=f"Orc{i}", side="Monsters"))
-    for i in range(5):
+    for i in range(3):
         arena.add_combatant(Goblin(arena=arena, name=f"Goblin{i}", side="Monsters"))
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
@@ -140,7 +155,7 @@ def combat_test():
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
-        print(f"##### Turn {turn}: {dict(arena.remaining_participants())}")
+        print(f"##### Turn {turn}: {participant_report(arena)}")
         arena.turn()
         turn += 1
         assert turn < 100

@@ -104,7 +104,7 @@ class Cleric(Character):
     def report(self):
         """Character report"""
         super().report()
-        print(f"| Spells: {self.spell_slots}")
+        print(f"|  Spells: {self.spell_slots}")
 
     ##########################################################################
     def spell_available(self, spell):
