@@ -4,6 +4,7 @@ from pycs.action import Action
 from pycs.effect import Effect
 from pycs.attack import MeleeAttack
 from pycs.gear import Longsword
+from pycs.gear import Potion_Healing
 from pycs.gear import Plate
 from pycs.constant import ActionType
 from pycs.constant import ActionCategory
@@ -54,6 +55,7 @@ class Fighter(Character):
             self.add_action(ActionSurge())
 
         self.add_gear(Longsword())
+        self.add_gear(Potion_Healing())
         self.add_gear(Plate())
 
         self.add_action(SecondWind())

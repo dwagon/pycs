@@ -6,6 +6,7 @@ from pycs.constant import ActionCategory
 from pycs.constant import Race
 from pycs.effect import Effect
 from pycs.gear import Leather
+from pycs.gear import Potion_Healing
 from pycs.gear import Longbow
 from pycs.gear import Shortsword
 
@@ -58,6 +59,7 @@ class Rogue(Character):
             self.add_action(UncannyDodge())
 
         self.add_gear(Shortsword())
+        self.add_gear(Potion_Healing())
         self.add_gear(Longbow())
         self.add_gear(Leather())
 

@@ -2,6 +2,7 @@
 import colors
 from pycs.action import Action
 from pycs.gear import Longsword
+from pycs.gear import Potion_Healing
 from pycs.gear import Javelin
 from pycs.gear import Chainmail
 from pycs.constant import ActionType
@@ -103,6 +104,7 @@ class Paladin(Character):
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
         self.add_gear(Chainmail())
+        self.add_gear(Potion_Healing())
         self.add_gear(Longsword())
         self.add_gear(Javelin())
 
