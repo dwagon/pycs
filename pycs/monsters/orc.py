@@ -1,8 +1,7 @@
 """ https://www.dndbeyond.com/monsters/orc"""
 import colors
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
-from pycs.constant import DamageType
+from pycs.gear import Javelin
+from pycs.gear import Greataxe
 from pycs.constant import MonsterType
 from pycs.monster import Monster
 
@@ -28,25 +27,8 @@ class Orc(Monster):
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Greataxe",
-                reach=5,
-                dmg=("1d12", 0),
-                dmg_type=DamageType.SLASHING,
-            )
-        )
-
-        self.add_action(
-            RangedAttack(
-                "Javelin",
-                ammo=2,
-                s_range=30,
-                l_range=120,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Javelin())
+        self.add_gear(Greataxe())
 
     ##########################################################################
     def shortrepr(self):

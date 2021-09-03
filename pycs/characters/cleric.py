@@ -1,8 +1,16 @@
 """ Cleric """
 import colors
-from pycs.attack import MeleeAttack
 from pycs.action import Action
+from pycs.character import Character
+from pycs.constant import ActionType
+from pycs.constant import MonsterType
+from pycs.constant import SpellType
+from pycs.constant import Stat
 from pycs.effect import Effect
+from pycs.gear import Chainmail
+from pycs.gear import Light_Crossbow
+from pycs.gear import Mace
+from pycs.gear import Shield
 from pycs.spells import Aid
 from pycs.spells import Beacon_Of_Hope
 from pycs.spells import Bless
@@ -17,12 +25,6 @@ from pycs.spells import Sacred_Flame
 from pycs.spells import Shield_Of_Faith
 from pycs.spells import Spirit_Guardians
 from pycs.spells import Spiritual_Weapon
-from pycs.constant import DamageType
-from pycs.constant import MonsterType
-from pycs.constant import SpellType
-from pycs.constant import Stat
-from pycs.constant import ActionType
-from pycs.character import Character
 
 
 ##############################################################################
@@ -42,7 +44,6 @@ class Cleric(Character):
                 "int": 11,
                 "wis": 16,
                 "cha": 13,
-                "ac": 18,
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
@@ -71,14 +72,6 @@ class Cleric(Character):
             kwargs["hp"] = 38
             self.spell_slots = {1: 4, 2: 3, 3: 2}
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Mace",
-                reach=5,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.BLUDGEONING,
-            )
-        )
         self.add_action(Bless())  # Life Domain freebie
         self.add_action(Cure_Wounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
@@ -99,6 +92,12 @@ class Cleric(Character):
             self.add_action(Beacon_Of_Hope())  # Life Domain freebie
             self.add_action(Mass_Healing_Word())
             self.add_action(Spirit_Guardians())
+
+        if level == 1:
+            self.add_gear(Shield())
+            self.add_gear(Chainmail())
+            self.add_gear(Mace())
+            self.add_gear(Light_Crossbow())
 
     ##########################################################################
     def report(self):

@@ -1,13 +1,12 @@
 """ Warlock """
 import colors
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionType
-from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.gear import Light_Crossbow
+from pycs.gear import Quarterstaff
 from pycs.spells import Burning_Hands
 
 # from pycs.spells import Command
@@ -88,23 +87,8 @@ class Warlock(Character):
         if level >= 5:
             self.add_action(Fireball())
 
-        self.add_action(
-            MeleeAttack(
-                "Quarterstaff",
-                reach=5,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.BLUDGEONING,
-            )
-        )
-        self.add_action(
-            RangedAttack(
-                "Light Crossbow",
-                s_range=80,
-                l_range=320,
-                dmg=("1d8", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Light_Crossbow())
+        self.add_gear(Quarterstaff())
 
     ##########################################################################
     def report(self):

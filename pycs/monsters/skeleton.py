@@ -1,7 +1,7 @@
 """ Skeleton Monster Class """
 import colors
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
+from pycs.gear import Shortsword
+from pycs.gear import Shortbow
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.monster import Monster
@@ -29,24 +29,8 @@ class Skeleton(Monster):
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Shortsword",
-                reach=5,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
-
-        self.add_action(
-            RangedAttack(
-                "Shortbow",
-                s_range=80,
-                l_range=320,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Shortsword())
+        self.add_gear(Shortbow())
 
     ##########################################################################
     def shortrepr(self):

@@ -73,6 +73,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.concentration = None
         self.damage_this_turn = []
         self.damage_last_turn = []
+        self.gear = []
 
     ##########################################################################
     @property
@@ -283,6 +284,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             else:
                 print(f"{self} is now {cond.value}")
             self.conditions.add(cond)
+
+    ##########################################################################
+    def add_gear(self, gear):
+        """Add something to the equipment list"""
+        self.gear.append(gear)
+        for action in gear.actions:
+            self.add_action(action)
 
     ##########################################################################
     def add_action(self, action: Action) -> None:
