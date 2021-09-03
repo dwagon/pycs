@@ -1,17 +1,18 @@
-""" Chain Mail"""
+""" Padded """
 from pycs.equipment import Armour
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Chainmail(Armour):
-    """Clinky"""
+class Padded(Armour):
+    """Puffy"""
 
     def __init__(self, **kwargs):
 
-        kwargs["ac"] = 16
-        super().__init__("Chain mail", **kwargs)
+        kwargs["ac"] = 11
+        kwargs["dex_bonus"] = True
+        super().__init__("Padded", **kwargs)
 
 
 # EOF

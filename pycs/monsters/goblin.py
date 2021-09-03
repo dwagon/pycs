@@ -2,6 +2,8 @@
 import colors
 from pycs.gear import Shortbow
 from pycs.gear import Scimitar
+from pycs.gear import Leather
+from pycs.gear import Shield
 from pycs.constant import MonsterType
 from pycs.monster import Monster
 
@@ -15,7 +17,6 @@ class Goblin(Monster):
         self.hitdice = "2d6"
         kwargs.update(
             {
-                "ac": 15,
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 8,
@@ -29,6 +30,8 @@ class Goblin(Monster):
         super().__init__(**kwargs)
         self.add_gear(Scimitar())
         self.add_gear(Shortbow())
+        self.add_gear(Leather())
+        self.add_gear(Shield())
 
     ##########################################################################
     def shortrepr(self):

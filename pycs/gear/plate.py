@@ -1,17 +1,17 @@
-""" Chain Mail"""
+""" Plate Mail"""
 from pycs.equipment import Armour
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Chainmail(Armour):
-    """Clinky"""
+class Plate(Armour):
+    """Very Clinky"""
 
     def __init__(self, **kwargs):
 
-        kwargs["ac"] = 16
-        super().__init__("Chain mail", **kwargs)
+        kwargs["ac"] = 18
+        super().__init__("Plate", **kwargs)
 
 
 # EOF

@@ -1,6 +1,7 @@
 """ https://www.dndbeyond.com/monsters/orc"""
 import colors
 from pycs.gear import Javelin
+from pycs.gear import Hide
 from pycs.gear import Greataxe
 from pycs.constant import MonsterType
 from pycs.monster import Monster
@@ -15,7 +16,6 @@ class Orc(Monster):
         self.hitdice = "2d8+6"
         kwargs.update(
             {
-                "ac": 13,
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 16,
@@ -29,6 +29,7 @@ class Orc(Monster):
         super().__init__(**kwargs)
         self.add_gear(Javelin())
         self.add_gear(Greataxe())
+        self.add_gear(Hide())
 
     ##########################################################################
     def shortrepr(self):

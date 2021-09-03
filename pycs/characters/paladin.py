@@ -58,7 +58,6 @@ class Paladin(Character):
         )
         if level >= 1:
             kwargs["hp"] = 14
-            kwargs["ac"] = 18
             self.spell_slots = {}
         if level >= 2:
             kwargs["hp"] = 20

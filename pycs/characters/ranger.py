@@ -9,6 +9,7 @@ from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
+from pycs.gear import Leather
 from pycs.gear import Longbow
 from pycs.gear import Shortsword
 
@@ -36,7 +37,6 @@ class Ranger(Character):
                 "int": 8,
                 "wis": 14,
                 "cha": 11,
-                "ac": 14,
                 "speed": 25,
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
@@ -81,6 +81,7 @@ class Ranger(Character):
 
         self.add_gear(Shortsword())
         self.add_gear(Longbow())
+        self.add_gear(Leather())
 
     ##########################################################################
     def spell_available(self, spell):

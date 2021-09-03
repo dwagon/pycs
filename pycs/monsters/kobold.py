@@ -18,7 +18,6 @@ class Kobold(Monster):
         self.hitdice = "2d6-2"
         kwargs.update(
             {
-                "ac": 12,
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 7,

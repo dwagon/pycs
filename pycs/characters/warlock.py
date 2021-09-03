@@ -1,5 +1,9 @@
 """ Warlock """
 import colors
+
+# from pycs.spells import Command
+# from pycs.spells import Frostbite
+# from pycs.spells import Poison_Spray
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Race
@@ -7,16 +11,11 @@ from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.gear import Light_Crossbow
 from pycs.gear import Quarterstaff
+from pycs.gear import Studded
 from pycs.spells import Burning_Hands
-
-# from pycs.spells import Command
 from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
-
-# from pycs.spells import Frostbite
 from pycs.spells import Hellish_Rebuke
-
-# from pycs.spells import Poison_Spray
 from pycs.spells import Scorching_Ray
 from pycs.spells import Shatter
 from pycs.spells import Thunderclap
@@ -36,7 +35,6 @@ class Warlock(Character):
                 "int": 12,
                 "wis": 11,
                 "cha": 17,
-                "ac": 13,
                 "race": Race.HALFELF,
                 "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {
@@ -87,6 +85,7 @@ class Warlock(Character):
         if level >= 5:
             self.add_action(Fireball())
 
+        self.add_gear(Studded())
         self.add_gear(Light_Crossbow())
         self.add_gear(Quarterstaff())
 

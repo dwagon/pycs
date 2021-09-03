@@ -1,12 +1,13 @@
 """ https://www.dndbeyond.com/classes/rogue """
 import colors
 from pycs.action import Action
-from pycs.gear import Shortsword
-from pycs.gear import Longbow
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import Race
 from pycs.effect import Effect
+from pycs.gear import Leather
+from pycs.gear import Longbow
+from pycs.gear import Shortsword
 
 
 ##############################################################################
@@ -26,7 +27,6 @@ class Rogue(Character):
                 "int": 9,
                 "wis": 14,
                 "cha": 10,
-                "ac": 14,
                 "speed": 35,
             }
         )
@@ -59,6 +59,7 @@ class Rogue(Character):
 
         self.add_gear(Shortsword())
         self.add_gear(Longbow())
+        self.add_gear(Leather())
 
     ##########################################################################
     def shortrepr(self):

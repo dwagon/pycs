@@ -2,6 +2,7 @@
 import colors
 from pycs.gear import Greataxe
 from pycs.gear import Javelin
+from pycs.gear import Hide
 from pycs.action import Action
 from pycs.attack import MeleeAttack
 from pycs.character import Character
@@ -29,7 +30,6 @@ class Barbarian(Character):
                 "int": 11,
                 "wis": 13,
                 "cha": 9,
-                "ac": 16,
                 "action_preference": {
                     BarbarianRage: 9,
                     ActionType.MELEE: 8,
@@ -57,6 +57,7 @@ class Barbarian(Character):
         super().__init__(**kwargs)
         self.add_gear(Greataxe())
         self.add_gear(Javelin())
+        self.add_gear(Hide())
         self.add_action(BarbarianRage())
         if level >= 2:
             self.add_effect(BarbarianDangerSenseEffect())
