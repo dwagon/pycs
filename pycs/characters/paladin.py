@@ -1,11 +1,11 @@
 """ Paladin """
 import colors
 from pycs.action import Action
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
+from pycs.gear import Longsword
+from pycs.gear import Javelin
+from pycs.gear import Chainmail
 from pycs.constant import ActionType
 from pycs.constant import Condition
-from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
@@ -58,7 +58,6 @@ class Paladin(Character):
         )
         if level >= 1:
             kwargs["hp"] = 14
-            kwargs["ac"] = 18
             self.spell_slots = {}
         if level >= 2:
             kwargs["hp"] = 20
@@ -103,23 +102,9 @@ class Paladin(Character):
             self.add_action(Branding_Smite())
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
-        self.add_action(
-            MeleeAttack(
-                "Longsword",
-                reach=5,
-                dmg=("1d8", 0),
-                dmg_type=DamageType.SLASHING,
-            )
-        )
-        self.add_action(
-            RangedAttack(
-                "Javelin",
-                reach=5,
-                ammo=3,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Chainmail())
+        self.add_gear(Longsword())
+        self.add_gear(Javelin())
 
     ########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):

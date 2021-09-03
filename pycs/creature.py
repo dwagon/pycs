@@ -16,6 +16,7 @@ from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.constant import Statistics
+from pycs.equipment import Armour
 from pycs.spell import SpellAction
 
 
@@ -29,7 +30,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.arena = arena
         self.vulnerable = kwargs.get("vulnerable", [])
         self.name = kwargs.get("name", self.__class__.__name__)
-        self._ac = kwargs.get("ac", 10)
+        self._ac = kwargs.get("ac", None)
         self.speed = int(kwargs.get("speed", 30) / 5)
         self.moves = self.speed
         self.type = kwargs.get("type", MonsterType.HUMANOID)
@@ -73,6 +74,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.concentration = None
         self.damage_this_turn = []
         self.damage_last_turn = []
+        self.gear = []
 
     ##########################################################################
     @property
@@ -86,7 +88,23 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     @property
     def ac(self):
         """The armour class"""
-        tmp = self._ac
+        if self._ac is None:
+            tmp = 0
+            dbon = True  # Can we apply dex bonus
+            max_db = 999  # Max Dex bonus
+            for geah in self.gear:
+                if issubclass(geah.__class__, Armour):
+                    tmp += geah.ac + geah.ac_bonus
+                    if not geah.dex_bonus:
+                        dbon = False
+                    max_db = min(max_db, geah.max_dex_bonus)
+            if tmp == 0:
+                tmp = 10
+            if dbon:
+                dexbonus = min(self.stat_bonus(Stat.DEX), max_db)
+                tmp += dexbonus
+        else:
+            tmp = self._ac
         for _, eff in self.effects.items():
             mod = eff.hook_ac_modifier(self)["bonus"]
             tmp += mod
@@ -283,6 +301,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             else:
                 print(f"{self} is now {cond.value}")
             self.conditions.add(cond)
+
+    ##########################################################################
+    def add_gear(self, gear):
+        """Add something to the equipment list"""
+        self.gear.append(gear)
+        for action in gear.actions:
+            self.add_action(action)
 
     ##########################################################################
     def add_action(self, action: Action) -> None:

@@ -1,8 +1,10 @@
 """ Barbarian """
 import colors
+from pycs.gear import Greataxe
+from pycs.gear import Javelin
+from pycs.gear import Hide
 from pycs.action import Action
 from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
@@ -28,7 +30,6 @@ class Barbarian(Character):
                 "int": 11,
                 "wis": 13,
                 "cha": 9,
-                "ac": 16,
                 "action_preference": {
                     BarbarianRage: 9,
                     ActionType.MELEE: 8,
@@ -54,23 +55,9 @@ class Barbarian(Character):
             kwargs["speed"] = 40
             kwargs["attacks_per_action"] = 2
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Greataxe",
-                reach=5,
-                dmg=("1d12", 0),
-                dmg_type=DamageType.SLASHING,
-            )
-        )
-        self.add_action(
-            RangedAttack(
-                "Javelin",
-                reach=5,
-                ammo=3,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Greataxe())
+        self.add_gear(Javelin())
+        self.add_gear(Hide())
         self.add_action(BarbarianRage())
         if level >= 2:
             self.add_effect(BarbarianDangerSenseEffect())

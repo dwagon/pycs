@@ -1,14 +1,13 @@
 """ https://www.dndbeyond.com/classes/rogue """
 import colors
 from pycs.action import Action
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
-from pycs.constant import DamageType
 from pycs.constant import Race
-from pycs.constant import Stat
 from pycs.effect import Effect
+from pycs.gear import Leather
+from pycs.gear import Longbow
+from pycs.gear import Shortsword
 
 
 ##############################################################################
@@ -28,7 +27,6 @@ class Rogue(Character):
                 "int": 9,
                 "wis": 14,
                 "cha": 10,
-                "ac": 14,
                 "speed": 35,
             }
         )
@@ -59,24 +57,9 @@ class Rogue(Character):
             self.sneak_attack_dmg = "3d6"
             self.add_action(UncannyDodge())
 
-        self.add_action(
-            MeleeAttack(
-                "Shortsword",
-                reach=5,
-                dmg=("1d6", 0),
-                use_stat=Stat.DEX,
-                dmg_type=DamageType.PIERCING,
-            )
-        )
-        self.add_action(
-            RangedAttack(
-                "Longbow",
-                s_range=150,
-                l_range=600,
-                dmg=("1d8", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Shortsword())
+        self.add_gear(Longbow())
+        self.add_gear(Leather())
 
     ##########################################################################
     def shortrepr(self):

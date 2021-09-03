@@ -3,7 +3,8 @@ import colors
 from pycs.action import Action
 from pycs.effect import Effect
 from pycs.attack import MeleeAttack
-from pycs.constant import DamageType
+from pycs.gear import Longsword
+from pycs.gear import Plate
 from pycs.constant import ActionType
 from pycs.constant import ActionCategory
 from pycs.character import Character
@@ -27,7 +28,6 @@ class Fighter(Character):
                 "int": 11,
                 "wis": 13,
                 "cha": 9,
-                "ac": 18,
             }
         )
         if level >= 1:
@@ -53,14 +53,9 @@ class Fighter(Character):
         if level >= 2:
             self.add_action(ActionSurge())
 
-        self.add_action(
-            MeleeAttack(
-                "Longsword",
-                reach=5,
-                dmg=("1d8", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Longsword())
+        self.add_gear(Plate())
+
         self.add_action(SecondWind())
         self.add_effect(DuelingFightingStyle())
 

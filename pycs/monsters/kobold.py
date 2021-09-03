@@ -1,11 +1,9 @@
 """ https://www.dndbeyond.com/monsters/kobold"""
 import colors
+from pycs.gear import Dagger
+from pycs.gear import Sling
 from pycs.effect import Effect
-from pycs.attack import MeleeAttack
-from pycs.attack import RangedAttack
-from pycs.constant import DamageType
 from pycs.constant import MonsterType
-from pycs.constant import Stat
 from pycs.monster import Monster
 
 
@@ -20,7 +18,6 @@ class Kobold(Monster):
         self.hitdice = "2d6-2"
         kwargs.update(
             {
-                "ac": 12,
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 7,
@@ -32,26 +29,8 @@ class Kobold(Monster):
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Dagger",
-                reach=5,
-                dmg=("1d4", 0),
-                use_stat=Stat.DEX,
-                dmg_type=DamageType.PIERCING,
-            )
-        )
-
-        self.add_action(
-            RangedAttack(
-                "Sling",
-                s_range=30,
-                l_range=120,
-                dmg=("1d4", 0),
-                use_stat=Stat.DEX,
-                dmg_type=DamageType.PIERCING,
-            )
-        )
+        self.add_gear(Dagger())
+        self.add_gear(Sling())
         self.add_effect(PackTactics())
 
     ##########################################################################
