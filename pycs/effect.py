@@ -19,7 +19,7 @@ class Effect:
     ##########################################################################
     def hook_attack_to_hit(self, **kwargs) -> dict:  # pylint: disable=unused-argument
         """Modify the roll to hit on attacks"""
-        return {"bonus": 0}
+        return 0
 
     ##########################################################################
     def hook_being_hit(self, dmg, dmgtype) -> int:  # pylint: disable=unused-argument

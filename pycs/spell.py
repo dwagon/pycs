@@ -156,10 +156,10 @@ class AttackSpell(SpellAction):
         return self.max_dmg(doer)
 
     ########################################################################
-    def roll_to_hit(self, source, target, rnge):
+    def roll_to_hit(self, source, target):
         """Special spell attack"""
         if self.style == SpellType.TOHIT:
-            return super().roll_to_hit(source, target, rnge)
+            return super().roll_to_hit(source, target)
         return 999, False, False
 
     ########################################################################

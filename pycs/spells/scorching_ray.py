@@ -48,7 +48,7 @@ class Scorching_Ray(AttackSpell):
                 return
             target = random.choice(targets)
             print(f"Targeting {target} with Scorching Ray")
-            to_hit, crit_hit, crit_miss = self.roll_to_hit(caster, target, 999)
+            to_hit, crit_hit, crit_miss = self.roll_to_hit(caster, target)
             if to_hit >= target.ac and not crit_miss:
                 dmg = self.roll_dmg(caster, target)
                 target.hit(dmg, self.dmg_type, caster, crit_hit, self.name)

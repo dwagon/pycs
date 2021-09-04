@@ -91,10 +91,20 @@ class Action:
         return self.name
 
     ##########################################################################
-    def roll_to_hit(self, source, target, rnge: int) -> Tuple[int, bool, bool]:
-        """Roll to hit with the attack"""
+    def check_criticals(self, source, to_hit_roll: int) -> Tuple[bool, bool]:
+        """Did we critical hit or miss"""
         crit_hit = False
         crit_miss = False
+        if to_hit_roll >= source.critical:
+            crit_hit = True
+        if to_hit_roll == 1:
+            crit_miss = True
+        return crit_hit, crit_miss
+
+    ##########################################################################
+    def roll_to_hit(self, source, target) -> Tuple[int, bool, bool]:
+        """Roll to hit with the attack"""
+        rnge = source.distance(target)
         balance = 0
         if self.has_disadvantage(source, target, rnge):
             balance -= 1
@@ -110,22 +120,11 @@ class Action:
         else:
             to_hit_roll = source.rolld20("attack")
             msg_0 = ""
-        msg = f"{source} rolled {to_hit_roll}{msg_0}"
 
-        if to_hit_roll >= source.critical:
-            crit_hit = True
-        if to_hit_roll == 1:
-            crit_miss = True
-        modifier = self.modifier(source)
-        msg += f" +{self.modifier(source)}"
-        to_hit = to_hit_roll + modifier
-        for name, eff in source.effects.items():
-            mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)[
-                "bonus"
-            ]
-            if mod:
-                to_hit += mod
-                msg += f" (+{mod} from {name})"
+        crit_hit, crit_miss = self.check_criticals(source, to_hit_roll)
+        to_hit, msg = self.calculate_to_hit(
+            msg_0, to_hit_roll, source=source, target=target
+        )
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
@@ -134,6 +133,26 @@ class Action:
             msg += f" = {to_hit}"
         print(msg)
         return int(to_hit), crit_hit, crit_miss
+
+    ########################################################################
+    def calculate_to_hit(self, msg_0, to_hit_roll, source, target):
+        """Calculate the to_hit"""
+        rnge = source.distance(target)
+        msg = f"{source} rolled {to_hit_roll}{msg_0}"
+        modifier = self.modifier(source)
+        to_hit = to_hit_roll + modifier
+        msg += f" +{self.modifier(source)}"
+        for name, eff in source.effects.items():
+            mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
+            if mod:
+                to_hit += mod
+                msg += f" (+{mod} from {name})"
+        if self.gear:
+            mod = self.gear.hook_attack_to_hit(target=target)
+            if mod:
+                to_hit += mod
+                msg += f" (+{mod} from {self.gear})"
+        return to_hit, msg
 
     ########################################################################
     def buff_attack_damage(self, source, target) -> None:
@@ -169,7 +188,7 @@ class Action:
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
             return False
-        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target, rnge)
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target)
         print(
             f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )

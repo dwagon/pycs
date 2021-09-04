@@ -199,7 +199,7 @@ class ArcheryFightingStyle(Effect):
         """+2 to hit"""
         eff = super().hook_attack_to_hit(**kwargs)
         if issubclass(kwargs["action"].__class__, RangedAttack):
-            eff.update({"bonus": 2})
+            eff += 2
         return eff
 
 
