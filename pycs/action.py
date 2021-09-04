@@ -28,6 +28,7 @@ class Action:
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
         self.ammo = kwargs.get("ammo", None)
+        self.gear = None  # Gear that induced the action
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument

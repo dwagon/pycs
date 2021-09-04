@@ -307,6 +307,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Add something to the equipment list"""
         self.gear.append(gear)
         for action in gear.actions:
+            action.gear = gear
             self.add_action(action)
 
     ##########################################################################
