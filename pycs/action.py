@@ -38,10 +38,10 @@ class Action:
         return 0
 
     ########################################################################
-    def dmg_bonus(self, attacker):  # pylint: disable=unused-argument
+    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented dmg_bonus()")
+        print(f"{__class__.__name__} hasn't implemented stat_dmg_bonus()")
         return 0
 
     ########################################################################
@@ -222,7 +222,7 @@ class Action:
         dmg = int(dice.roll_max(self.dmg[0]))
         if self.dmg[1]:
             dmg += self.dmg[1]
-        dmg_bon = self.dmg_bonus(source)
+        dmg_bon = self.stat_dmg_bonus(source)
         if dmg_bon:
             dmg += dmg_bon
         return max(dmg, 0)

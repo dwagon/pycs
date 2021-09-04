@@ -40,8 +40,8 @@ class Attack(Action):
         raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
 
     ########################################################################
-    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
-        """The melee damage bonus modifier"""
+    def stat_dmg_bonus(self, attacker):  # pylint: disable=no-self-use
+        """The damage bonus modifier"""
         if self.damage_modifier:
             return self.damage_modifier
         bonus = 0
