@@ -27,7 +27,9 @@ class Effect:
         return dmg
 
     ##########################################################################
-    def hook_saving_throw(self, stat, **kwargs):  # pylint: disable=unused-argument
+    def hook_saving_throw(
+        self, stat, **kwargs  # pylint: disable=unused-argument
+    ) -> dict:
         """Modify the saving throw roll"""
         return {"bonus": 0, "advantage": False, "disadvantage": False}
 

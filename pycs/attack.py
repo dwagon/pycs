@@ -46,7 +46,7 @@ class Attack(Action):
             return self.damage_modifier
         bonus = 0
         if self.gear:
-            bonus = self.gear.magic_bonus
+            bonus += self.gear.magic_bonus
         bonus += attacker.stat_bonus(self.use_stat)
         return bonus
 

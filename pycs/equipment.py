@@ -20,6 +20,10 @@ class Equipment:
         self.ammo = kwargs.get("ammo")
         self.actions = []
 
+    ##########################################################################
+    def __repr__(self):
+        return f"{self.name}"
+
 
 ##############################################################################
 ##############################################################################
@@ -36,6 +40,11 @@ class Weapon(Equipment):
     ##########################################################################
     def hook_attack_to_hit(self, target):  # pylint: disable=unused-argument
         """Any modifier to hit"""
+        return self.magic_bonus
+
+    ##########################################################################
+    def hook_source_additional_damage(self):
+        """Additional damage"""
         return self.magic_bonus
 
 

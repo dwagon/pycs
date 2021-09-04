@@ -17,6 +17,7 @@ class Action:
     ########################################################################
     def __init__(self, name: str, **kwargs):
         self.name = name
+        self.use_stat = None
         self.available = True
         self.type = ActionType.UNKNOWN
         self.category = kwargs.get("category", ActionCategory.ACTION)
@@ -228,6 +229,20 @@ class Action:
         return max(dmg, 0)
 
     ########################################################################
+    def dmg_bonus(self, source):
+        """All the damage bonuses"""
+        bonus = []
+        if self.use_stat:
+            dmg_bon = self.stat_dmg_bonus(source)
+            if dmg_bon:
+                bonus.append((dmg_bon, f"{self.use_stat.value} stat"))
+        if self.gear:
+            dmg_bon = self.gear.hook_source_additional_damage()
+            if dmg_bon:
+                bonus.append((dmg_bon, self.gear.name))
+        return bonus
+
+    ########################################################################
     def roll_dmg(self, source, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
@@ -239,9 +254,9 @@ class Action:
             dmg += self.dmg[1]
             print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
         dmg_bon = self.dmg_bonus(source)
-        if dmg_bon:
-            dmg += dmg_bon
-            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
+        for bonus, cause in dmg_bon:
+            dmg += bonus
+            print(f"Adding bonus from {cause} of {bonus} -> {dmg}")
         return max(dmg, 0)
 
     ########################################################################
