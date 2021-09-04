@@ -136,8 +136,6 @@ class Paladin(Character):
         super().report()
         print(f"|  Lay On Hands: {self.lay_on_hands}")
         print(f"|  Spells: {self.spell_slots}")
-        javs = self.pick_attack_by_name("Javelin")
-        print(f"|  Javelins: {javs.ammo}")
 
     ########################################################################
     def shortrepr(self):

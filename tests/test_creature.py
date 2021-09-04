@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-"""Tests for `arena`"""
+"""Tests for `creature`"""
 
 
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from pycs.constant import Condition
 from pycs.constant import MonsterType
 from pycs.constant import Stat
@@ -115,6 +115,35 @@ class TestCreature(unittest.TestCase):
         self.assertFalse(self.creat.is_alive())
 
     ########################################################################
+    def test_saving_throw(self):
+        """Test saving_throw"""
+        # If unconscious - auto fail STR saves
+        self.creat.add_condition(Condition.UNCONSCIOUS)
+        res = self.creat.saving_throw(Stat.STR, 1)
+        self.assertFalse(res)
+        self.creat.remove_condition(Condition.UNCONSCIOUS)
+
+        # Test succeeding save
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            res = self.creat.saving_throw(Stat.WIS, 20)
+            self.assertTrue(res)
+
+        # Test failing save
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            res = self.creat.saving_throw(Stat.WIS, 20)
+            self.assertFalse(res)
+
+    ########################################################################
+    def test_roll_initiative(self):
+        """Test rolling initiative"""
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 10
+            init = self.creat.roll_initiative()
+            self.assertEqual(init, 9)  # Dex -1
+
+    ########################################################################
     def test_hit(self):
         """Test creature hurting"""
         self.creat.hp = 30
@@ -168,7 +197,7 @@ class MockACEffect(Effect):
     """Test AC modification"""
 
     def hook_ac_modifier(self, target):
-        return {"bonus": -2}
+        return -2
 
 
 # EOF

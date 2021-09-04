@@ -20,6 +20,10 @@ class Equipment:
         self.ammo = kwargs.get("ammo")
         self.actions = []
 
+    ##########################################################################
+    def __repr__(self):
+        return f"{self.name}"
+
 
 ##############################################################################
 ##############################################################################
@@ -28,9 +32,20 @@ class Weapon(Equipment):
     """Attitude adjusters"""
 
     ##########################################################################
-    def __init__(self, name, **kwargs):  # pylint: disable=useless-super-delegation
+    def __init__(self, name, **kwargs):
         """init"""
+        self.magic_bonus = kwargs.get("magic_bonus", 0)
         super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def hook_attack_to_hit(self, target):  # pylint: disable=unused-argument
+        """Any modifier to hit"""
+        return self.magic_bonus
+
+    ##########################################################################
+    def hook_source_additional_damage(self):
+        """Additional damage"""
+        return self.magic_bonus
 
 
 ##############################################################################
@@ -46,6 +61,7 @@ class MeleeWeapon(Weapon):
         self.actions = [
             MeleeAttack(
                 name,
+                magic_bonus=kwargs.get("magic_bonus"),
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
                 reach=kwargs.get("reach"),
@@ -68,6 +84,7 @@ class RangedWeapon(Weapon):
         self.actions = [
             RangedAttack(
                 name,
+                magic_bonus=kwargs.get("magic_bonus"),
                 ammo=self.ammo,
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),

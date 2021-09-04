@@ -94,7 +94,7 @@ class BlessEffect(Effect):
     def hook_attack_to_hit(self, **kwargs):
         """Mod attack roll"""
         eff = super().hook_attack_to_hit(**kwargs)
-        eff.update({"bonus": int(dice.roll("d4"))})
+        eff += int(dice.roll("d4"))
         return eff
 
     def hook_saving_throw(self, stat, **kwargs):

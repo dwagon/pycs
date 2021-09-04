@@ -56,7 +56,7 @@ class Barbarian(Character):
             kwargs["speed"] = 40
             kwargs["attacks_per_action"] = 2
         super().__init__(**kwargs)
-        self.add_gear(Greataxe())
+        self.add_gear(Greataxe(magic_bonus=3))
         self.add_gear(Javelin(ammo=3))
         self.add_gear(Hide())
         self.add_gear(Potion_Healing(ammo=1))

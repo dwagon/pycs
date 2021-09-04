@@ -114,7 +114,7 @@ class AttackSpell(SpellAction):
         self.save_dc = kwargs.get("save_dc")
 
     ########################################################################
-    def dmg_bonus(self, attacker):
+    def stat_dmg_bonus(self, attacker):
         """No spell bonus to damage"""
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
@@ -128,7 +128,7 @@ class AttackSpell(SpellAction):
         if self.dmg[1]:
             dmg += self.dmg[1]
             print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg_bon = self.dmg_bonus(source)
+        dmg_bon = self.stat_dmg_bonus(source)
         if dmg_bon:
             dmg += dmg_bon
             print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
@@ -156,10 +156,10 @@ class AttackSpell(SpellAction):
         return self.max_dmg(doer)
 
     ########################################################################
-    def roll_to_hit(self, source, target, rnge):
+    def roll_to_hit(self, source, target):
         """Special spell attack"""
         if self.style == SpellType.TOHIT:
-            return super().roll_to_hit(source, target, rnge)
+            return super().roll_to_hit(source, target)
         return 999, False, False
 
     ########################################################################

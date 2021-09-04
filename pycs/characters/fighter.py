@@ -54,7 +54,7 @@ class Fighter(Character):
         if level >= 2:
             self.add_action(ActionSurge())
 
-        self.add_gear(Longsword())
+        self.add_gear(Longsword(magic_bonus=1))
         self.add_gear(Potion_Healing(ammo=3))
         self.add_gear(Plate())
 

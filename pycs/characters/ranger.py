@@ -82,7 +82,7 @@ class Ranger(Character):
 
         self.add_gear(Shortsword())
         self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Longbow())
+        self.add_gear(Longbow(magic_bonus=3))
         self.add_gear(Leather())
 
     ##########################################################################
@@ -199,7 +199,7 @@ class ArcheryFightingStyle(Effect):
         """+2 to hit"""
         eff = super().hook_attack_to_hit(**kwargs)
         if issubclass(kwargs["action"].__class__, RangedAttack):
-            eff.update({"bonus": 2})
+            eff += 2
         return eff
 
 

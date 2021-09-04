@@ -19,7 +19,7 @@ class Effect:
     ##########################################################################
     def hook_attack_to_hit(self, **kwargs) -> dict:  # pylint: disable=unused-argument
         """Modify the roll to hit on attacks"""
-        return {"bonus": 0}
+        return 0
 
     ##########################################################################
     def hook_being_hit(self, dmg, dmgtype) -> int:  # pylint: disable=unused-argument
@@ -27,7 +27,9 @@ class Effect:
         return dmg
 
     ##########################################################################
-    def hook_saving_throw(self, stat, **kwargs):  # pylint: disable=unused-argument
+    def hook_saving_throw(
+        self, stat, **kwargs  # pylint: disable=unused-argument
+    ) -> dict:
         """Modify the saving throw roll"""
         return {"bonus": 0, "advantage": False, "disadvantage": False}
 
@@ -47,7 +49,7 @@ class Effect:
     ##########################################################################
     def hook_ac_modifier(self, target):  # pylint: disable=unused-argument
         """Modifications to {target}'s armour class"""
-        return {"bonus": 0}
+        return 0
 
     ##########################################################################
     def hook_gives_advantage_against(self):
