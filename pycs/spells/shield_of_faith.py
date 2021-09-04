@@ -79,7 +79,7 @@ class Shield_Of_Faith_Effect(Effect):
     ###########################################################################
     def hook_ac_modifier(self, target):
         eff = super().hook_ac_modifier(target)
-        eff.update({"bonus": 2})
+        eff += 2
         return eff
 
 

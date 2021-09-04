@@ -106,7 +106,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         else:
             tmp = self._ac
         for _, eff in self.effects.items():
-            mod = eff.hook_ac_modifier(self)["bonus"]
+            mod = eff.hook_ac_modifier(self)
             tmp += mod
         return tmp
 

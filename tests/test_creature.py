@@ -168,7 +168,7 @@ class MockACEffect(Effect):
     """Test AC modification"""
 
     def hook_ac_modifier(self, target):
-        return {"bonus": -2}
+        return -2
 
 
 # EOF

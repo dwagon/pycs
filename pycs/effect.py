@@ -47,7 +47,7 @@ class Effect:
     ##########################################################################
     def hook_ac_modifier(self, target):  # pylint: disable=unused-argument
         """Modifications to {target}'s armour class"""
-        return {"bonus": 0}
+        return 0
 
     ##########################################################################
     def hook_gives_advantage_against(self):
