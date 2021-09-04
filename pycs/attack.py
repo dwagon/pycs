@@ -12,6 +12,11 @@ class Attack(Action):
     """generic attack"""
 
     ########################################################################
+    def __init__(self, name, **kwargs):
+        self.use_stat = None
+        super().__init__(name, **kwargs)
+
+    ########################################################################
     def perform_action(self, source):
         """Do the attack"""
         response = False
@@ -33,6 +38,17 @@ class Attack(Action):
     ########################################################################
     def modifier(self, attacker):
         raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
+
+    ########################################################################
+    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
+        """The melee damage bonus modifier"""
+        if self.damage_modifier:
+            return self.damage_modifier
+        bonus = 0
+        if self.gear:
+            bonus = self.gear.magic_bonus
+        bonus += attacker.stat_bonus(self.use_stat)
+        return bonus
 
 
 ##############################################################################
@@ -59,13 +75,6 @@ class MeleeAttack(Attack):
         if self.attack_modifier:
             return self.attack_modifier
         return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
-
-    ########################################################################
-    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
-        """The melee damage bonus modifier"""
-        if self.damage_modifier:
-            return self.damage_modifier
-        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def is_available(self, owner):
@@ -117,13 +126,6 @@ class RangedAttack(Attack):
         if self.attack_modifier:
             return self.attack_modifier
         return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
-
-    ########################################################################
-    def dmg_bonus(self, attacker):  # pylint: disable=no-self-use
-        """The melee damage bonus modifier"""
-        if self.damage_modifier:
-            return self.damage_modifier
-        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def range(self):
