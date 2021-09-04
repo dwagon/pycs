@@ -96,7 +96,7 @@ class Cleric(Character):
 
         self.add_gear(Shield())
         self.add_gear(Chainmail())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Mace())
         self.add_gear(Light_Crossbow())
 

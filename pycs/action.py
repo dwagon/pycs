@@ -27,6 +27,7 @@ class Action:
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
+        self.ammo = kwargs.get("ammo", None)
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument
@@ -66,13 +67,24 @@ class Action:
         return 0, 0
 
     ##########################################################################
-    def is_available(self, owner):  # pylint: disable=unused-argument, no-self-use
+    def is_available(self, owner):  # pylint: disable=unused-argument
         """Is this action currently available to the creature"""
+        if self.ammo is not None and not self.ammo:
+            return False
         return True
 
     ########################################################################
-    def perform_action(self, source):  # pylint: disable=unused-argument
+    def perform_action(self, source):
         """Perform the action"""
+        raise NotImplementedError
+
+    ########################################################################
+    def ammo_usage(self):
+        """Use up ammo if that is a thing"""
+        if self.ammo is not None:
+            self.ammo -= 1
+            if self.ammo <= 0:
+                self.available = False
 
     ########################################################################
     def __repr__(self):

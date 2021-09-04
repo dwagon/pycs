@@ -14,9 +14,10 @@ class Equipment:
     """Generic class"""
 
     ##########################################################################
-    def __init__(self, name, **kwargs):  # pylint: disable=unused-argument
+    def __init__(self, name, **kwargs):
         """init"""
         self.name = name
+        self.ammo = kwargs.get("ammo")
         self.actions = []
 
 
@@ -67,7 +68,7 @@ class RangedWeapon(Weapon):
         self.actions = [
             RangedAttack(
                 name,
-                ammo=kwargs.get("ammo"),
+                ammo=self.ammo,
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
                 l_range=kwargs.get("l_range"),
@@ -107,6 +108,7 @@ class Potion(Equipment):
         self.act.heuristic = kwargs.get("heuristic", self.heuristic)
         self.act.perform_action = kwargs.get("perform_action", self.perform_action)
         self.act.category = ActionCategory.BONUS
+        self.act.ammo = self.ammo
         self.actions = [self.act]
 
     ##########################################################################
@@ -158,6 +160,10 @@ class DrinkPotion(Action):
     def pick_target(self, doer):
         """Who do we do it do"""
         return doer
+
+    ##########################################################################
+    def perform_action(self, source):
+        raise NotImplementedError
 
 
 # EOF

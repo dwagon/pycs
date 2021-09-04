@@ -55,7 +55,7 @@ class Fighter(Character):
             self.add_action(ActionSurge())
 
         self.add_gear(Longsword())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=3))
         self.add_gear(Plate())
 
         self.add_action(SecondWind())

@@ -27,7 +27,7 @@ class Orc(Monster):
             }
         )
         super().__init__(**kwargs)
-        self.add_gear(Javelin())
+        self.add_gear(Javelin(ammo=4))
         self.add_gear(Greataxe())
         self.add_gear(Hide())
 

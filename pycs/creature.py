@@ -419,6 +419,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Damage This Turn: {self.damage_summary(self.damage_this_turn)}")
         if self.damage_last_turn:
             print(f"|  Damage Last Turn: {self.damage_summary(self.damage_last_turn)}")
+        for act in self.actions + self.bonus_actions + self.reactions:
+            if act.ammo is not None:
+                print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
     def damage_summary(self, dmglist):
@@ -550,6 +553,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def do_action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
+            act.ammo_usage()
             did_act = act.perform_action(self)
             if did_act is None or did_act:
                 return True

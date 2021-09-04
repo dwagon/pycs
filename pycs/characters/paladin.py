@@ -104,9 +104,9 @@ class Paladin(Character):
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
         self.add_gear(Chainmail())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Longsword())
-        self.add_gear(Javelin())
+        self.add_gear(Javelin(ammo=3))
 
     ########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):

@@ -81,7 +81,7 @@ class Ranger(Character):
             self.add_action(Lesser_Restoration())
 
         self.add_gear(Shortsword())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Longbow())
         self.add_gear(Leather())
 

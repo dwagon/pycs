@@ -59,7 +59,7 @@ class Rogue(Character):
             self.add_action(UncannyDodge())
 
         self.add_gear(Shortsword())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=2))
         self.add_gear(Longbow())
         self.add_gear(Leather())
 

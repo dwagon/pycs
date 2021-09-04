@@ -89,12 +89,12 @@ class Warlock(Character):
         self.add_gear(Studded())
         self.add_gear(Light_Crossbow())
         self.add_gear(Quarterstaff())
-        self.add_gear(Potion_Healing())
+        self.add_gear(Potion_Healing(ammo=2))
 
     ##########################################################################
     def report(self):
         super().report()
-        print(f"| Spells: {self.spell_slots}")
+        print(f"|  Spells: {self.spell_slots}")
 
     ########################################################################
     def spell_available(self, spell):

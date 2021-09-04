@@ -96,18 +96,6 @@ class RangedAttack(Attack):
         self.l_range = int(kwargs.get("l_range", 999) / 5)
         self.use_stat = kwargs.get("use_stat", Stat.DEX)
         self.type = ActionType.RANGED
-        self.ammo = kwargs.get("ammo", None)
-
-    ########################################################################
-    def perform_action(self, source):
-        """Fire the weapon"""
-        if self.ammo is not None:
-            self.ammo -= 1
-            if self.ammo <= 0:
-                print(f"{source} {self} has run out of ammo")
-                self.available = False
-
-        return super().perform_action(source)
 
     ########################################################################
     def heuristic(self, doer):
