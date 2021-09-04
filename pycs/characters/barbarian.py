@@ -1,6 +1,7 @@
 """ Barbarian """
 import colors
 from pycs.gear import Greataxe
+from pycs.gear import Potion_Healing
 from pycs.gear import Javelin
 from pycs.gear import Hide
 from pycs.action import Action
@@ -56,8 +57,9 @@ class Barbarian(Character):
             kwargs["attacks_per_action"] = 2
         super().__init__(**kwargs)
         self.add_gear(Greataxe())
-        self.add_gear(Javelin())
+        self.add_gear(Javelin(ammo=3))
         self.add_gear(Hide())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_action(BarbarianRage())
         if level >= 2:
             self.add_effect(BarbarianDangerSenseEffect())
@@ -97,6 +99,7 @@ class BarbarianRage(Action):
 
     ########################################################################
     def heuristic(self, doer):
+        """Should we do it"""
         if doer.has_effect("Rage"):
             return 0
         return 10

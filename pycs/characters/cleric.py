@@ -9,6 +9,7 @@ from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.gear import Chainmail
 from pycs.gear import Light_Crossbow
+from pycs.gear import Potion_Healing
 from pycs.gear import Mace
 from pycs.gear import Shield
 from pycs.spells import Aid
@@ -95,6 +96,7 @@ class Cleric(Character):
 
         self.add_gear(Shield())
         self.add_gear(Chainmail())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Mace())
         self.add_gear(Light_Crossbow())
 

@@ -8,6 +8,7 @@ from pycs.constant import Condition
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.gear import Potion_Healing
 from pycs.effect import Effect
 from pycs.gear import Leather
 from pycs.gear import Longbow
@@ -80,6 +81,7 @@ class Ranger(Character):
             self.add_action(Lesser_Restoration())
 
         self.add_gear(Shortsword())
+        self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Longbow())
         self.add_gear(Leather())
 

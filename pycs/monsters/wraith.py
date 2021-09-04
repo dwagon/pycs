@@ -73,7 +73,7 @@ class Wraith(Monster):
             print(f"{target} resisted Wraith life drain")
         else:
             print(f"Wraith life drain's {target} of {dmg} hit points")
-            target.max_hp -= dmg
+            target.max_hp = max(target.max_hp - dmg, 0)
 
     ##########################################################################
     def shortrepr(self):

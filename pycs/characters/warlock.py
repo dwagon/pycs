@@ -10,6 +10,7 @@ from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.gear import Light_Crossbow
+from pycs.gear import Potion_Healing
 from pycs.gear import Quarterstaff
 from pycs.gear import Studded
 from pycs.spells import Burning_Hands
@@ -88,11 +89,12 @@ class Warlock(Character):
         self.add_gear(Studded())
         self.add_gear(Light_Crossbow())
         self.add_gear(Quarterstaff())
+        self.add_gear(Potion_Healing(ammo=2))
 
     ##########################################################################
     def report(self):
         super().report()
-        print(f"| Spells: {self.spell_slots}")
+        print(f"|  Spells: {self.spell_slots}")
 
     ########################################################################
     def spell_available(self, spell):
