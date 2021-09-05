@@ -5,13 +5,14 @@
 
 import unittest
 from unittest.mock import Mock
-from pycs.gear import Javelin
-from pycs.gear import Leather
-from pycs.gear import Splint
-from pycs.gear import Potion_Healing
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.gear import Javelin
+from pycs.gear import Leather
+from pycs.gear import Potion_Healing
+from pycs.gear import Shield
+from pycs.gear import Splint
 
 
 ##############################################################################
@@ -79,6 +80,24 @@ class TestEquipment(unittest.TestCase):
         """Test adding heavy armour"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_gear(Splint())
+        self.assertEqual(self.creat.ac, 17)
+
+    ########################################################################
+    def test_armour_shield(self):
+        """Test armour and shield combo"""
+        self.assertEqual(self.creat.ac, 11)
+        self.creat.add_gear(Leather())
+        self.assertEqual(self.creat.ac, 12)
+        self.creat.add_gear(Shield())
+        self.assertEqual(self.creat.ac, 14)
+
+    ########################################################################
+    def test_magic_armour_shield(self):
+        """Test magic armour and shield combo"""
+        self.assertEqual(self.creat.ac, 11)
+        self.creat.add_gear(Leather(magic_bonus=1))
+        self.assertEqual(self.creat.ac, 13)
+        self.creat.add_gear(Shield(magic_bonus=2))
         self.assertEqual(self.creat.ac, 17)
 
 

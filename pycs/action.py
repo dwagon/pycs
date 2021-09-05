@@ -11,7 +11,7 @@ from pycs.constant import Statistics
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Action:
+class Action:  # pylint: disable=too-many-instance-attributes
     """generic action"""
 
     ########################################################################
@@ -54,7 +54,7 @@ class Action:
         return None
 
     ########################################################################
-    def heuristic(self, doer):  # pylint: disable=unused-argument, no-self-use
+    def heuristic(self, doer):  # pylint: disable=unused-argument
         """How good is this action for doer this turn
         0 - don't do
         1 - whatevs
@@ -64,7 +64,7 @@ class Action:
         return 1
 
     ########################################################################
-    def range(self):  # pylint: disable=no-self-use
+    def range(self):
         """Return the range (good, max) of the action"""
         return 0, 0
 
@@ -263,7 +263,7 @@ class Action:
 
     ########################################################################
     def has_disadvantage(
-        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
+        self, source, target, rnge: int  # pylint: disable=unused-argument
     ) -> bool:
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
@@ -271,9 +271,7 @@ class Action:
         return False
 
     ########################################################################
-    def has_advantage(
-        self, source, target, rnge: int
-    ) -> bool:  # pylint: disable=no-self-use
+    def has_advantage(self, source, target, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True

@@ -23,14 +23,12 @@ class Arena(AStar):
                 self.grid[(i, j)] = None
 
     ##############################################################################
-    def distance_between(
-        self, n1, n2
-    ):  # pylint: disable=unused-argument, no-self-use, invalid-name
+    def distance_between(self, n1, n2):  # pylint: disable=unused-argument, invalid-name
         """This method always returns 1, as two 'neighbors' are always adjacent"""
         return 1
 
     ##########################################################################
-    def heuristic_cost_estimate(self, current, goal):  # pylint: disable=no-self-use
+    def heuristic_cost_estimate(self, current, goal):
         """computes the 'direct' distance between two (x,y) tuples"""
         (point_x1, point_y1) = current
         (point_x2, point_y2) = goal
@@ -86,7 +84,7 @@ class Arena(AStar):
         comb.coords = coords
 
     ##############################################################################
-    def distance(self, one, two):  # pylint: disable=no-self-use
+    def distance(self, one, two):
         """Return the distance in moves between two protagonists"""
         if one.coords is None or two.coords is None:
             print(

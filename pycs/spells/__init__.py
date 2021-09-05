@@ -42,7 +42,6 @@ __all__ = [
     "Enhance_Ability",
     "Fireball",
     # "Frostbite",
-    "Frostbite",
     "Guiding_Bolt",
     "Healing_Word",
     "Hellish_Rebuke",

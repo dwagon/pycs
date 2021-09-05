@@ -4,8 +4,6 @@ import sys
 import click
 import pycs
 
-# from .pycs import start
-
 
 ##############################################################################
 @click.command()
@@ -17,6 +15,6 @@ def main(rounds):
 
 ##############################################################################
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    sys.exit(main(1))  # pragma: no cover
 
 # EOF

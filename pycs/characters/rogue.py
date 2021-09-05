@@ -91,6 +91,10 @@ class UncannyDodge(Action):
         print("Using uncanny dodge to reduce damage")
         return int(kwargs.get("dmg") / 2)
 
+    ##########################################################################
+    def perform_action(self, _):
+        """Need to define but nothing to do"""
+
 
 ##############################################################################
 ##############################################################################
@@ -110,6 +114,10 @@ class CunningAction(Action):
         """Should we do this"""
         return 0
         # Don't know how to implement this yet
+
+    ##########################################################################
+    def perform_action(self, _):
+        """Not implemented yet"""
 
 
 ##############################################################################
@@ -163,8 +171,7 @@ class SneakAttack(Effect):
         if not allies_adjacent:
             if not attack.has_advantage(source, target, rnge):
                 return ("", 0, None)
-            else:
-                print("We have advantage on attack")
+            print("We have advantage on attack")
         self._used_this_turn = True
         return (self.source.sneak_attack_dmg, 0, None)
 

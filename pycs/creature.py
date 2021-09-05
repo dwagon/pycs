@@ -86,7 +86,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     @property
-    def ac(self):
+    def ac(self):  # pylint: disable=invalid-name
         """The armour class"""
         if self._ac is None:
             tmp = 0
@@ -94,11 +94,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             max_db = 999  # Max Dex bonus
             for geah in self.gear:
                 if issubclass(geah.__class__, Armour):
-                    tmp += geah.ac + geah.ac_bonus
+                    tmp += geah.ac + geah.ac_bonus + geah.magic_bonus
                     if not geah.dex_bonus:
                         dbon = False
                     max_db = min(max_db, geah.max_dex_bonus)
-            if tmp == 0:
+            if tmp == 0:  # No armour so default to 10
                 tmp = 10
             if dbon:
                 dexbonus = min(self.stat_bonus(Stat.DEX), max_db)
@@ -145,8 +145,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(
-        self, stat: Stat, dc: int, **kwargs  # pylint: disable=invalid-name
+    def saving_throw(  # pylint: disable=invalid-name
+        self, stat: Stat, dc: int, **kwargs
     ) -> bool:
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
@@ -462,9 +462,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(
-        self, spell  # pylint: disable=unused-argument
-    ) -> bool:  # pylint: disable=no-self-use
+    def spell_available(self, spell) -> bool:  # pylint: disable=unused-argument
         """Spell casters should redefine this"""
         return False
 

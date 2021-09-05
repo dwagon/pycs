@@ -14,6 +14,7 @@ from pycs.gear import Chainmail
 from pycs.gear import Javelin
 from pycs.gear import Longsword
 from pycs.gear import Potion_Healing
+from pycs.gear import Shield
 from pycs.spells.bless import Bless
 from pycs.spells.branding_smite import Branding_Smite
 from pycs.spells.cure_wounds import Cure_Wounds
@@ -102,7 +103,8 @@ class Paladin(Character):
             self.add_action(Branding_Smite())
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
-        self.add_gear(Chainmail())
+        self.add_gear(Chainmail(magic_bonus=1))
+        self.add_gear(Shield(magic_bonus=1))
         self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Longsword(side_effect=self.flaming_sword))
         self.add_gear(Javelin(ammo=3))

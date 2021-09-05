@@ -19,5 +19,8 @@ class Protection_From_Poison(SpellAction):
         )
         super().__init__(name, **kwargs)
 
+    def cast(self, caster):
+        """Not implemented yet"""
+
 
 # EOF

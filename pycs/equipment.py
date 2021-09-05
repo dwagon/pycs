@@ -10,7 +10,7 @@ from pycs.constant import Stat
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Equipment:
+class Equipment:  # pylint: disable=too-few-public-methods
     """Generic class"""
 
     ##########################################################################
@@ -99,16 +99,17 @@ class RangedWeapon(Weapon):
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Armour(Equipment):
+class Armour(Equipment):  # pylint: disable=too-few-public-methods
     """Stop taking damage"""
 
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        self.ac = kwargs.get("ac", 0)
+        self.ac = kwargs.get("ac", 0)  # pylint: disable=invalid-name
         self.ac_bonus = kwargs.get("ac_bonus", 0)
         self.dex_bonus = kwargs.get("dex_bonus", False)
         self.max_dex_bonus = kwargs.get("max_dex_bonus", 999)
+        self.magic_bonus = kwargs.get("magic_bonus", 0)
         super().__init__(name, **kwargs)
 
 

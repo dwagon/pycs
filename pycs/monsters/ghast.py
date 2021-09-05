@@ -82,8 +82,7 @@ class Ghast(Monster):
         """Pick the claw attack more often than damage would indicate"""
         if self.target.has_condition(Condition.PARALYZED):
             return self.pick_attack_by_name("Bite")
-        else:
-            return self.pick_attack_by_name("Claw")
+        return self.pick_attack_by_name("Claw")
 
     ##########################################################################
     def shortrepr(self):

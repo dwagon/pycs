@@ -132,10 +132,10 @@ class AttackSpell(SpellAction):
         if dmg_bon:
             dmg += dmg_bon
             print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
-        dc = self.save_dc
-        if not dc:
-            dc = source.spellcast_save
-        saved = victim.saving_throw(stat=self.save_stat, dc=dc, effect="unknown")
+        spell_dc = self.save_dc
+        if not spell_dc:
+            spell_dc = source.spellcast_save
+        saved = victim.saving_throw(stat=self.save_stat, dc=spell_dc, effect="unknown")
         if saved:
             if self.style == SpellType.SAVE_HALF:
                 dmg = int(dmg / 2)
