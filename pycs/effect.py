@@ -59,8 +59,18 @@ class Effect:
         return False
 
     ##########################################################################
+    def hook_gives_disadvantage_against(self):  # pylint: disable=unused-argument
+        """Gives disadvantage for creature who has the effect"""
+        return False
+
+    ##########################################################################
     def hook_gives_advantage(self, target):  # pylint: disable=unused-argument
         """Gives advantage for creature doing the attack"""
+        return False
+
+    ##########################################################################
+    def hook_gives_disadvantage(self, target):  # pylint: disable=unused-argument
+        """Gives disadvantage for creature doing the attack"""
         return False
 
     ##########################################################################
