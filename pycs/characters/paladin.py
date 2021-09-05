@@ -1,28 +1,27 @@
 """ Paladin """
 import colors
+import dice
 from pycs.action import Action
-from pycs.gear import Longsword
-from pycs.gear import Potion_Healing
-from pycs.gear import Javelin
-from pycs.gear import Chainmail
+from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Condition
+from pycs.constant import DamageType
 from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
+from pycs.gear import Chainmail
+from pycs.gear import Javelin
+from pycs.gear import Longsword
+from pycs.gear import Potion_Healing
 from pycs.spells.bless import Bless
-
 from pycs.spells.branding_smite import Branding_Smite
 from pycs.spells.cure_wounds import Cure_Wounds
-
 from pycs.spells.lesser_restoration import Lesser_Restoration
-
-# from pycs.spells.protection_from_poison import Protection_From_Poison
 from pycs.spells.sanctuary import Sanctuary
 from pycs.spells.shield_of_faith import Shield_Of_Faith
 
-from pycs.character import Character
+# from pycs.spells.protection_from_poison import Protection_From_Poison
 
 
 ##############################################################################
@@ -105,8 +104,14 @@ class Paladin(Character):
         #            self.add_action(Protection_From_Poison())
         self.add_gear(Chainmail())
         self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Longsword())
+        self.add_gear(Longsword(side_effect=self.flaming_sword))
         self.add_gear(Javelin(ammo=3))
+
+    ########################################################################
+    def flaming_sword(self, source, target, dmg):
+        """Add some extra spice"""
+        dmg = int(dice.roll("1d6"))
+        target.hit(dmg, DamageType.FIRE, source, False, "Flaming Sword")
 
     ########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):
