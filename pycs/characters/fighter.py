@@ -5,6 +5,7 @@ from pycs.attack import MeleeAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
+from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.gear import Longsword
 from pycs.gear import Plate
@@ -30,6 +31,7 @@ class Fighter(Character):
                 "int": 11,
                 "wis": 13,
                 "cha": 9,
+                "stat_prof": [Stat.STR, Stat.CON],
             }
         )
         if level >= 1:

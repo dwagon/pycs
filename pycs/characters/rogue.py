@@ -4,6 +4,7 @@ from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import Race
+from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.gear import Leather
 from pycs.gear import Potion_Healing
@@ -28,6 +29,7 @@ class Rogue(Character):
                 "int": 9,
                 "wis": 14,
                 "cha": 10,
+                "stat_prof": [Stat.DEX, Stat.INT],
                 "speed": 35,
             }
         )

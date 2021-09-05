@@ -34,6 +34,7 @@ class TestCreature(unittest.TestCase):
             "side": "a",
             "hp": 30,
             "ac": 11,
+            "stat_prof": [Stat.CHA],
             "type": MonsterType.UNDEAD,
             "spellcast_bonus_stat": Stat.WIS,
         }
@@ -134,6 +135,12 @@ class TestCreature(unittest.TestCase):
             mock.return_value = 1
             res = self.creat.saving_throw(Stat.WIS, 20)
             self.assertFalse(res)
+
+        # Test stat proficiency
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 10
+            res = self.creat.saving_throw(Stat.CHA, 11)
+            self.assertTrue(res)
 
     ########################################################################
     def test_roll_initiative(self):

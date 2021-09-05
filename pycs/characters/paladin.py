@@ -44,6 +44,7 @@ class Paladin(Character):
                 "int": 8,
                 "wis": 12,
                 "cha": 14,
+                "stat_prof": [Stat.WIS, Stat.CHA],
                 "spellcast_bonus_stat": Stat.CHA,
                 "race": Race.HALFORC,
                 "action_preference": {

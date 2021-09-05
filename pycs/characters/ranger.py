@@ -38,6 +38,7 @@ class Ranger(Character):
                 "int": 8,
                 "wis": 14,
                 "cha": 11,
+                "stat_prof": [Stat.STR, Stat.DEX],
                 "speed": 25,
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
