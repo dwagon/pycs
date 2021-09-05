@@ -36,6 +36,7 @@ class Warlock(Character):
                 "int": 12,
                 "wis": 11,
                 "cha": 17,
+                "stat_prof": [Stat.WIS, Stat.CHA],
                 "race": Race.HALFELF,
                 "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {

@@ -31,6 +31,7 @@ class Barbarian(Character):
                 "int": 11,
                 "wis": 13,
                 "cha": 9,
+                "stat_prof": [Stat.STR, Stat.CON],
                 "action_preference": {
                     BarbarianRage: 9,
                     ActionType.MELEE: 8,

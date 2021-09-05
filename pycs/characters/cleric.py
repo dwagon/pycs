@@ -45,6 +45,7 @@ class Cleric(Character):
                 "int": 11,
                 "wis": 16,
                 "cha": 13,
+                "stat_prof": [Stat.WIS, Stat.CHA],
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,

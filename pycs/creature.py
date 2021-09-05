@@ -46,6 +46,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CON: kwargs["con"],
             Stat.CHA: kwargs["cha"],
         }
+        self.stat_prof = kwargs.get("stat_prof", [])
         self.spellcast_bonus_stat = kwargs.get("spellcast_bonus_stat")
         self.action_preference = kwargs.get(
             "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
@@ -168,6 +169,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         else:
             save = self.rolld20("save")
             msg = ""
+        if stat in self.stat_prof:
+            save += self.prof_bonus
 
         save += effct["bonus"] + self.stat_bonus(stat)
         if save >= dc:
