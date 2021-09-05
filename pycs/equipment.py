@@ -35,6 +35,7 @@ class Weapon(Equipment):
     def __init__(self, name, **kwargs):
         """init"""
         self.magic_bonus = kwargs.get("magic_bonus", 0)
+        self.side_effect = kwargs.get("side_effect")
         super().__init__(name, **kwargs)
 
     ##########################################################################
