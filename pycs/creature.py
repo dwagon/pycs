@@ -86,7 +86,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     @property
-    def ac(self):
+    def ac(self):  # pylint: disable=invalid-name
         """The armour class"""
         if self._ac is None:
             tmp = 0
@@ -145,8 +145,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(
-        self, stat: Stat, dc: int, **kwargs  # pylint: disable=invalid-name
+    def saving_throw(  # pylint: disable=invalid-name
+        self, stat: Stat, dc: int, **kwargs
     ) -> bool:
         """Make a saving throw against a stat"""
         # Need to add stat proficiency
@@ -425,7 +425,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
-    def damage_summary(self, dmglist):
+    def damage_summary(self, dmglist):  # pylint: disable=no-self-use
         """Summarise damage"""
         if not dmglist:
             return "None"
@@ -462,9 +462,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(
+    def spell_available(  # pylint: disable=no-self-use
         self, spell  # pylint: disable=unused-argument
-    ) -> bool:  # pylint: disable=no-self-use
+    ) -> bool:
         """Spell casters should redefine this"""
         return False
 

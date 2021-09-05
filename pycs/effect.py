@@ -1,4 +1,5 @@
 """ Handle Effects """
+# pylint: disable=no-self-use
 from typing import Tuple, Optional
 from pycs.constant import DamageType
 
@@ -52,7 +53,9 @@ class Effect:
         return 0
 
     ##########################################################################
-    def hook_gives_advantage_against(self):
+    def hook_gives_advantage_against(
+        self,
+    ):  # pylint: disable=unused-argument
         """Gives advantage against creature who has effect"""
         return False
 
@@ -62,7 +65,9 @@ class Effect:
         return False
 
     ##########################################################################
-    def removal_after_being_attacked(self):
+    def removal_after_being_attacked(
+        self,
+    ):  # pylint: disable=unused-argument
         """Do we remove the effect after being turned"""
         return False
 

@@ -12,7 +12,6 @@ class Monster(Creature):
     ##########################################################################
     def shortrepr(self):
         """Arena repr"""
-        pass
 
 
 # EOF

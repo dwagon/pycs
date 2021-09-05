@@ -11,7 +11,7 @@ from pycs.constant import Statistics
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Action:
+class Action:  # pylint: disable=too-many-instance-attributes
     """generic action"""
 
     ########################################################################
@@ -32,21 +32,21 @@ class Action:
         self.gear = None  # Gear that induced the action
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=unused-argument
+    def modifier(self, attacker):  # pylint: disable=unused-argument, no-self-use
         """Modifier to the action dice roll"""
         # Don't use NotImplementedError as isn't required for every action
         print(f"{__class__.__name__} hasn't implemented modifier()")
         return 0
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument
+    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument, no-self-use
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
         print(f"{__class__.__name__} hasn't implemented stat_dmg_bonus()")
         return 0
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self, doer):  # pylint: disable=no-self-use
         """Who are we going to do the action to"""
         enemy = doer.pick_closest_enemy()
         if enemy:
@@ -93,7 +93,9 @@ class Action:
         return self.name
 
     ##########################################################################
-    def check_criticals(self, source, to_hit_roll: int) -> Tuple[bool, bool]:
+    def check_criticals(  # pylint: disable=no-self-use
+        self, source, to_hit_roll: int
+    ) -> Tuple[bool, bool]:
         """Did we critical hit or miss"""
         crit_hit = False
         crit_miss = False
@@ -262,8 +264,8 @@ class Action:
         return max(dmg, 0)
 
     ########################################################################
-    def has_disadvantage(
-        self, source, target, rnge: int  # pylint: disable=unused-argument, no-self-use
+    def has_disadvantage(  # pylint: disable=no-self-use
+        self, source, target, rnge: int  # pylint: disable=unused-argument
     ) -> bool:
         """Does this attack have disadvantage at this range"""
         if source.has_condition(Condition.POISONED):
@@ -271,9 +273,9 @@ class Action:
         return False
 
     ########################################################################
-    def has_advantage(
+    def has_advantage(  # pylint: disable=no-self-use
         self, source, target, rnge: int
-    ) -> bool:  # pylint: disable=no-self-use
+    ) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
