@@ -91,6 +91,10 @@ class UncannyDodge(Action):
         print("Using uncanny dodge to reduce damage")
         return int(kwargs.get("dmg") / 2)
 
+    ##########################################################################
+    def perform_action(self, _):
+        """Need to define but nothing to do"""
+
 
 ##############################################################################
 ##############################################################################
@@ -110,6 +114,10 @@ class CunningAction(Action):
         """Should we do this"""
         return 0
         # Don't know how to implement this yet
+
+    ##########################################################################
+    def perform_action(self, _):
+        """Not implemented yet"""
 
 
 ##############################################################################

@@ -109,6 +109,7 @@ class Armour(Equipment):
         self.ac_bonus = kwargs.get("ac_bonus", 0)
         self.dex_bonus = kwargs.get("dex_bonus", False)
         self.max_dex_bonus = kwargs.get("max_dex_bonus", 999)
+        self.magic_bonus = kwargs.get("magic_bonus", 0)
         super().__init__(name, **kwargs)
 
 

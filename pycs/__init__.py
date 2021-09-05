@@ -2,7 +2,6 @@
 
 __author__ = """Dougal Scott"""
 __email__ = "dougal.scott@gmail.com"
-__version__ = "0.1.0"
 
 from collections import defaultdict
 from prettytable import PrettyTable

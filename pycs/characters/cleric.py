@@ -94,8 +94,8 @@ class Cleric(Character):
             self.add_action(Mass_Healing_Word())
             self.add_action(Spirit_Guardians())
 
-        self.add_gear(Shield())
-        self.add_gear(Chainmail())
+        self.add_gear(Shield(magic_bonus=1))
+        self.add_gear(Chainmail(magic_bonus=1))
         self.add_gear(Potion_Healing(ammo=1))
         self.add_gear(Mace(magic_bonus=1))
         self.add_gear(Light_Crossbow())

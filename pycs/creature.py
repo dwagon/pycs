@@ -94,11 +94,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             max_db = 999  # Max Dex bonus
             for geah in self.gear:
                 if issubclass(geah.__class__, Armour):
-                    tmp += geah.ac + geah.ac_bonus
+                    tmp += geah.ac + geah.ac_bonus + geah.magic_bonus
                     if not geah.dex_bonus:
                         dbon = False
                     max_db = min(max_db, geah.max_dex_bonus)
-            if tmp == 0:
+            if tmp == 0:  # No armour so default to 10
                 tmp = 10
             if dbon:
                 dexbonus = min(self.stat_bonus(Stat.DEX), max_db)
