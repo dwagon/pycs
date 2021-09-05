@@ -154,7 +154,8 @@ def combat_test():
     arena.do_initiative()
     print(f"{arena}")
     while arena.still_going():
-        print(f"##### Turn {turn}: {participant_report(arena)}")
+        print(f"##### Turn {turn}")
+        participant_report(arena)
         arena.turn()
         turn += 1
         assert turn < 100
