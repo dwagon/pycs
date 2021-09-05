@@ -425,7 +425,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
-    def damage_summary(self, dmglist):  # pylint: disable=no-self-use
+    def damage_summary(self, dmglist):
         """Summarise damage"""
         if not dmglist:
             return "None"
@@ -462,9 +462,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(  # pylint: disable=no-self-use
-        self, spell  # pylint: disable=unused-argument
-    ) -> bool:
+    def spell_available(self, spell) -> bool:  # pylint: disable=unused-argument
         """Spell casters should redefine this"""
         return False
 

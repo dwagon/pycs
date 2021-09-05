@@ -32,21 +32,21 @@ class Action:  # pylint: disable=too-many-instance-attributes
         self.gear = None  # Gear that induced the action
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=unused-argument, no-self-use
+    def modifier(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the action dice roll"""
         # Don't use NotImplementedError as isn't required for every action
         print(f"{__class__.__name__} hasn't implemented modifier()")
         return 0
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument, no-self-use
+    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
         print(f"{__class__.__name__} hasn't implemented stat_dmg_bonus()")
         return 0
 
     ########################################################################
-    def pick_target(self, doer):  # pylint: disable=no-self-use
+    def pick_target(self, doer):
         """Who are we going to do the action to"""
         enemy = doer.pick_closest_enemy()
         if enemy:
@@ -54,7 +54,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return None
 
     ########################################################################
-    def heuristic(self, doer):  # pylint: disable=unused-argument, no-self-use
+    def heuristic(self, doer):  # pylint: disable=unused-argument
         """How good is this action for doer this turn
         0 - don't do
         1 - whatevs
@@ -64,7 +64,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return 1
 
     ########################################################################
-    def range(self):  # pylint: disable=no-self-use
+    def range(self):
         """Return the range (good, max) of the action"""
         return 0, 0
 
@@ -93,9 +93,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return self.name
 
     ##########################################################################
-    def check_criticals(  # pylint: disable=no-self-use
-        self, source, to_hit_roll: int
-    ) -> Tuple[bool, bool]:
+    def check_criticals(self, source, to_hit_roll: int) -> Tuple[bool, bool]:
         """Did we critical hit or miss"""
         crit_hit = False
         crit_miss = False
@@ -264,7 +262,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return max(dmg, 0)
 
     ########################################################################
-    def has_disadvantage(  # pylint: disable=no-self-use
+    def has_disadvantage(
         self, source, target, rnge: int  # pylint: disable=unused-argument
     ) -> bool:
         """Does this attack have disadvantage at this range"""
@@ -273,9 +271,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return False
 
     ########################################################################
-    def has_advantage(  # pylint: disable=no-self-use
-        self, source, target, rnge: int
-    ) -> bool:
+    def has_advantage(self, source, target, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True

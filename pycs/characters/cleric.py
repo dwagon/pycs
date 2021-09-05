@@ -130,8 +130,7 @@ class Cleric(Character):
         """What a cleric looks like in the arena"""
         if self.is_alive():
             return colors.blue("C", bg="green")
-        else:
-            return colors.blue("C", bg="red")
+        return colors.blue("C", bg="red")
 
 
 ##############################################################################

@@ -40,7 +40,7 @@ class Attack(Action):
         raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):  # pylint: disable=no-self-use
+    def stat_dmg_bonus(self, attacker):
         """The damage bonus modifier"""
         if self.damage_modifier:
             return self.damage_modifier
@@ -70,7 +70,7 @@ class MeleeAttack(Attack):
         return self.reach, self.reach
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=no-self-use
+    def modifier(self, attacker):
         """The melee attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier
@@ -121,7 +121,7 @@ class RangedAttack(Attack):
         return self.max_dmg(doer)
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=no-self-use
+    def modifier(self, attacker):
         """The ranged attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier

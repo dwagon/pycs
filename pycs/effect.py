@@ -1,5 +1,4 @@
 """ Handle Effects """
-# pylint: disable=no-self-use
 from typing import Tuple, Optional
 from pycs.constant import DamageType
 

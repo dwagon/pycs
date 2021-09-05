@@ -20,4 +20,4 @@ jobs:
         pip install pylint==2.9.6
     - name: Analysing the code with pylint
       run: |
-        pylint pycs
+        pylint -d C0103,R0903,R0201 pycs

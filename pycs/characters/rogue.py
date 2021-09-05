@@ -171,8 +171,7 @@ class SneakAttack(Effect):
         if not allies_adjacent:
             if not attack.has_advantage(source, target, rnge):
                 return ("", 0, None)
-            else:
-                print("We have advantage on attack")
+            print("We have advantage on attack")
         self._used_this_turn = True
         return (self.source.sneak_attack_dmg, 0, None)
 
