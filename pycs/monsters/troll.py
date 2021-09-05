@@ -17,6 +17,7 @@ class Troll(Monster):
     ##########################################################################
     def __init__(self, **kwargs):
         self.hitdice = "8d10+40"
+        self._regen = 5
         kwargs.update(
             {
                 "ac": 15,
@@ -45,6 +46,13 @@ class Troll(Monster):
             if hit.type in (DamageType.ACID, DamageType.FIRE):
                 print(f"Not regenerating as took {hit.type.value} damage last turn")
                 return
+        # Don't come back from unconsciousness forever - can lead to loops
+        if self.hp <= 0:
+            self._regen -= 1
+        if self._regen <= 0:
+            print("Not regening as getting ridiculous")
+            return
+        print(f"{self._regen} regens left")
         if self.hp < self.max_hp:
             self.heal("", 10)
 
