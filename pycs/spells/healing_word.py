@@ -4,6 +4,8 @@ from pycs.spell import SpellAction
 from pycs.spell import pick_heal_target
 from pycs.spell import healing_heuristic
 from pycs.constant import SpellType
+from pycs.constant import ActionCategory
+from .spelltest import SpellTest
 
 
 ##############################################################################
@@ -41,9 +43,26 @@ class Healing_Word(SpellAction):
     ########################################################################
     def heuristic(self, doer):
         """Should we cast this"""
-        if not doer.spell_available(self):
-            return 0
         return healing_heuristic(doer, self)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class Test_Frostbite(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(Healing_Word())
+
+    ##########################################################################
+    def test_cast(self):
+        """See what this spell does"""
+        self.friend.hp = 5
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
+        self.assertGreater(self.friend.hp, 5)
 
 
 # EOF

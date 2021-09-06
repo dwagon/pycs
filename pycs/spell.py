@@ -23,6 +23,14 @@ class SpellAction(Action):
         self.target = None
 
     ########################################################################
+    def failed_save(self, source, target, dmg):
+        """Called when the target failed save"""
+
+    ########################################################################
+    def made_save(self, source, target, dmg):
+        """Called when the target made save"""
+
+    ########################################################################
     def is_type(self, *types):
         """Is this spell of the specified types"""
         return self.type in types
@@ -76,7 +84,7 @@ def health_level_of_peers(doer):
     ]
     if not peers:
         return None
-    peers.sort()
+    peers.sort(reverse=True)
     return peers[0]
 
 
@@ -141,6 +149,9 @@ class AttackSpell(SpellAction):
                 dmg = int(dmg / 2)
             if self.style == SpellType.SAVE_NONE:
                 dmg = 0
+            self.made_save(source=source, target=victim, dmg=dmg)
+        else:
+            self.failed_save(source=source, target=victim, dmg=dmg)
         return max(dmg, 0)
 
     ########################################################################

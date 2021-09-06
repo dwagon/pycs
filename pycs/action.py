@@ -263,7 +263,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
 
     ########################################################################
     def has_disadvantage(self, source, target, _: int) -> bool:
-        """Does this attack have disadvantage at this range"""
+        """Does this attack have disadvantage"""
         if source.has_condition(Condition.POISONED):
             return True
         for _, eff in target.effects.items():
