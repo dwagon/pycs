@@ -93,7 +93,7 @@ class TestShieldOfFaith(SpellTest):
     def setUp(self):
         super().setUp()
         self.caster.add_action(ShieldOfFaith())
-        self.caster._ac = 19
+        self.caster._ac = 19  # pylint: disable=protected-access
         self.caster.speed = 90  # Ensure we can get to friend
 
     ##########################################################################
