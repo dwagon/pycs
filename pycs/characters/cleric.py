@@ -20,7 +20,7 @@ from pycs.spells import Enhance_Ability
 from pycs.spells import Guiding_Bolt
 from pycs.spells import HealingWord
 from pycs.spells import Hold_Person
-from pycs.spells import Lesser_Restoration
+from pycs.spells import LesserRestoration
 from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
 from pycs.spells import Shield_Of_Faith
@@ -84,7 +84,7 @@ class Cleric(Character):
             self.add_action(TurnUndead())
         if level >= 3:
             self.add_action(Aid())
-            self.add_action(Lesser_Restoration())  # Life Domain freebie
+            self.add_action(LesserRestoration())  # Life Domain freebie
             self.add_action(Enhance_Ability())
             self.add_action(Spiritual_Weapon())  # Life Domain freebie
             self.add_action(Hold_Person())

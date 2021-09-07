@@ -18,7 +18,7 @@ from pycs.gear import Shield
 from pycs.spells import Bless
 from pycs.spells import BrandingSmite
 from pycs.spells import CureWounds
-from pycs.spells import Lesser_Restoration
+from pycs.spells import LesserRestoration
 from pycs.spells import Sanctuary
 from pycs.spells import Shield_Of_Faith
 
@@ -102,7 +102,7 @@ class Paladin(Character):
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
             self.add_action(BrandingSmite())
-            self.add_action(Lesser_Restoration())
+            self.add_action(LesserRestoration())
         #            self.add_action(Protection_From_Poison())
         self.add_gear(Chainmail(magic_bonus=1))
         self.add_gear(Shield(magic_bonus=1))
