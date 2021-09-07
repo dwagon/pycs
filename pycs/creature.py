@@ -150,7 +150,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self, stat: Stat, dc: int, **kwargs
     ) -> bool:
         """Make a saving throw against a stat"""
-        # Need to add stat proficiency
         if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
             print(
                 f"{self} automatically failed {stat.value} saving throw as unconscious"
@@ -366,17 +365,19 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.type == typ
 
     ##########################################################################
-    def end_turn(self):
+    def end_turn(self, draw=True):
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
-        print(self.arena)
+        if draw:
+            print(self.arena)
 
     ##########################################################################
     def remove_effect(self, name):
         """Remove an effect"""
+        self.effects[name].finish(self)
         del self.effects[name]
 
     ##########################################################################

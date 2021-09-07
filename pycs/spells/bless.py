@@ -1,9 +1,14 @@
 """https://www.dndbeyond.com/spells/bless"""
 
+from unittest.mock import patch
 import dice
+from pycs.creature import Creature
 from pycs.constant import SpellType
+from pycs.constant import ActionCategory
+from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.spell import SpellAction
+from .spelltest import SpellTest
 
 
 ##############################################################################
@@ -75,11 +80,6 @@ class Bless(SpellAction):
         for pers in self._affected:
             pers.remove_effect("Bless")
 
-    ###########################################################################
-    def bless_result(self):
-        """What does the bless do"""
-        return int(dice.roll("d4"))
-
 
 ##############################################################################
 ##############################################################################
@@ -103,6 +103,63 @@ class BlessEffect(Effect):
         eff.update({"bonus": int(dice.roll("d4"))})
         print(f"Bless adds {eff['bonus']} to saving throw")
         return eff
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class Test_Bless(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        """setup"""
+        super().setUp()
+        self.caster.add_action(Bless())
+
+    ##########################################################################
+    def test_cast(self):
+        """test casting"""
+        self.assertFalse(self.friend.has_effect("Bless"))
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertTrue(self.friend.has_effect("Bless"))
+
+    ##########################################################################
+    def test_saving_throw_effect(self):
+        """test the bless effect on saving throws"""
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 9
+            save = self.friend.saving_throw(Stat.CON, 10)
+            self.assertFalse(save)
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 9
+            save = self.friend.saving_throw(Stat.CON, 10)
+            self.assertTrue(save)
+
+    ##########################################################################
+    def test_to_hit_effect(self):
+        """test the bless effect on attack rolls"""
+        act = self.friend.actions[0]
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 9
+            to_hit, _, _ = act.roll_to_hit(self.friend, self.enemy)
+        self.assertEqual(to_hit, 9)
+
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        act = self.friend.actions[0]
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 9
+            to_hit, _, _ = act.roll_to_hit(self.friend, self.enemy)
+        self.assertGreaterEqual(to_hit, 10)
+
+    ##########################################################################
+    def test_concentration(self):
+        """Does the effect remove when we end concentration"""
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertTrue(self.friend.has_effect("Bless"))
+        self.caster.remove_concentration()
+        self.assertFalse(self.friend.has_effect("Bless"))
 
 
 # EOF

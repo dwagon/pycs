@@ -15,15 +15,15 @@ from pycs.gear import Shield
 from pycs.spells import Aid
 from pycs.spells import Beacon_Of_Hope
 from pycs.spells import Bless
-from pycs.spells import Cure_Wounds
+from pycs.spells import CureWounds
 from pycs.spells import Enhance_Ability
 from pycs.spells import Guiding_Bolt
-from pycs.spells import Healing_Word
-from pycs.spells import Hold_Person
-from pycs.spells import Lesser_Restoration
-from pycs.spells import Mass_Healing_Word
+from pycs.spells import HealingWord
+from pycs.spells import HoldPerson
+from pycs.spells import LesserRestoration
+from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
-from pycs.spells import Shield_Of_Faith
+from pycs.spells import ShieldOfFaith
 from pycs.spells import Spirit_Guardians
 from pycs.spells import Spiritual_Weapon
 
@@ -75,24 +75,24 @@ class Cleric(Character):
             self.spell_slots = {1: 4, 2: 3, 3: 2}
         super().__init__(**kwargs)
         self.add_action(Bless())  # Life Domain freebie
-        self.add_action(Cure_Wounds())  # Life Domain freebie
+        self.add_action(CureWounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
-        self.add_action(Healing_Word())
-        self.add_action(Shield_Of_Faith())
+        self.add_action(HealingWord())
+        self.add_action(ShieldOfFaith())
         if level >= 2:
             self.add_action(TurnUndead())
         if level >= 3:
             self.add_action(Aid())
-            self.add_action(Lesser_Restoration())  # Life Domain freebie
+            self.add_action(LesserRestoration())  # Life Domain freebie
             self.add_action(Enhance_Ability())
             self.add_action(Spiritual_Weapon())  # Life Domain freebie
-            self.add_action(Hold_Person())
+            self.add_action(HoldPerson())
         if level >= 4:
             self.stats[Stat.WIS] = 18
         if level >= 5:
             self.add_action(Beacon_Of_Hope())  # Life Domain freebie
-            self.add_action(Mass_Healing_Word())
+            self.add_action(MassHealingWord())
             self.add_action(Spirit_Guardians())
 
         self.add_gear(Shield(magic_bonus=1))

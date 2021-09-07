@@ -1,10 +1,14 @@
 """https://www.dndbeyond.com/spells/frostbite"""
 
+from unittest.mock import patch
+from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.spell import AttackSpell
+from .spelltest import SpellTest
 
 
 ##############################################################################
@@ -49,10 +53,9 @@ class Frostbite(AttackSpell):
         return self._target
 
     ##########################################################################
-    def cast(self, caster):
-        """Do the spell"""
-        self._target.add_effect(FrostbiteEffect(cause=caster))
-        return super().cast(caster)
+    def failed_save(self, source, target, dmg):
+        """What to when we target fails save"""
+        self._target.add_effect(FrostbiteEffect(cause=source))
 
 
 ##############################################################################
@@ -76,6 +79,54 @@ class FrostbiteEffect(Effect):
     ##########################################################################
     def removal_end_of_its_turn(self, victim):
         return True
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestFrostbite(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(Frostbite())
+
+    ##########################################################################
+    def test_cast_miss(self):
+        """test casting where victim makes saving throw"""
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19
+            self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.assertFalse(self.enemy.has_effect("Frostbite"))
+
+    ##########################################################################
+    def test_cast_hit(self):
+        """test casting where victim fails saving throw"""
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertLess(self.enemy.hp, self.enemy.max_hp)
+        self.assertTrue(self.enemy.has_effect("Frostbite"))
+
+    ##########################################################################
+    def test_effect(self):
+        """Test the effect of casting the spell"""
+        act = self.enemy.pick_attack_by_name("Longsword")
+        self.assertFalse(act.has_disadvantage(self.enemy, self.friend, 1))
+        self.enemy.add_effect(FrostbiteEffect())
+        self.assertTrue(act.has_disadvantage(self.enemy, self.friend, 1))
+
+    ##########################################################################
+    def test_removal(self):
+        """Test the effect gets removed"""
+        self.enemy.add_effect(FrostbiteEffect())
+        self.assertTrue(self.enemy.has_effect("Frostbite"))
+        self.enemy.end_turn(draw=False)
+        self.assertFalse(self.enemy.has_effect("Frostbite"))
 
 
 # EOF

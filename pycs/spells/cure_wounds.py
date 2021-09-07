@@ -1,13 +1,15 @@
 """https://www.dndbeyond.com/spells/cure-wounds"""
 
-from pycs.spell import SpellAction
-from pycs.spell import pick_heal_target
-from pycs.spell import healing_heuristic
+from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.spell import SpellAction
+from pycs.spell import healing_heuristic
+from pycs.spell import pick_heal_target
+from .spelltest import SpellTest
 
 
 ##############################################################################
-class Cure_Wounds(SpellAction):
+class CureWounds(SpellAction):
     """A creature you touch regains a number of hit points equal to 1d8
     + your spellcasting ability modifier. This spell has no effect on
     undead or constructs."""
@@ -41,6 +43,25 @@ class Cure_Wounds(SpellAction):
         if not doer.spell_available(self):
             return 0
         return healing_heuristic(doer, self)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestCureWounds(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(CureWounds())
+
+    ##########################################################################
+    def test_cast(self):
+        """See what this spell does"""
+        self.friend.hp = 5
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
+        self.assertGreater(self.friend.hp, 5)
 
 
 # EOF

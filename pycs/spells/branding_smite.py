@@ -10,7 +10,7 @@ from pycs.effect import Effect
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Branding_Smite(SpellAction):
+class BrandingSmite(SpellAction):
     """The next time you hit a creature with a weapon attack before
     this spell ends, the weapon gleams with astral radiance as you
     strike. The attack deals an extra 2d6 radiant damage to the target,

@@ -1,14 +1,17 @@
 """https://www.dndbeyond.com/spells/scorching-ray"""
 
 import random
+from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.spell import AttackSpell
+from .spelltest import SpellTest
 
 
 ##############################################################################
-class Scorching_Ray(AttackSpell):
+class ScorchingRay(AttackSpell):
     """You create three rays of fire and hurl them at targets within
     range. You can hurl them at one target or several.
 
@@ -73,6 +76,41 @@ class Scorching_Ray(AttackSpell):
             if doer.distance(enemy) < self.range()[0]:
                 targets += 1
         return min(3, targets) * 12
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestScorchingRay(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(ScorchingRay())
+
+    ##########################################################################
+    def test_cast_miss(self):
+        """test casting where misses victim"""
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 2
+            self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.assertEqual(self.enemy.damage_this_turn, [])
+
+    ##########################################################################
+    def test_cast_hit(self):
+        """test casting where victim fails saving throw"""
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.assertEqual(self.enemy.damage_this_turn, [])
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19
+            self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertLess(self.enemy.hp, self.enemy.max_hp)
+        self.assertEqual(len(self.enemy.damage_this_turn), 3)
+        for obj in self.enemy.damage_this_turn:
+            self.assertEqual(obj.type, DamageType.FIRE)
 
 
 # EOF

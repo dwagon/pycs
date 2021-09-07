@@ -3,10 +3,12 @@
 from pycs.spell import SpellAction
 from pycs.constant import SpellType
 from pycs.constant import Condition
+from pycs.constant import ActionCategory
+from .spelltest import SpellTest
 
 
 ##############################################################################
-class Lesser_Restoration(SpellAction):
+class LesserRestoration(SpellAction):
     """You touch a creature and can end either one disease or one
     condition afflicting it. The condition can be blinded, deafened,
     paralyzed, or poisoned."""
@@ -58,11 +60,30 @@ class Lesser_Restoration(SpellAction):
     ###########################################################################
     def heuristic(self, doer):
         """Should we do the spell"""
-        if not doer.spell_available(self):
-            return 0
         if self.pick_target(doer) is None:
             return 0
-        return 10
+        return 20
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestLesserRestoration(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(LesserRestoration())
+
+    ##########################################################################
+    def test_cast(self):
+        """See what this spell does"""
+        self.caster.moves = 90  # Make sure we can get there
+        self.friend.add_condition(Condition.BLINDED)
+        self.assertTrue(self.friend.has_condition(Condition.BLINDED))
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
+        self.assertFalse(self.friend.has_condition(Condition.BLINDED))
 
 
 # EOF
