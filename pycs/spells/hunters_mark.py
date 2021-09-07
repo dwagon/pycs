@@ -2,13 +2,13 @@
 
 import dice
 from unittest.mock import patch
-from .spelltest import SpellTest
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.gear import Shortbow
 from pycs.spell import SpellAction
+from .spelltest import SpellTest
 
 
 ##############################################################################

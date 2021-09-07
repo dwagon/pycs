@@ -2,12 +2,12 @@
 
 import random
 from unittest.mock import patch
-from .spelltest import SpellTest
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.spell import AttackSpell
+from .spelltest import SpellTest
 
 
 ##############################################################################
