@@ -1,7 +1,7 @@
 """https://www.dndbeyond.com/spells/hunters-mark"""
 
-import dice
 from unittest.mock import patch
+import dice
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.creature import Creature
