@@ -23,7 +23,7 @@ from .sacred_flame import Sacred_Flame
 from .sanctuary import Sanctuary
 from .scorching_ray import ScorchingRay
 from .shatter import Shatter
-from .shield_of_faith import Shield_Of_Faith
+from .shield_of_faith import ShieldOfFaith
 from .spirit_guardians import Spirit_Guardians
 from .spiritual_weapon import Spiritual_Weapon
 from .thunderclap import Thunderclap
@@ -53,7 +53,7 @@ __all__ = [
     "Sanctuary",
     "ScorchingRay",
     "Shatter",
-    "Shield_Of_Faith",
+    "ShieldOfFaith",
     "Spirit_Guardians",
     "Spiritual_Weapon",
     "Thunderclap",

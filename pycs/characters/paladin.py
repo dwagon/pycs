@@ -20,7 +20,7 @@ from pycs.spells import BrandingSmite
 from pycs.spells import CureWounds
 from pycs.spells import LesserRestoration
 from pycs.spells import Sanctuary
-from pycs.spells import Shield_Of_Faith
+from pycs.spells import ShieldOfFaith
 
 # from pycs.spells.protection_from_poison import Protection_From_Poison
 
@@ -87,7 +87,7 @@ class Paladin(Character):
             self.lay_on_hands = 5
             self.add_action(CureWounds())
             self.add_action(Bless())
-            self.add_action(Shield_Of_Faith())
+            self.add_action(ShieldOfFaith())
             # Divine Smite
             # Starting at 2nd level, when you hit a creature with a melee weapon
             # attack, you can expend one spell slot to deal radiant damage to the

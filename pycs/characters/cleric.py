@@ -23,7 +23,7 @@ from pycs.spells import HoldPerson
 from pycs.spells import LesserRestoration
 from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
-from pycs.spells import Shield_Of_Faith
+from pycs.spells import ShieldOfFaith
 from pycs.spells import Spirit_Guardians
 from pycs.spells import Spiritual_Weapon
 
@@ -79,7 +79,7 @@ class Cleric(Character):
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
         self.add_action(HealingWord())
-        self.add_action(Shield_Of_Faith())
+        self.add_action(ShieldOfFaith())
         if level >= 2:
             self.add_action(TurnUndead())
         if level >= 3:
