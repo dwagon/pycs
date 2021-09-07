@@ -12,12 +12,12 @@ from .enhance_ability import Enhance_Ability
 from .fireball import Fireball
 from .frostbite import Frostbite
 from .guiding_bolt import Guiding_Bolt
-from .healing_word import Healing_Word
+from .healing_word import HealingWord
 from .hellish_rebuke import Hellish_Rebuke
 from .hold_person import Hold_Person
 from .hunters_mark import Hunters_Mark
 from .lesser_restoration import Lesser_Restoration
-from .mass_healing_word import Mass_Healing_Word
+from .mass_healing_word import MassHealingWord
 from .sacred_flame import Sacred_Flame
 from .scorching_ray import Scorching_Ray
 from .shatter import Shatter
@@ -39,12 +39,12 @@ __all__ = [
     "Fireball",
     "Frostbite",
     "Guiding_Bolt",
-    "Healing_Word",
+    "HealingWord",
     "Hellish_Rebuke",
     "Hold_Person",
     "Hunters_Mark",
     "Lesser_Restoration",
-    "Mass_Healing_Word",
+    "MassHealingWord",
     # "Poison_Spray",
     "Sacred_Flame",
     "Scorching_Ray",

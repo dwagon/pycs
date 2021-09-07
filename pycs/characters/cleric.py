@@ -18,10 +18,10 @@ from pycs.spells import Bless
 from pycs.spells import Cure_Wounds
 from pycs.spells import Enhance_Ability
 from pycs.spells import Guiding_Bolt
-from pycs.spells import Healing_Word
+from pycs.spells import HealingWord
 from pycs.spells import Hold_Person
 from pycs.spells import Lesser_Restoration
-from pycs.spells import Mass_Healing_Word
+from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
 from pycs.spells import Shield_Of_Faith
 from pycs.spells import Spirit_Guardians
@@ -78,7 +78,7 @@ class Cleric(Character):
         self.add_action(Cure_Wounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
-        self.add_action(Healing_Word())
+        self.add_action(HealingWord())
         self.add_action(Shield_Of_Faith())
         if level >= 2:
             self.add_action(TurnUndead())
@@ -92,7 +92,7 @@ class Cleric(Character):
             self.stats[Stat.WIS] = 18
         if level >= 5:
             self.add_action(Beacon_Of_Hope())  # Life Domain freebie
-            self.add_action(Mass_Healing_Word())
+            self.add_action(MassHealingWord())
             self.add_action(Spirit_Guardians())
 
         self.add_gear(Shield(magic_bonus=1))

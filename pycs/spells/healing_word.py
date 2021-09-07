@@ -9,7 +9,7 @@ from .spelltest import SpellTest
 
 
 ##############################################################################
-class Healing_Word(SpellAction):
+class HealingWord(SpellAction):
     """A creature of your choice that you can see within range regains
     hit points equal to 1d4 + your spellcasting ability modifier. This
     spell has no effect on undead or constructs.
@@ -49,13 +49,13 @@ class Healing_Word(SpellAction):
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Test_Frostbite(SpellTest):
+class Test_HealingWord(SpellTest):
     """Test Spell"""
 
     ##########################################################################
     def setUp(self):
         super().setUp()
-        self.caster.add_action(Healing_Word())
+        self.caster.add_action(HealingWord())
 
     ##########################################################################
     def test_cast(self):
