@@ -53,11 +53,6 @@ class Frostbite(AttackSpell):
         return self._target
 
     ##########################################################################
-    def cast(self, caster):
-        """Do the spell"""
-        return super().cast(caster)
-
-    ##########################################################################
     def failed_save(self, source, target, dmg):
         """What to when we target fails save"""
         self._target.add_effect(FrostbiteEffect(cause=source))
@@ -89,7 +84,7 @@ class FrostbiteEffect(Effect):
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Test_Frostbite(SpellTest):
+class TestFrostbite(SpellTest):
     """Test Spell"""
 
     ##########################################################################
@@ -119,6 +114,7 @@ class Test_Frostbite(SpellTest):
 
     ##########################################################################
     def test_effect(self):
+        """Test the effect of casting the spell"""
         act = self.enemy.pick_attack_by_name("Longsword")
         self.assertFalse(act.has_disadvantage(self.enemy, self.friend, 1))
         self.enemy.add_effect(FrostbiteEffect())
@@ -126,6 +122,7 @@ class Test_Frostbite(SpellTest):
 
     ##########################################################################
     def test_removal(self):
+        """Test the effect gets removed"""
         self.enemy.add_effect(FrostbiteEffect())
         self.assertTrue(self.enemy.has_effect("Frostbite"))
         self.enemy.end_turn(draw=False)
