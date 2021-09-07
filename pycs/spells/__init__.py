@@ -21,7 +21,7 @@ from .lesser_restoration import Lesser_Restoration
 from .mass_healing_word import MassHealingWord
 from .sacred_flame import Sacred_Flame
 from .sanctuary import Sanctuary
-from .scorching_ray import Scorching_Ray
+from .scorching_ray import ScorchingRay
 from .shatter import Shatter
 from .shield_of_faith import Shield_Of_Faith
 from .spirit_guardians import Spirit_Guardians
@@ -51,7 +51,7 @@ __all__ = [
     # "Poison_Spray",
     "Sacred_Flame",
     "Sanctuary",
-    "Scorching_Ray",
+    "ScorchingRay",
     "Shatter",
     "Shield_Of_Faith",
     "Spirit_Guardians",

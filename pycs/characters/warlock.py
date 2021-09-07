@@ -17,7 +17,7 @@ from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
 from pycs.spells import Frostbite
 from pycs.spells import Hellish_Rebuke
-from pycs.spells import Scorching_Ray
+from pycs.spells import ScorchingRay
 from pycs.spells import Shatter
 from pycs.spells import Thunderclap
 
@@ -77,7 +77,7 @@ class Warlock(Character):
             # You can cast mage armor on yourself at will, without expending
             # a spell slot or material components.
         if level >= 3:
-            self.add_action(Scorching_Ray())
+            self.add_action(ScorchingRay())
             # Pact Boon: Pact of the Blades
             # Summon magical weapon
         if level >= 4:
