@@ -89,6 +89,7 @@ class TestFrostbite(SpellTest):
 
     ##########################################################################
     def setUp(self):
+        """Test Setup"""
         super().setUp()
         self.caster.add_action(Frostbite())
 

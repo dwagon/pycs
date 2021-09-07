@@ -1,7 +1,6 @@
 """ Spells """
 # from .command import Command
 # from .absorb_elements import Absorb_Elements
-# from .poison_spray import Poison_Spray
 from .aid import Aid
 from .beacon_of_hope import Beacon_Of_Hope
 from .bless import Bless
@@ -19,6 +18,7 @@ from .hold_person import HoldPerson
 from .hunters_mark import HuntersMark
 from .lesser_restoration import LesserRestoration
 from .mass_healing_word import MassHealingWord
+from .poison_spray import PoisonSpray
 from .sacred_flame import Sacred_Flame
 from .sanctuary import Sanctuary
 from .scorching_ray import ScorchingRay
@@ -48,7 +48,7 @@ __all__ = [
     "HuntersMark",
     "LesserRestoration",
     "MassHealingWord",
-    # "Poison_Spray",
+    "PoisonSpray",
     "Sacred_Flame",
     "Sanctuary",
     "ScorchingRay",
