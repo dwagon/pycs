@@ -15,7 +15,7 @@ from .frostbite import Frostbite
 from .guiding_bolt import Guiding_Bolt
 from .healing_word import HealingWord
 from .hellish_rebuke import Hellish_Rebuke
-from .hold_person import Hold_Person
+from .hold_person import HoldPerson
 from .hunters_mark import HuntersMark
 from .lesser_restoration import LesserRestoration
 from .mass_healing_word import MassHealingWord
@@ -44,7 +44,7 @@ __all__ = [
     "Guiding_Bolt",
     "HealingWord",
     "Hellish_Rebuke",
-    "Hold_Person",
+    "HoldPerson",
     "HuntersMark",
     "LesserRestoration",
     "MassHealingWord",

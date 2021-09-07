@@ -19,7 +19,7 @@ from pycs.spells import CureWounds
 from pycs.spells import Enhance_Ability
 from pycs.spells import Guiding_Bolt
 from pycs.spells import HealingWord
-from pycs.spells import Hold_Person
+from pycs.spells import HoldPerson
 from pycs.spells import LesserRestoration
 from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
@@ -87,7 +87,7 @@ class Cleric(Character):
             self.add_action(LesserRestoration())  # Life Domain freebie
             self.add_action(Enhance_Ability())
             self.add_action(Spiritual_Weapon())  # Life Domain freebie
-            self.add_action(Hold_Person())
+            self.add_action(HoldPerson())
         if level >= 4:
             self.stats[Stat.WIS] = 18
         if level >= 5:

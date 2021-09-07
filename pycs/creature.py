@@ -377,6 +377,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def remove_effect(self, name):
         """Remove an effect"""
+        self.effects[name].finish(self)
         del self.effects[name]
 
     ##########################################################################

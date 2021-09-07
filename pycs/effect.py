@@ -38,6 +38,10 @@ class Effect:
         """Initial effects on target"""
 
     ##########################################################################
+    def finish(self, victim):
+        """When the effect finishes"""
+
+    ##########################################################################
     def hook_start_turn(self):
         """We start the turn with an effect"""
 
