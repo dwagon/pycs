@@ -16,7 +16,7 @@ from .guiding_bolt import Guiding_Bolt
 from .healing_word import HealingWord
 from .hellish_rebuke import Hellish_Rebuke
 from .hold_person import Hold_Person
-from .hunters_mark import Hunters_Mark
+from .hunters_mark import HuntersMark
 from .lesser_restoration import LesserRestoration
 from .mass_healing_word import MassHealingWord
 from .sacred_flame import Sacred_Flame
@@ -45,7 +45,7 @@ __all__ = [
     "HealingWord",
     "Hellish_Rebuke",
     "Hold_Person",
-    "Hunters_Mark",
+    "HuntersMark",
     "LesserRestoration",
     "MassHealingWord",
     # "Poison_Spray",
