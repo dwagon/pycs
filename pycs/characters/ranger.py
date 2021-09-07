@@ -15,7 +15,7 @@ from pycs.gear import Longbow
 from pycs.gear import Shortsword
 
 # from pycs.spells import Absorb_Elements
-from pycs.spells import Cure_Wounds
+from pycs.spells import CureWounds
 from pycs.spells import Hunters_Mark
 from pycs.spells import Lesser_Restoration
 
@@ -73,7 +73,7 @@ class Ranger(Character):
         self.add_effect(Lucky())
         if level >= 2:
             self.add_effect(ArcheryFightingStyle())
-            self.add_action(Cure_Wounds())
+            self.add_action(CureWounds())
             self.add_action(Hunters_Mark())
         if level >= 3:
             self.add_effect(ColossusSlayer())

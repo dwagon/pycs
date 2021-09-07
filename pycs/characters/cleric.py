@@ -15,7 +15,7 @@ from pycs.gear import Shield
 from pycs.spells import Aid
 from pycs.spells import Beacon_Of_Hope
 from pycs.spells import Bless
-from pycs.spells import Cure_Wounds
+from pycs.spells import CureWounds
 from pycs.spells import Enhance_Ability
 from pycs.spells import Guiding_Bolt
 from pycs.spells import HealingWord
@@ -75,7 +75,7 @@ class Cleric(Character):
             self.spell_slots = {1: 4, 2: 3, 3: 2}
         super().__init__(**kwargs)
         self.add_action(Bless())  # Life Domain freebie
-        self.add_action(Cure_Wounds())  # Life Domain freebie
+        self.add_action(CureWounds())  # Life Domain freebie
         self.add_action(Sacred_Flame())
         self.add_action(Guiding_Bolt())
         self.add_action(HealingWord())

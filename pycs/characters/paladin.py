@@ -15,12 +15,12 @@ from pycs.gear import Javelin
 from pycs.gear import Longsword
 from pycs.gear import Potion_Healing
 from pycs.gear import Shield
-from pycs.spells.bless import Bless
-from pycs.spells.branding_smite import Branding_Smite
-from pycs.spells.cure_wounds import Cure_Wounds
-from pycs.spells.lesser_restoration import Lesser_Restoration
-from pycs.spells.sanctuary import Sanctuary
-from pycs.spells.shield_of_faith import Shield_Of_Faith
+from pycs.spells import Bless
+from pycs.spells import BrandingSmite
+from pycs.spells import CureWounds
+from pycs.spells import Lesser_Restoration
+from pycs.spells import Sanctuary
+from pycs.spells import Shield_Of_Faith
 
 # from pycs.spells.protection_from_poison import Protection_From_Poison
 
@@ -51,7 +51,7 @@ class Paladin(Character):
                     LayOnHands: 2,
                     SpellType.HEALING: 2,
                     SpellType.BUFF: 2,
-                    Branding_Smite: 9,
+                    BrandingSmite: 9,
                     ActionType.RANGED: 4,
                     ActionType.MELEE: 6,
                 }
@@ -85,7 +85,7 @@ class Paladin(Character):
         super().__init__(**kwargs)
         if level >= 2:
             self.lay_on_hands = 5
-            self.add_action(Cure_Wounds())
+            self.add_action(CureWounds())
             self.add_action(Bless())
             self.add_action(Shield_Of_Faith())
             # Divine Smite
@@ -101,7 +101,7 @@ class Paladin(Character):
             # Add Action Channel Divinity : Sacred Weapon
             # Add Action Channel Divinity : Turn the Unholy
         if level >= 5:
-            self.add_action(Branding_Smite())
+            self.add_action(BrandingSmite())
             self.add_action(Lesser_Restoration())
         #            self.add_action(Protection_From_Poison())
         self.add_gear(Chainmail(magic_bonus=1))
