@@ -65,7 +65,9 @@ class TestPoisonSpray(SpellTest):
         """test casting where victim fails saving throw"""
         self.caster.moves = 90
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.caster.target = self.enemy
         self.assertEqual(self.enemy.damage_this_turn, [])
+        self.caster.move_to_target(self.enemy, 1)
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
