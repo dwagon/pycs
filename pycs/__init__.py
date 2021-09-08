@@ -16,6 +16,7 @@ from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
 from pycs.monsters import Skeleton
+
 # from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
@@ -144,7 +145,9 @@ def combat_test():
     for i in range(3):
         arena.add_combatant(Goblin(arena=arena, name=f"Goblin{i}", side="Monsters"))
     for i in range(3):
-        arena.add_combatant(Hobgoblin(arena=arena, name=f"Hobgoblin{i}", side="Monsters"))
+        arena.add_combatant(
+            Hobgoblin(arena=arena, name=f"Hobgoblin{i}", side="Monsters")
+        )
 
     arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))

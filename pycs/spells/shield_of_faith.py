@@ -93,7 +93,7 @@ class TestShieldOfFaith(SpellTest):
 
     ##########################################################################
     def setUp(self):
-        """ Test setup"""
+        """Test setup"""
         super().setUp()
         self.caster.add_action(ShieldOfFaith())
         self.caster._ac = 19  # pylint: disable=protected-access

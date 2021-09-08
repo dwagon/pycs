@@ -89,7 +89,7 @@ class UncannyDodge(Action):
 
     ##########################################################################
     def heuristic(self, doer):
-        """ Should we do this - prob could be smarter, but at the moment
+        """Should we do this - prob could be smarter, but at the moment
         just do it for the first attack"""
         return 1
 

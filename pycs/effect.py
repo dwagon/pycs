@@ -18,7 +18,7 @@ class Effect:
 
     ##########################################################################
     def hook_heuristic_mod(self, action, actor):  # pylint: disable=unused-argument
-        """ Modification to the actions {action} heuristic """
+        """Modification to the actions {action} heuristic"""
         return 0
 
     ##########################################################################
