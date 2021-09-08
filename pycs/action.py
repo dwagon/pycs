@@ -274,6 +274,9 @@ class Action:  # pylint: disable=too-many-instance-attributes
         """Does this attack have disadvantage"""
         if source.has_condition(Condition.POISONED):
             return True
+        # Needs to change to be related to the source of the fright
+        if source.has_condition(Condition.FRIGHTENED):
+            return True
         for _, eff in target.effects.items():
             if eff.hook_gives_disadvantage_against():
                 return True
