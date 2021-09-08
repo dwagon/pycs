@@ -108,6 +108,7 @@ class TestHuntersMark(SpellTest):
 
     ##########################################################################
     def setUp(self):
+        """test setup"""
         super().setUp()
         self.caster.add_action(HuntersMark())
 
@@ -122,6 +123,7 @@ class TestHuntersMark(SpellTest):
     ##########################################################################
     def test_effect(self):
         """Test the effect of casting the spell"""
+        self.caster.moves = 99
         self.caster.options_this_turn = [ActionCategory.BONUS, ActionCategory.ACTION]
         self.caster.do_stuff(categ=ActionCategory.BONUS, moveto=True)
         self.caster.add_gear(Shortbow())

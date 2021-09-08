@@ -197,6 +197,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
 
         if to_hit >= target.ac and not crit_miss:
             dmg = self.roll_dmg(source, target, crit_hit)
+            if dmg == 0:
+                return True
             target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
             if self.side_effect:
                 self.side_effect(source=source, target=target, dmg=dmg)

@@ -2,7 +2,6 @@
 import colors
 
 # from pycs.spells import Command
-# from pycs.spells import Poison_Spray
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Race
@@ -17,6 +16,7 @@ from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
 from pycs.spells import Frostbite
 from pycs.spells import Hellish_Rebuke
+from pycs.spells import PoisonSpray
 from pycs.spells import ScorchingRay
 from pycs.spells import Shatter
 from pycs.spells import Thunderclap
@@ -64,7 +64,7 @@ class Warlock(Character):
             self.spell_slots = 1
             self.add_action(Eldritch_Blast())
             self.add_action(Frostbite())
-            # self.add_action(Poison_Spray())
+            self.add_action(PoisonSpray())
             self.add_action(Burning_Hands())
             self.add_action(Hellish_Rebuke())
         if level >= 2:
