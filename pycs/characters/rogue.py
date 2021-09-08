@@ -88,6 +88,12 @@ class UncannyDodge(Action):
         self.category = ActionCategory.REACTION
 
     ##########################################################################
+    def heuristic(self, doer):
+        """ Should we do this - prob could be smarter, but at the moment
+        just do it for the first attack"""
+        return 1
+
+    ##########################################################################
     def hook_predmg(self, **kwargs):
         """Half damage"""
         print("Using uncanny dodge to reduce damage")
