@@ -29,7 +29,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
         self.ammo = kwargs.get("ammo", None)
-        self.gear = None  # Gear that induced the action
+        self.gear = None  # Gear that induced the action (set when added)
+        self.owner = None  # Creature owning the action (set when added)
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument
@@ -273,6 +274,9 @@ class Action:  # pylint: disable=too-many-instance-attributes
     def has_disadvantage(self, source, target, _: int) -> bool:
         """Does this attack have disadvantage"""
         if source.has_condition(Condition.POISONED):
+            return True
+        # Needs to change to be related to the source of the fright
+        if source.has_condition(Condition.FRIGHTENED):
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_disadvantage_against():

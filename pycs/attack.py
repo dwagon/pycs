@@ -36,7 +36,8 @@ class Attack(Action):
         return response
 
     ########################################################################
-    def modifier(self, attacker):
+    def modifier(self, attacker) -> int:
+        """The modifier to hit"""
         raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
 
     ########################################################################

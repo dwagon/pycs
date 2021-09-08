@@ -315,6 +315,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def add_action(self, action: Action) -> None:
         """Add an action to the creature"""
+        action.owner = self
         if action.category == ActionCategory.BONUS:
             self.bonus_actions.append(action)
         elif action.category == ActionCategory.REACTION:
@@ -327,7 +328,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Roll the initial hitpoints"""
         if not hasattr(self, "hitdice"):
             self.hitdice = ""
-        return int(dice.roll(self.hitdice))
+        return max(1, int(dice.roll(self.hitdice)))
 
     ##########################################################################
     def is_alive(self) -> bool:
