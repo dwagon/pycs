@@ -4,6 +4,7 @@ from .ghast import Ghast
 from .ghoul import Ghoul
 from .giant_frog import GiantFrog
 from .goblin import Goblin
+from .hobgoblin import Hobgoblin
 from .kobold import Kobold
 from .orc import Orc
 from .skeleton import Skeleton
@@ -18,6 +19,7 @@ __all__ = [
     "Ghoul",
     "GiantFrog",
     "Goblin",
+    "Hobgoblin",
     "Kobold",
     "Orc",
     "Skeleton",
