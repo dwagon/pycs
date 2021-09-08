@@ -7,19 +7,20 @@ from collections import defaultdict
 from prettytable import PrettyTable
 import colors
 
+from pycs.monsters import AdultGoldDragon
+from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast
 from pycs.monsters import Ghoul
 from pycs.monsters import GiantFrog
-from pycs.monsters import BarbedDevil
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
 from pycs.monsters import Skeleton
-
-# from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
+
+# from pycs.monsters import Troll
 
 from pycs.characters import Barbarian
 from pycs.characters import Cleric
@@ -129,6 +130,10 @@ def combat_test():
     turn = 0
     print("#" * 80)
     arena = Arena(max_x=40, max_y=20)
+
+    arena.add_combatant(
+        AdultGoldDragon(arena=arena, name="Adult Gold Dragon", side="Dragon")
+    )
 
     arena.add_combatant(BarbedDevil(arena=arena, name="Barbed Devil", side="Monsters"))
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
