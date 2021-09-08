@@ -461,7 +461,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             from_actions = self.reactions
         for act in from_actions:
             if act.is_available(self):
-                quality = act.heuristic(self)
+                quality = act.get_heuristic(self)
                 possible_acts.append((quality, act))
         return possible_acts
 

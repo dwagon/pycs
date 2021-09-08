@@ -17,6 +17,11 @@ class Effect:
         self.source = None  # Set when added to a creature
 
     ##########################################################################
+    def hook_heuristic_mod(self, action, actor):  # pylint: disable=unused-argument
+        """Modification to the actions {action} heuristic"""
+        return 0
+
+    ##########################################################################
     def hook_attack_to_hit(self, **kwargs) -> dict:  # pylint: disable=unused-argument
         """Modify the roll to hit on attacks"""
         return 0

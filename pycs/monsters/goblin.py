@@ -1,4 +1,4 @@
-""" Gobline Monster Class """
+""" https://www.dndbeyond.com/monsters/goblin"""
 import colors
 from pycs.gear import Shortbow
 from pycs.gear import Scimitar

@@ -54,14 +54,20 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return None
 
     ########################################################################
+    def get_heuristic(self, doer):
+        """How much we should do this action"""
+        heur = 0
+        for _, eff in doer.effects.items():
+            heur += eff.hook_heuristic_mod(self, doer)
+        heur += self.heuristic(doer)
+        return heur
+
+    ########################################################################
     def heuristic(self, doer):  # pylint: disable=unused-argument
-        """How good is this action for doer this turn
-        0 - don't do
-        1 - whatevs
-        ..
-        5 - zOMG!
-        """
-        return 1
+        """Should we do this thing"""
+        raise NotImplementedError(
+            f"{self.name} {__class__.__name__}.heuristic() not implemented"
+        )
 
     ########################################################################
     def range(self):
