@@ -41,7 +41,6 @@ class BarbedDevil(Monster):
         )
         super().__init__(**kwargs)
         self.add_action(BDMeleeAttack())
-        self.add_action(BDRangedAttack())
 
     ##########################################################################
     def shortrepr(self):
@@ -80,9 +79,15 @@ class BDMeleeAttack(MeleeAttack):
     ##########################################################################
     def perform_action(self):
         """Do the attack"""
-        tail = MeleeAttack("Tail", dmg=("2d6", 0), dmg_type=DamageType.PIERCING)
-        claw1 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
-        claw2 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
+        tail = MeleeAttack(
+            "Tail", dmg=("2d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner
+        )
+        claw1 = MeleeAttack(
+            "Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner
+        )
+        claw2 = MeleeAttack(
+            "Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner
+        )
         tail.do_attack()
         claw1.do_attack()
         claw2.do_attack()
@@ -125,6 +130,7 @@ class BDRangedAttack(RangedAttack):
             s_range=150,
             l_range=150,
             dmg_type=DamageType.FIRE,
+            owner=self.owner,
         )
         flame.do_attack()
         flame.do_attack()

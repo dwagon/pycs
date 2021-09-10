@@ -208,12 +208,20 @@ class DragonMultiAttack(Action):
     def perform_action(self):
         """Do the attack"""
         bite = MeleeAttack(
-            "Bite", reach=10, dmg=("2d10", 0), dmg_type=DamageType.PIERCING
+            "Bite",
+            reach=10,
+            dmg=("2d10", 0),
+            dmg_type=DamageType.PIERCING,
+            owner=self.owner,
         )
         claw = MeleeAttack(
-            "Claw", reach=10, dmg=("2d6", 0), dmg_type=DamageType.PIERCING
+            "Claw",
+            reach=10,
+            dmg=("2d6", 0),
+            dmg_type=DamageType.PIERCING,
+            owner=self.owner,
         )
-        fright = FrightfulPresenceAttack()
+        fright = FrightfulPresenceAttack(owner=self.owner)
         fright.perform_action()
         bite.do_attack()
         claw.do_attack()

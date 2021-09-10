@@ -30,7 +30,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
         self.damage_modifier = kwargs.get("damage_modifier", None)
         self.ammo = kwargs.get("ammo", None)
         self.gear = None  # Gear that induced the action (set when added)
-        self.owner = None  # Creature owning the action (set when added)
+        # Creature owning the action (set when added) or sometimes explicitly
+        self.owner = kwargs.get("owner", None)
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument
