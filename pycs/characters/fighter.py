@@ -139,7 +139,7 @@ class ActionSurge(Action):
     ##########################################################################
     def pick_target(self):
         """Only applies to self"""
-        return self.target
+        return self.owner
 
 
 ##############################################################################
