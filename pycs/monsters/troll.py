@@ -85,9 +85,15 @@ class TrollMultiAttack(Action):
     ##########################################################################
     def perform_action(self):
         """Do the attack"""
-        bite = MeleeAttack("Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
-        claw1 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING)
-        claw2 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING)
+        bite = MeleeAttack(
+            "Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner
+        )
+        claw1 = MeleeAttack(
+            "Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner
+        )
+        claw2 = MeleeAttack(
+            "Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner
+        )
         bite.do_attack()
         claw1.do_attack()
         claw2.do_attack()
