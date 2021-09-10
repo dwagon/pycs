@@ -45,10 +45,10 @@ class HuntersMark(SpellAction):
         self._victim = None
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        for enemy in doer.pick_closest_enemy():
-            if doer.distance(enemy) > self.range()[0]:
+        for enemy in self.owner.pick_closest_enemy():
+            if self.owner.distance(enemy) > self.range()[0]:
                 continue
             if enemy.has_effect("Hunters Mark"):
                 return 0
@@ -57,19 +57,19 @@ class HuntersMark(SpellAction):
         return 0
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        for enemy in doer.pick_closest_enemy():
-            if doer.distance(enemy) > self.range()[0]:
+        for enemy in self.owner.pick_closest_enemy():
+            if self.owner.distance(enemy) > self.range()[0]:
                 continue
             self.target = enemy
             return enemy
         return None
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        self.target.add_effect(HuntersMarkEffect(caster=caster))
+        self.target.add_effect(HuntersMarkEffect(caster=self.owner))
         self._victim = self.target
 
     ##########################################################################

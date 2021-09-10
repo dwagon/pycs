@@ -22,32 +22,32 @@ class MassHealingWord(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell
         the more people it can effect the more we should do it"""
         suitable = 0
-        for creat in doer.pick_closest_friends():
+        for creat in self.owner.pick_closest_friends():
             if creat.hp < creat.max_hp:
                 suitable += creat.max_hp - creat.hp
         return suitable
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        return doer
+        return self.owner
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
         cured = 0
-        for creat in caster.pick_closest_friends():
+        for creat in self.owner.pick_closest_friends():
             if creat.hp < creat.max_hp:
                 cured += 1
-                creat.heal("1d4", self.modifier(caster))
+                creat.heal("1d4", self.modifier(self.owner))
             if cured >= 6:
                 break
-        if cured <= 6 and caster.hp < caster.max_hp:
-            caster.heal("1d4", self.modifier(caster))
+        if cured <= 6 and self.owner.hp < self.owner.max_hp:
+            self.owner.heal("1d4", self.modifier(self.owner))
         return True
 
 

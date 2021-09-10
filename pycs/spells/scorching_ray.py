@@ -39,41 +39,41 @@ class ScorchingRay(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell - reevaluate targets each ray in case the ray
         has already killed the target"""
         for _ in range(3):
             targets = []
-            for enemy in caster.pick_closest_enemy():
-                if caster.distance(enemy) < self.range()[0]:
+            for enemy in self.owner.pick_closest_enemy():
+                if self.owner.distance(enemy) < self.range()[0]:
                     targets.append(enemy)
             if not targets:
                 return
             target = random.choice(targets)
             print(f"Targeting {target} with Scorching Ray")
-            to_hit, crit_hit, crit_miss = self.roll_to_hit(caster, target)
+            to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
             if to_hit >= target.ac and not crit_miss:
-                dmg = self.roll_dmg(caster, target)
-                target.hit(dmg, self.dmg_type, caster, crit_hit, self.name)
+                dmg = self.roll_dmg(self.owner, target)
+                target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
             else:
                 print(
                     f"Scorching Ray missed {target} (Rolled {to_hit} < AC: {target.ac})"
                 )
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        for enemy in doer.pick_closest_enemy():
-            if doer.distance(enemy) < self.range()[0]:
+        for enemy in self.owner.pick_closest_enemy():
+            if self.owner.distance(enemy) < self.range()[0]:
                 return enemy
         return None
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
         targets = 0
-        for enemy in doer.pick_closest_enemy():
-            if doer.distance(enemy) < self.range()[0]:
+        for enemy in self.owner.pick_closest_enemy():
+            if self.owner.distance(enemy) < self.range()[0]:
                 targets += 1
         return min(3, targets) * 12
 
@@ -86,6 +86,7 @@ class TestScorchingRay(SpellTest):
 
     ##########################################################################
     def setUp(self):
+        """setup tests"""
         super().setUp()
         self.caster.add_action(ScorchingRay())
 
@@ -102,12 +103,15 @@ class TestScorchingRay(SpellTest):
     ##########################################################################
     def test_cast_hit(self):
         """test casting where victim fails saving throw"""
+        self.enemy.max_hp = 100  # Need enough hp to survive 3 rays
+        self.enemy.hp = 100
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         self.assertEqual(self.enemy.damage_this_turn, [])
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19
             self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
         self.assertLess(self.enemy.hp, self.enemy.max_hp)
+        print(f"{self.enemy.damage_this_turn=}")
         self.assertEqual(len(self.enemy.damage_this_turn), 3)
         for obj in self.enemy.damage_this_turn:
             self.assertEqual(obj.type, DamageType.FIRE)

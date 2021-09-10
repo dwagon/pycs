@@ -36,9 +36,9 @@ class Hellish_Rebuke(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def hook_postdmg(self, source):
+    def hook_postdmg(self):
         """We are a post damage hook"""
-        return super().perform_action(source)
+        return super().perform_action()
 
 
 # EOF

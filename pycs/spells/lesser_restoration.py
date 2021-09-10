@@ -26,9 +26,9 @@ class LesserRestoration(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        if not caster.target:
+        if not self.owner.target:
             return False
         for cond in (
             Condition.PARALYZED,
@@ -36,18 +36,18 @@ class LesserRestoration(SpellAction):
             Condition.POISONED,
             Condition.DEAFENED,
         ):
-            if caster.target.has_condition(cond):
-                caster.target.remove_condition(cond)
-                print(f"{caster} cured {caster.target} of {cond.value}")
+            if self.owner.target.has_condition(cond):
+                self.owner.target.remove_condition(cond)
+                print(f"{self.owner} cured {self.owner.target} of {cond.value}")
                 break
         return True
 
     ###########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who are we going to cast it on"""
-        friends = doer.pick_closest_friends()
+        friends = self.owner.pick_closest_friends()
         for friend in friends:
-            if doer.distance(friend) < doer.moves:
+            if self.owner.distance(friend) < self.owner.moves:
                 if friend.has_condition(
                     Condition.BLINDED,
                     Condition.DEAFENED,
@@ -58,9 +58,9 @@ class LesserRestoration(SpellAction):
         return None
 
     ###########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if self.pick_target(doer) is None:
+        if self.pick_target() is None:
             return 0
         return 20
 

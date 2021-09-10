@@ -46,29 +46,29 @@ class SpellAction(Action):
         return attacker.stat_bonus(attacker.spellcast_bonus_stat) + attacker.prof_bonus
 
     ########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Cast the spell"""
-        if not source.spell_available(self):
+        if not self.owner.spell_available(self):
             return False
-        source.cast(self)
-        print(f"{source} is casting {self.name}")
-        self.caster = source
+        self.owner.cast(self)
+        print(f"{self.owner} is casting {self.name}")
+        self.caster = self.owner
         if self.concentration and self.caster.concentration:
             self.caster.remove_concentration()
-        result = self.cast(source)
+        result = self.cast()
         if self.concentration:
-            source.add_concentration(self)
+            self.owner.add_concentration(self)
         return result
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
         return 1
 
     ########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Needs to be replaced"""
         raise NotImplementedError(f"SpellAction.{__class__.__name__} needs a cast()")
 
@@ -127,50 +127,50 @@ class AttackSpell(SpellAction):
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def roll_dmg(self, source, victim, critical=False):
+    def roll_dmg(self, victim, critical=False):
         """Special spell damage"""
         if self.style == SpellType.TOHIT:
-            return super().roll_dmg(source, victim, critical)
+            return super().roll_dmg(victim, critical)
         dmg = int(dice.roll(self.dmg[0]))
-        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        print(f"{self.owner} rolled {dmg} on {self.dmg[0]} for damage")
         if self.dmg[1]:
             dmg += self.dmg[1]
             print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg_bon = self.stat_dmg_bonus(source)
+        dmg_bon = self.stat_dmg_bonus(self.owner)
         if dmg_bon:
             dmg += dmg_bon
             print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
         spell_dc = self.save_dc
         if not spell_dc:
-            spell_dc = source.spellcast_save
+            spell_dc = self.owner.spellcast_save
         saved = victim.saving_throw(stat=self.save_stat, dc=spell_dc, effect="unknown")
         if saved:
             if self.style == SpellType.SAVE_HALF:
                 dmg = int(dmg / 2)
             if self.style == SpellType.SAVE_NONE:
                 dmg = 0
-            self.made_save(source=source, target=victim, dmg=dmg)
+            self.made_save(source=self.owner, target=victim, dmg=dmg)
         else:
-            self.failed_save(source=source, target=victim, dmg=dmg)
+            self.failed_save(source=self.owner, target=victim, dmg=dmg)
         return max(dmg, 0)
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we cast this"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
-        pot_target = doer.pick_closest_enemy()
+        pot_target = self.owner.pick_closest_enemy()
         if not pot_target:
             return 0
-        if doer.distance(pot_target[0]) > self.range()[1]:
+        if self.owner.distance(pot_target[0]) > self.range()[1]:
             return 0
-        return self.max_dmg(doer)
+        return self.max_dmg()
 
     ########################################################################
-    def roll_to_hit(self, source, target):
+    def roll_to_hit(self, target):
         """Special spell attack"""
         if self.style == SpellType.TOHIT:
-            return super().roll_to_hit(source, target)
+            return super().roll_to_hit(target)
         return 999, False, False
 
     ########################################################################
@@ -179,14 +179,14 @@ class AttackSpell(SpellAction):
         return self.reach, self.reach
 
     ########################################################################
-    def is_available(self, owner):
+    def is_available(self):
         """Is this action available?"""
-        return owner.spell_available(self)
+        return self.owner.spell_available(self)
 
     ########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Cast the attack spell - overwrite if required"""
-        return self.do_attack(caster)
+        return self.do_attack()
 
     ##########################################################################
     def end_concentration(self):

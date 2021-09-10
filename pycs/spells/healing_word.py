@@ -30,20 +30,20 @@ class HealingWord(SpellAction):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        caster.target.heal("1d4", self.modifier(caster))
+        self.owner.target.heal("1d4", self.modifier(self.owner))
         return True
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we target"""
-        return pick_heal_target(doer)
+        return pick_heal_target(self.owner)
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we cast this"""
-        return healing_heuristic(doer, self)
+        return healing_heuristic(self.owner, self)
 
 
 ##############################################################################

@@ -27,20 +27,20 @@ class Beacon_Of_Hope(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell
         the more people it can effect the more we should do it"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
         return 0
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        return doer
+        return self.owner
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
         return True
 

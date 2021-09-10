@@ -42,14 +42,14 @@ class Frostbite(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Slightly better than the damage itself would indicate"""
-        return super().heuristic(doer) + 2
+        return super().heuristic() + 2
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we target"""
-        self._target = super().pick_target(doer)
+        self._target = super().pick_target()
         return self._target
 
     ##########################################################################
@@ -117,9 +117,9 @@ class TestFrostbite(SpellTest):
     def test_effect(self):
         """Test the effect of casting the spell"""
         act = self.enemy.pick_attack_by_name("Longsword")
-        self.assertFalse(act.has_disadvantage(self.enemy, self.friend, 1))
+        self.assertFalse(act.has_disadvantage(self.friend, 1))
         self.enemy.add_effect(FrostbiteEffect())
-        self.assertTrue(act.has_disadvantage(self.enemy, self.friend, 1))
+        self.assertTrue(act.has_disadvantage(self.friend, 1))
 
     ##########################################################################
     def test_removal(self):
