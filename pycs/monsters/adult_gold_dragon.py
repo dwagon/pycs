@@ -154,6 +154,8 @@ class DragonFireBreath(Attack):
     def heuristic(self):
         """Should we do this attack"""
         target = self.pick_target()
+        if not target:
+            return 0
         return min(target.hp, 66)
 
     ##########################################################################
