@@ -75,7 +75,7 @@ class FrightfulPresenceAttack(Attack):
         super().__init__("Frightful Presence", **kwargs)
 
     ##########################################################################
-    def heuristic(self, _):
+    def heuristic(self):
         """Do the attack"""
         return 1
 
@@ -85,14 +85,14 @@ class FrightfulPresenceAttack(Attack):
         return 0
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
-        for enemy in source.pick_closest_enemy():
-            if enemy in source.immune_fp:
+        for enemy in self.owner.pick_closest_enemy():
+            if enemy in self.owner.immune_fp:
                 continue
-            if source.distance(enemy) < 120 / 5:
+            if self.owner.distance(enemy) < 120 / 5:
                 continue
-            source.immune_fp.add(enemy)
+            self.owner.immune_fp.add(enemy)
             svth = enemy.saving_throw(Stat.WIS, 21)
             if not svth:
                 enemy.add_effect(FrightfulPresenceEffect())
@@ -151,24 +151,24 @@ class DragonFireBreath(Attack):
         return 0
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this attack"""
-        target = self.pick_target(doer)
+        target = self.pick_target()
         return min(target.hp, 66)
 
     ##########################################################################
-    def is_available(self, _):
+    def is_available(self):
         """Is breath weapon available"""
         return self.owner.breath
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Pick on the strongest enemy"""
         result = namedtuple("Result", "health id target")
         targets = [
             result(_.hp, id(_), _)
-            for _ in doer.pick_closest_enemy()
-            if doer.distance(_) < 60 / 5 and DamageType.FIRE not in _.immunity
+            for _ in self.owner.pick_closest_enemy()
+            if self.owner.distance(_) < 60 / 5 and DamageType.FIRE not in _.immunity
         ]
         if not targets:
             return None
@@ -176,16 +176,16 @@ class DragonFireBreath(Attack):
         return targets[-1].target
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the breath weapon - need to do cone"""
-        target = self.pick_target(source)
+        target = self.pick_target()
         dmg = int(dice.roll("12d10"))
         svth = target.saving_throw(Stat.DEX, 21)
         if not svth:
-            target.hit(dmg, DamageType.FIRE, source, False, "Fire Breath")
+            target.hit(dmg, DamageType.FIRE, self.owner, False, "Fire Breath")
         else:
-            target.hit(dmg / 2, DamageType.FIRE, source, False, "Fire Breath")
-        source.breath = False
+            target.hit(dmg / 2, DamageType.FIRE, self.owner, False, "Fire Breath")
+        self.owner.breath = False
 
 
 ##############################################################################
@@ -200,12 +200,12 @@ class DragonMultiAttack(Action):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the attack"""
         return 1
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the attack"""
         bite = MeleeAttack(
             "Bite", reach=10, dmg=("2d10", 0), dmg_type=DamageType.PIERCING
@@ -214,10 +214,10 @@ class DragonMultiAttack(Action):
             "Claw", reach=10, dmg=("2d6", 0), dmg_type=DamageType.PIERCING
         )
         fright = FrightfulPresenceAttack()
-        fright.perform_action(source)
-        bite.do_attack(source)
-        claw.do_attack(source)
-        claw.do_attack(source)
+        fright.perform_action()
+        bite.do_attack()
+        claw.do_attack()
+        claw.do_attack()
 
 
 # EOF

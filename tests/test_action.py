@@ -58,17 +58,19 @@ class TestAction(unittest.TestCase):
     def test_check_criticals(self):
         """Test check_criticals"""
         act = DummyAction()
-        self.assertEqual(act.check_criticals(self.creat, 10), (False, False))
-        self.assertEqual(act.check_criticals(self.creat, 1), (False, True))
-        self.assertEqual(act.check_criticals(self.creat, 20), (True, False))
+        self.source.add_action(act)
+        self.assertEqual(act.check_criticals(10), (False, False))
+        self.assertEqual(act.check_criticals(1), (False, True))
+        self.assertEqual(act.check_criticals(20), (True, False))
 
     ########################################################################
     def test_roll_to_hit(self):
         """test roll_to_hit()"""
         act = DummyAction()
+        self.source.add_action(act)
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 18
-            to_hit, crit_hit, crit_miss = act.roll_to_hit(self.source, self.creat)
+            to_hit, crit_hit, crit_miss = act.roll_to_hit(self.creat)
         self.assertEqual(to_hit, 18 + 5)
         self.assertFalse(crit_hit)
         self.assertFalse(crit_miss)
@@ -78,7 +80,8 @@ class TestAction(unittest.TestCase):
         """Test calculate_to_hit()"""
         self.source.add_effect(DummyEffect())
         act = DummyAction()
-        to_hit, msg = act.calculate_to_hit("msg_0", 10, self.source, self.creat)
+        self.source.add_action(act)
+        to_hit, msg = act.calculate_to_hit("msg_0", 10, self.creat)
         self.assertEqual(to_hit, 10 + 5 + 3)
         self.assertEqual(msg, "Creature rolled 10msg_0 +5 (+3 from Dummy Effect)")
 
@@ -86,10 +89,12 @@ class TestAction(unittest.TestCase):
     def test_buff_attack_damage(self):
         """Test buff_attack_damage()"""
         act = DummyAction()
+        self.source.add_action(act)
         with patch.object(Creature, "hit") as mock:
             self.source.add_effect(DummyEffect())
+            self.source.add_action(act)
             self.creat.add_effect(DummyEffect())
-            act.buff_attack_damage(self.source, self.creat)
+            act.buff_attack_damage(self.creat)
 
             self.assertEqual(
                 mock.call_args_list[0],
@@ -131,17 +136,22 @@ class DummyEffect(Effect):
 
 
 ############################################################################
+############################################################################
+############################################################################
 class DummyAction(Action):
     """Test action"""
 
     def __init__(self, **kwargs):
         super().__init__("Dummy Action", **kwargs)
 
-    def perform_action(self, _):
+    def perform_action(self):
         """Required"""
 
     def modifier(self, _):
         return 5
+
+    def heuristic(self):
+        return 1
 
 
 ############################################################################

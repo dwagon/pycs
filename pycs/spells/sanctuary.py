@@ -21,7 +21,7 @@ class Sanctuary(SpellAction):
         )
         super().__init__(name, **kwargs)
 
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
 
 

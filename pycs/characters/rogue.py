@@ -88,7 +88,7 @@ class UncannyDodge(Action):
         self.category = ActionCategory.REACTION
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this - prob could be smarter, but at the moment
         just do it for the first attack"""
         return 1
@@ -100,7 +100,7 @@ class UncannyDodge(Action):
         return int(kwargs.get("dmg") / 2)
 
     ##########################################################################
-    def perform_action(self, _):
+    def perform_action(self):
         """Need to define but nothing to do"""
 
 
@@ -118,13 +118,13 @@ class CunningAction(Action):
         self.category = ActionCategory.BONUS
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this"""
         return 0
         # Don't know how to implement this yet
 
     ##########################################################################
-    def perform_action(self, _):
+    def perform_action(self):
         """Not implemented yet"""
 
 
@@ -172,12 +172,12 @@ class SneakAttack(Effect):
                 print(f"Ally {allies[0]} adjacent to {target}")
 
         rnge = source.distance(target)
-        if allies_adjacent and attack.has_disadvantage(source, target, rnge):
+        if allies_adjacent and attack.has_disadvantage(target, rnge):
             print("but it doesn't matter as we have disadvantage")
             allies_adjacent = False
 
         if not allies_adjacent:
-            if not attack.has_advantage(source, target, rnge):
+            if not attack.has_advantage(target, rnge):
                 return ("", 0, None)
             print("We have advantage on attack")
         self._used_this_turn = True

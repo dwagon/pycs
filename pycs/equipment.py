@@ -17,6 +17,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
     def __init__(self, name, **kwargs):
         """init"""
         self.name = name
+        self.owner = None  # Set by add_gear()
         self.ammo = kwargs.get("ammo")
         self.actions = []
 
@@ -131,12 +132,12 @@ class Potion(Equipment):
         self.actions = [self.act]
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Drink the potion"""
         raise NotImplementedError
 
     ##########################################################################
-    def heuristic(self, source):
+    def heuristic(self):
         """Should we drink the potion"""
         raise NotImplementedError
 
@@ -155,14 +156,14 @@ class HealingPotion(Potion):
         self.act.type = ActionType.HEALING
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Drink the healing potion"""
-        source.heal(*self.curing)
+        self.owner.heal(*self.curing)
 
     ##########################################################################
-    def heuristic(self, source):
+    def heuristic(self):
         """Should we drink the potion"""
-        return source.max_hp - source.hp
+        return self.owner.max_hp - self.owner.hp
 
 
 ##############################################################################
@@ -176,12 +177,12 @@ class DrinkPotion(Action):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who do we do it do"""
-        return doer
+        return self.owner
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         raise NotImplementedError
 
 

@@ -162,22 +162,22 @@ class TurnUndead(Action):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this"""
         return 0  # Not finished yet
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
         undead = [
             _
-            for _ in source.arena.combatants
-            if _.side != source.side and _.is_type(MonsterType.UNDEAD)
+            for _ in self.owner.arena.combatants
+            if _.side != self.owner.side and _.is_type(MonsterType.UNDEAD)
         ]
         for und in undead:
-            if source.arena.distance(source, und) < 30 / 5:
-                if und.saving_throw(Stat.WIS, 10 + source.spellcast_modifier):
-                    print(f"{und} has been turned by {source}")
+            if self.owner.arena.distance(self.owner, und) < 30 / 5:
+                if und.saving_throw(Stat.WIS, 10 + self.owner.spellcast_modifier):
+                    print(f"{und} has been turned by {self.owner}")
                     und.add_effect(TurnedUndeadEffect())
 
     ##########################################################################

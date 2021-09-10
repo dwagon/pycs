@@ -33,29 +33,29 @@ class BrandingSmite(SpellAction):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        caster.add_effect(BrandingSmiteEffect(cause=caster))
+        self.owner.add_effect(BrandingSmiteEffect(cause=self.owner))
         return True
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        return doer
+        return self.owner
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
-        if doer.has_effect("Branding Smite"):
+        if self.owner.has_effect("Branding Smite"):
             return 0
         return 12  # 2d6
 
     ##########################################################################
     def end_concentration(self):
         """What happens when we stop concentrating"""
-        self.caster.remove_effect("Branding Smite")
+        self.owner.remove_effect("Branding Smite")
 
 
 ##############################################################################

@@ -90,22 +90,22 @@ class SecondWind(Action):
         self.type = ActionType.HEALING
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
-        source.second_wind = 0
-        source.heal("d10", source.level)
+        self.owner.second_wind = 0
+        self.owner.heal("d10", self.owner.level)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this"""
-        if not doer.second_wind:
+        if not self.owner.second_wind:
             return 0
-        return doer.max_hp - doer.hp
+        return self.owner.max_hp - self.owner.hp
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Only applies to self"""
-        return doer
+        return self.owner
 
 
 ##############################################################################
@@ -124,22 +124,22 @@ class ActionSurge(Action):
         self.type = ActionType.BUFF
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
-        source.action_surge = 0
-        source.options_this_turn.append(ActionCategory.ACTION)
+        self.owner.action_surge = 0
+        self.owner.options_this_turn.append(ActionCategory.ACTION)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this"""
-        if not doer.action_surge:
+        if not self.owner.action_surge:
             return 0
         return 0  # Doesn't work yet
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Only applies to self"""
-        return doer
+        return self.target
 
 
 ##############################################################################

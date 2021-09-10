@@ -94,21 +94,21 @@ class BarbarianRage(Action):
         self.category = ActionCategory.BONUS
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who do we do it to"""
-        return doer
+        return self.owner
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do it"""
-        if doer.has_effect("Rage"):
+        if self.owner.has_effect("Rage"):
             return 0
         return 10
 
     ########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
-        source.add_effect(BarbarianRageEffect())
+        self.owner.add_effect(BarbarianRageEffect())
 
 
 ##############################################################################

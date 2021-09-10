@@ -36,33 +36,33 @@ class HoldPerson(SpellAction):
         self._victim = None
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        target = self.pick_target(doer)
+        target = self.pick_target()
         if target:
             return 10
         return 0
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
-        for enemy in doer.pick_closest_enemy():
+        for enemy in self.owner.pick_closest_enemy():
             if not enemy.is_type(MonsterType.HUMANOID):
                 continue
-            if doer.distance(enemy) > self.range()[0]:
+            if self.owner.distance(enemy) > self.range()[0]:
                 continue
             return enemy
         return None
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        svth = caster.target.saving_throw(
-            Stat.WIS, caster.spellcast_save, effect=Condition.PARALYZED
+        svth = self.owner.target.saving_throw(
+            Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED
         )
         if not svth:
-            caster.target.add_effect(HoldPersonEffect(caster=caster))
-            self._victim = caster.target
+            self.owner.target.add_effect(HoldPersonEffect(caster=self.owner))
+            self._victim = self.owner.target
         return True
 
     ##########################################################################

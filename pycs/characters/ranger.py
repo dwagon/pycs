@@ -126,25 +126,25 @@ class RangersRangedAttack(RangedAttack):
     """Prioritise the creature with a hunters mark"""
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we perform this attack - no if adjacent, yes if in range,
         middling if at long range"""
-        enemies = doer.pick_closest_enemy()
+        enemies = self.owner.pick_closest_enemy()
         if not enemies:
             return 0
         if not self.available:
             return 0
         hmark = [_ for _ in enemies if _.has_effect("Hunters Mark")]
-        dist = doer.distance(enemies[0])
+        dist = self.owner.distance(enemies[0])
         if dist <= 1:
             return 0
-        return self.max_dmg(doer) + len(hmark)
+        return self.max_dmg() + len(hmark)
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who are we doing this to - the target with hunters mark or the
         closest"""
-        enemies = doer.pick_closest_enemy()
+        enemies = self.owner.pick_closest_enemy()
         if not enemies:
             return 0
         if not self.available:

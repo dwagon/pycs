@@ -30,23 +30,23 @@ class ShieldOfFaith(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        friend = self.pick_target(caster)
-        if caster.distance(friend) > self.range()[0]:
+        friend = self.pick_target()
+        if self.owner.distance(friend) > self.range()[0]:
             return False
-        friend.add_effect(ShieldOfFaithEffect(cause=caster))
+        friend.add_effect(ShieldOfFaithEffect(cause=self.owner))
         self._target = friend
         return True
 
     ###########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who gets the spell - person with the lowest AC"""
         targets = []
-        for friend in doer.arena.my_side(doer.side):
+        for friend in self.owner.arena.my_side(self.owner.side):
             if friend.has_effect(self.name):
                 continue
-            if doer.distance(friend) > self.range()[0]:
+            if self.owner.distance(friend) > self.range()[0]:
                 continue
             targets.append((friend.ac, id(friend), friend))
         targets.sort()
@@ -55,9 +55,9 @@ class ShieldOfFaith(SpellAction):
         return targets[0][-1]
 
     ###########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if self.pick_target(doer):
+        if self.pick_target():
             return 5
         return 0
 

@@ -39,36 +39,34 @@ class Bless(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
         # The more applicable targets the more likely we should do it
-        if not doer.spell_available(self):
-            return 0
         close = 0
-        for targ in doer.arena.my_side(doer.side):
-            if doer.distance(targ) <= self.range()[0]:
-                if doer.has_effect("Bless"):
+        for targ in self.owner.arena.my_side(self.owner.side):
+            if self.owner.distance(targ) <= self.range()[0]:
+                if self.owner.has_effect("Bless"):
                     continue
                 close += 2
         return close
 
     ###########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
         # Improve this
-        return doer
+        return self.owner
 
     ###########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
         self._affected = []
         targets = 3
-        for friend in caster.arena.my_side(caster.side):
+        for friend in self.owner.arena.my_side(self.owner.side):
             if friend.has_effect("Bless"):
                 continue
             targets -= 1
             print(f"{friend} is now Blessed")
-            friend.add_effect(BlessEffect(cause=caster))
+            friend.add_effect(BlessEffect(cause=self.owner))
             self._affected.append(friend)
             if targets <= 0:
                 break
@@ -143,14 +141,14 @@ class Test_Bless(SpellTest):
         act = self.friend.actions[0]
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 9
-            to_hit, _, _ = act.roll_to_hit(self.friend, self.enemy)
+            to_hit, _, _ = act.roll_to_hit(self.enemy)
         self.assertEqual(to_hit, 9)
 
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
         act = self.friend.actions[0]
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 9
-            to_hit, _, _ = act.roll_to_hit(self.friend, self.enemy)
+            to_hit, _, _ = act.roll_to_hit(self.enemy)
         self.assertGreaterEqual(to_hit, 10)
 
     ##########################################################################

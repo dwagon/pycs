@@ -168,23 +168,29 @@ class LayOnHands(Action):
         super().__init__("Lay on Hands", **kwargs)
 
     ########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the action"""
-        if source.lay_on_hands >= 5 and source.target.has_condition(Condition.POISONED):
-            print(f"{source} lays on hands to {source.target} and cures them of poison")
-            source.lay_on_hands -= 5
-            source.target.remove_condition(Condition.POISONED)
-        print(f"{source} lays on hands to {source.target} to heal them")
-        chp = min(source.lay_on_hands, source.target.max_hp - source.target.hp)
-        source.target.heal("", chp)
-        source.lay_on_hands -= source.target.heal(0, chp)
+        if self.owner.lay_on_hands >= 5 and self.owner.target.has_condition(
+            Condition.POISONED
+        ):
+            print(
+                f"{self.owner} lays on hands to {self.owner.target} and cures them of poison"
+            )
+            self.owner.lay_on_hands -= 5
+            self.owner.target.remove_condition(Condition.POISONED)
+        print(f"{self.owner} lays on hands to {self.owner.target} to heal them")
+        chp = min(
+            self.owner.lay_on_hands, self.owner.target.max_hp - self.owner.target.hp
+        )
+        self.owner.target.heal("", chp)
+        self.owner.lay_on_hands -= self.owner.target.heal(0, chp)
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do this action"""
-        if doer.lay_on_hands == 0:
+        if self.owner.lay_on_hands == 0:
             return 0
-        friends = doer.pick_closest_friends()
+        friends = self.owner.pick_closest_friends()
         if not friends:
             return 0
         friend = friends[0]
@@ -193,9 +199,9 @@ class LayOnHands(Action):
         return friend.max_hp - friend.hp
 
     ########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who are we doing the action to"""
-        friends = doer.pick_closest_friends()
+        friends = self.owner.pick_closest_friends()
         if friends:
             return friends[0]
         return None

@@ -47,28 +47,28 @@ class Fireball(AttackSpell):
         self._num_friend = 0
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        for per in caster.arena.combatants:
+        for per in self.owner.arena.combatants:
             if per.distance(self.target) < 20 / 5:
                 print(f"Attacking {per} with fireball")
-                dmg = self.roll_dmg(caster, per)
-                per.hit(dmg, self.dmg_type, caster, False, self.name)
+                dmg = self.roll_dmg(self.owner, per)
+                per.hit(dmg, self.dmg_type, self.owner, False, self.name)
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
         targets = []
-        for enemy in doer.pick_closest_enemy():
-            if doer.distance(enemy) > self.range()[0]:
+        for enemy in self.owner.pick_closest_enemy():
+            if self.owner.distance(enemy) > self.range()[0]:
                 continue
             sides = defaultdict(int)
 
-            for per in doer.arena.combatants:
+            for per in self.owner.arena.combatants:
                 if per.distance(enemy) < 20 / 5:
                     sides[per.side] += 1
             targets.append(
-                (sides[enemy.side], 999 - sides[doer.side], id(enemy), enemy)
+                (sides[enemy.side], 999 - sides[self.owner.side], id(enemy), enemy)
             )
         # We want the most enemy and the least friends in the blast
         if targets:
@@ -80,9 +80,9 @@ class Fireball(AttackSpell):
         return None
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if self.pick_target(doer):
+        if self.pick_target():
             val = (
                 int(dice.roll_max("8d6")) * self._num_enemy
                 - int(1.5 * int(dice.roll_max("8d6"))) * self._num_friend

@@ -277,7 +277,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         )
         if react is not None:
             print(f"{self} reacts against {source}")
-            react.hook_postdmg(self)
+            react.hook_postdmg()
             self.options_this_turn.remove(ActionCategory.REACTION)
 
     ##########################################################################
@@ -308,6 +308,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def add_gear(self, gear):
         """Add something to the equipment list"""
         self.gear.append(gear)
+        gear.owner = self
         for action in gear.actions:
             action.gear = gear
             self.add_action(action)
@@ -461,8 +462,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         elif typ == ActionCategory.REACTION:
             from_actions = self.reactions
         for act in from_actions:
-            if act.is_available(self):
-                quality = act.get_heuristic(self)
+            if act.is_available():
+                quality = act.get_heuristic()
                 possible_acts.append((quality, act))
         return possible_acts
 
@@ -505,7 +506,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         action = actions[0].act
         if target is None:
-            self.target = action.pick_target(self)
+            self.target = action.pick_target()
         else:
             self.target = target
         return action
@@ -557,8 +558,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def do_action(self, act: Action) -> bool:
         """Have an action"""
         if act and self.target:
+            assert act.owner is not None
             act.ammo_usage()
-            did_act = act.perform_action(self)
+            did_act = act.perform_action()
             if did_act is None or did_act:
                 return True
         return False

@@ -33,15 +33,15 @@ class Guiding_Bolt(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
-        caster.target.add_effect(GuidingBoltEffect(cause=caster))
+        self.owner.target.add_effect(GuidingBoltEffect(cause=self.owner))
         return True
 
     ###########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
         return 0
 

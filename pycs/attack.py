@@ -17,20 +17,21 @@ class Attack(Action):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the attack"""
+        assert self.owner is not None
         response = False
-        apa = source.attacks_per_action
+        apa = self.owner.attacks_per_action
         if isinstance(self.attacks_per_action, tuple):
             apa *= (
                 int(dice.roll(self.attacks_per_action[0])) + self.attacks_per_action[1]
             )
         elif isinstance(self.attacks_per_action, int):
-            apa = source.attacks_per_action
+            apa = self.owner.attacks_per_action
         if apa != 1:
             print(f"Doing {apa} attacks")
         for _ in range(apa):
-            success = self.do_attack(source)
+            success = self.do_attack()
             if success:
                 response = True
         return response
@@ -78,18 +79,18 @@ class MeleeAttack(Attack):
         return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def is_available(self, owner):
+    def is_available(self):
         """Is this action available?"""
         return self.available
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we perform this attack - yes if adjacent"""
-        enemy = doer.pick_closest_enemy()
+        enemy = self.owner.pick_closest_enemy()
         if not enemy:
             return 0
-        if doer.distance(enemy[0]) <= 1:
-            return self.max_dmg(doer)
+        if self.owner.distance(enemy[0]) <= 1:
+            return self.max_dmg()
         return 0
 
 
@@ -108,18 +109,18 @@ class RangedAttack(Attack):
         self.type = ActionType.RANGED
 
     ########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we perform this attack - no if adjacent,
         yes if in range, middling if at long range"""
-        enemy = doer.pick_closest_enemy()
+        enemy = self.owner.pick_closest_enemy()
         if not enemy:
             return 0
         if not self.available:
             return 0
-        dist = doer.distance(enemy[0])
+        dist = self.owner.distance(enemy[0])
         if dist <= 1:
             return 0
-        return self.max_dmg(doer)
+        return self.max_dmg()
 
     ########################################################################
     def modifier(self, attacker):
@@ -134,7 +135,7 @@ class RangedAttack(Attack):
         return self.s_range, self.l_range
 
     ########################################################################
-    def has_disadvantage(self, source, target, rnge):
+    def has_disadvantage(self, target, rnge):
         """Does this attack have disadvantage at this range"""
         if rnge == 1:
             return True

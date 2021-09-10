@@ -75,22 +75,22 @@ class TrollMultiAttack(Action):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the action"""
-        enemy = doer.pick_closest_enemy()
-        if enemy and doer.distance(enemy[0]) <= 1:
+        enemy = self.owner.pick_closest_enemy()
+        if enemy and self.owner.distance(enemy[0]) <= 1:
             return 1
         return 0
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the attack"""
         bite = MeleeAttack("Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
         claw1 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING)
         claw2 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING)
-        bite.do_attack(source)
-        claw1.do_attack(source)
-        claw2.do_attack(source)
+        bite.do_attack()
+        claw1.do_attack()
+        claw2.do_attack()
 
 
 # EOF

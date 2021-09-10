@@ -23,14 +23,14 @@ class Spiritual_Weapon(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
         return True
 
     ###########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell"""
-        if not doer.spell_available(self):
+        if not self.owner.spell_available(self):
             return 0
         return 0
 

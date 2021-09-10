@@ -62,30 +62,30 @@ class BDMeleeAttack(MeleeAttack):
         super().__init__("Tail / Claw combo", **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the action"""
-        enemy = doer.pick_closest_enemy()
-        if enemy and doer.distance(enemy[0]) <= 1:
+        enemy = self.owner.pick_closest_enemy()
+        if enemy and self.owner.distance(enemy[0]) <= 1:
             return 10
         return 0
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who we should do the action against"""
-        enemy = doer.pick_closest_enemy()
+        enemy = self.owner.pick_closest_enemy()
         if not enemy:
             return None
         return enemy[0]
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the attack"""
         tail = MeleeAttack("Tail", dmg=("2d6", 0), dmg_type=DamageType.PIERCING)
         claw1 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
         claw2 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING)
-        tail.do_attack(source)
-        claw1.do_attack(source)
-        claw2.do_attack(source)
+        tail.do_attack()
+        claw1.do_attack()
+        claw2.do_attack()
 
 
 ##############################################################################
@@ -99,25 +99,25 @@ class BDRangedAttack(RangedAttack):
         super().__init__("Hurl Flame", **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the action"""
-        enemy = doer.pick_closest_enemy()
+        enemy = self.owner.pick_closest_enemy()
         if not enemy:
             return 0
-        if doer.distance(enemy[0]) <= 1:
+        if self.owner.distance(enemy[0]) <= 1:
             return 0
         return 10
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who we should attack"""
-        enemy = doer.pick_closest_enemy()
+        enemy = self.owner.pick_closest_enemy()
         if not enemy:
             return None
         return enemy[0]
 
     ##########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Do the attack"""
         flame = RangedAttack(
             "Hurl Flame",
@@ -126,8 +126,8 @@ class BDRangedAttack(RangedAttack):
             l_range=150,
             dmg_type=DamageType.FIRE,
         )
-        flame.do_attack(source)
-        flame.do_attack(source)
+        flame.do_attack()
+        flame.do_attack()
 
 
 # EOF

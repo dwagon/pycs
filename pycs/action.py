@@ -47,24 +47,24 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return 0
 
     ########################################################################
-    def pick_target(self, doer):
-        """Who are we going to do the action to"""
-        enemy = doer.pick_closest_enemy()
+    def pick_target(self):
+        """Who are we going to do the action to - generally overwritten"""
+        enemy = self.owner.pick_closest_enemy()
         if enemy:
             return enemy[0]
         return None
 
     ########################################################################
-    def get_heuristic(self, doer):
+    def get_heuristic(self):
         """How much we should do this action"""
         heur = 0
-        for _, eff in doer.effects.items():
-            heur += eff.hook_heuristic_mod(self, doer)
-        heur += self.heuristic(doer)
+        for _, eff in self.owner.effects.items():
+            heur += eff.hook_heuristic_mod(self, self.owner)
+        heur += self.heuristic()
         return heur
 
     ########################################################################
-    def heuristic(self, doer):  # pylint: disable=unused-argument
+    def heuristic(self):  # pylint: disable=unused-argument
         """Should we do this thing"""
         raise NotImplementedError(
             f"{self.name} {__class__.__name__}.heuristic() not implemented"
@@ -76,14 +76,14 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return 0, 0
 
     ##########################################################################
-    def is_available(self, owner):  # pylint: disable=unused-argument
+    def is_available(self):  # pylint: disable=unused-argument
         """Is this action currently available to the creature"""
         if self.ammo is not None and not self.ammo:
             return False
         return True
 
     ########################################################################
-    def perform_action(self, source):
+    def perform_action(self):
         """Perform the action"""
         raise NotImplementedError
 
@@ -100,40 +100,42 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return self.name
 
     ##########################################################################
-    def check_criticals(self, source, to_hit_roll: int) -> Tuple[bool, bool]:
+    def check_criticals(self, to_hit_roll: int) -> Tuple[bool, bool]:
         """Did we critical hit or miss"""
         crit_hit = False
         crit_miss = False
-        if to_hit_roll >= source.critical:
+        if to_hit_roll >= self.owner.critical:
             crit_hit = True
         if to_hit_roll == 1:
             crit_miss = True
         return crit_hit, crit_miss
 
     ##########################################################################
-    def roll_to_hit(self, source, target) -> Tuple[int, bool, bool]:
+    def roll_to_hit(self, target) -> Tuple[int, bool, bool]:
         """Roll to hit with the attack"""
-        rnge = source.distance(target)
+        rnge = self.owner.distance(target)
         balance = 0
-        if self.has_disadvantage(source, target, rnge):
+        if self.has_disadvantage(target, rnge):
             balance -= 1
-        elif self.has_advantage(source, target, rnge):
+        elif self.has_advantage(target, rnge):
             balance += 1
 
         if balance < 0:
-            to_hit_roll = min(source.rolld20("attack"), source.rolld20("attack"))
+            to_hit_roll = min(
+                self.owner.rolld20("attack"), self.owner.rolld20("attack")
+            )
             msg_0 = " with disadvantage"
         elif balance > 0:
-            to_hit_roll = max(source.rolld20("attack"), source.rolld20("attack"))
+            to_hit_roll = max(
+                self.owner.rolld20("attack"), self.owner.rolld20("attack")
+            )
             msg_0 = " with advantage"
         else:
-            to_hit_roll = source.rolld20("attack")
+            to_hit_roll = self.owner.rolld20("attack")
             msg_0 = ""
 
-        crit_hit, crit_miss = self.check_criticals(source, to_hit_roll)
-        to_hit, msg = self.calculate_to_hit(
-            msg_0, to_hit_roll, source=source, target=target
-        )
+        crit_hit, crit_miss = self.check_criticals(to_hit_roll)
+        to_hit, msg = self.calculate_to_hit(msg_0, to_hit_roll, target=target)
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
@@ -144,14 +146,14 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def calculate_to_hit(self, msg_0, to_hit_roll, source, target):
+    def calculate_to_hit(self, msg_0, to_hit_roll, target):
         """Calculate the to_hit"""
-        rnge = source.distance(target)
-        msg = f"{source} rolled {to_hit_roll}{msg_0}"
-        modifier = self.modifier(source)
+        rnge = self.owner.distance(target)
+        msg = f"{self.owner} rolled {to_hit_roll}{msg_0}"
+        modifier = self.modifier(self.owner)
         to_hit = to_hit_roll + modifier
-        msg += f" +{self.modifier(source)}"
-        for name, eff in source.effects.items():
+        msg += f" +{self.modifier(self.owner)}"
+        for name, eff in self.owner.effects.items():
             mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
             if mod:
                 to_hit += mod
@@ -164,64 +166,65 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return to_hit, msg
 
     ########################################################################
-    def buff_attack_damage(self, source, target) -> None:
+    def buff_attack_damage(self, target) -> None:
         """Calculate the attack damage from buffs"""
-        for atkname, eff in source.effects.copy().items():
+        for atkname, eff in self.owner.effects.copy().items():
             dice_dmg, dmg, dmg_type = eff.hook_source_additional_damage(
-                self, source, target
+                self, self.owner, target
             )
             if dmg_type is None:
                 dmg_type = self.dmg_type
             if dice_dmg:
                 dmg += int(dice.roll(dice_dmg))
             if dmg:
-                target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
+                target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
 
         # If the target of the damage has a buff
         for atkname, eff in target.effects.copy().items():
             dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(
-                self, source, target
+                self, self.owner, target
             )
             if dmg_type is None:
                 dmg_type = self.dmg_type
             if dice_dmg:
                 dmg += int(dice.roll(dice_dmg))
             if dmg:
-                target.hit(dmg, dmg_type, source, critical=False, atkname=atkname)
+                target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
 
     ########################################################################
-    def do_attack(self, source) -> bool:
-        """Do the attack from {source}"""
-        target = source.target
-        rnge = source.distance(target)
+    def do_attack(self) -> bool:
+        """Do the attack"""
+        assert self.owner is not None
+        target = self.owner.target
+        rnge = self.owner.distance(target)
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
             return False
-        to_hit, crit_hit, crit_miss = self.roll_to_hit(source, target)
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
         print(
-            f"{source} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
+            f"{self.owner} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
         )
 
         if to_hit >= target.ac and not crit_miss:
-            dmg = self.roll_dmg(source, target, crit_hit)
+            dmg = self.roll_dmg(target, crit_hit)
             if dmg == 0:
                 return True
-            target.hit(dmg, self.dmg_type, source, crit_hit, self.name)
+            target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
             if self.side_effect:
-                self.side_effect(source=source, target=target, dmg=dmg)
+                self.side_effect(source=self.owner, target=target, dmg=dmg)
             if self.gear and self.gear.side_effect:
-                self.gear.side_effect(source=source, target=target, dmg=dmg)
+                self.gear.side_effect(source=self.owner, target=target, dmg=dmg)
 
             # If the target or source of the damage has a buff
-            self.buff_attack_damage(source, target)
+            self.buff_attack_damage(target)
 
             print(
-                f"{source} hit {target} (AC: {target.ac})"
+                f"{self.owner} hit {target} (AC: {target.ac})"
                 f" with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
         else:
-            source.statistics.append(Statistics(self.name, 0, None, False))
-            print(f"{source} missed {target} (AC: {target.ac}) with {self}")
+            self.owner.statistics.append(Statistics(self.name, 0, None, False))
+            print(f"{self.owner} missed {target} (AC: {target.ac}) with {self}")
         for name, eff in target.effects.copy().items():
             if eff.removal_after_being_attacked():
                 print(f"{name} removed from {target}")
@@ -229,22 +232,22 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return True
 
     ########################################################################
-    def max_dmg(self, source) -> int:
+    def max_dmg(self) -> int:
         """Return the max possible damage of the attack - used to calculate desirable action"""
         dmg = int(dice.roll_max(self.dmg[0]))
         if self.dmg[1]:
             dmg += self.dmg[1]
-        dmg_bon = self.stat_dmg_bonus(source)
+        dmg_bon = self.stat_dmg_bonus(self.owner)
         if dmg_bon:
             dmg += dmg_bon
         return max(dmg, 0)
 
     ########################################################################
-    def dmg_bonus(self, source):
+    def dmg_bonus(self):
         """All the damage bonuses"""
         bonus = []
         if self.use_stat:
-            dmg_bon = self.stat_dmg_bonus(source)
+            dmg_bon = self.stat_dmg_bonus(self.owner)
             if dmg_bon:
                 bonus.append((dmg_bon, f"{self.use_stat.value} stat"))
         if self.gear:
@@ -254,47 +257,47 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return bonus
 
     ########################################################################
-    def roll_dmg(self, source, _, critical=False) -> int:
+    def roll_dmg(self, _, critical=False) -> int:
         """Roll the damage of the attack"""
         if critical:
             dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
         else:
             dmg = int(dice.roll(self.dmg[0]))
-        print(f"{source} rolled {dmg} on {self.dmg[0]} for damage")
+        print(f"{self.owner} rolled {dmg} on {self.dmg[0]} for damage")
         if self.dmg[1]:
             dmg += self.dmg[1]
             print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg_bon = self.dmg_bonus(source)
+        dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
             dmg += bonus
             print(f"Adding bonus from {cause} of {bonus} -> {dmg}")
         return max(dmg, 0)
 
     ########################################################################
-    def has_disadvantage(self, source, target, _: int) -> bool:
+    def has_disadvantage(self, target, _: int) -> bool:
         """Does this attack have disadvantage"""
-        if source.has_condition(Condition.POISONED):
+        if self.owner.has_condition(Condition.POISONED):
             return True
         # Needs to change to be related to the source of the fright
-        if source.has_condition(Condition.FRIGHTENED):
+        if self.owner.has_condition(Condition.FRIGHTENED):
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_disadvantage_against():
                 return True
-        for _, eff in source.effects.items():
+        for _, eff in self.owner.effects.items():
             if eff.hook_gives_disadvantage(target):
                 return True
         return False
 
     ########################################################################
-    def has_advantage(self, source, target, rnge: int) -> bool:
+    def has_advantage(self, target, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_advantage_against():
                 return True
-        for _, eff in source.effects.items():
+        for _, eff in self.owner.effects.items():
             if eff.hook_gives_advantage(target):
                 return True
         return False

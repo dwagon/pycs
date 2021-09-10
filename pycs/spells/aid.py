@@ -27,33 +27,33 @@ class Aid(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self, doer):
+    def heuristic(self):
         """Should we do the spell
         the more people it can effect the more we should do it"""
         close = 0
-        for targ in doer.arena.my_side(doer.side):
-            if doer.distance(targ) <= 30 / 5:
+        for targ in self.owner.arena.my_side(self.owner.side):
+            if self.owner.distance(targ) <= 30 / 5:
                 if targ.has_effect("Aid"):
                     continue
                 close += 5
         return close
 
     ##########################################################################
-    def pick_target(self, doer):
+    def pick_target(self):
         """Who should we do the spell to"""
         # Pick three people near where we are
         # TO DO - better this to move to where we can get 3 peeps
-        return doer
+        return self.owner
 
     ##########################################################################
-    def cast(self, caster):
+    def cast(self):
         """Do the spell"""
         targets = 3
-        for targ in caster.arena.my_side(caster.side):
-            if caster.distance(targ) <= 30 / 5:
+        for targ in self.owner.arena.my_side(self.owner.side):
+            if self.owner.distance(targ) <= 30 / 5:
                 if not targ.has_effect("Aid"):
-                    print(f"{caster} casts Aid on {targ}")
-                    targ.add_effect(AidEffect(cause=caster))
+                    print(f"{self.owner} casts Aid on {targ}")
+                    targ.add_effect(AidEffect(cause=self.owner))
                     targets -= 1
         return True
 
@@ -81,6 +81,7 @@ class TestAid(SpellTest):
 
     ##########################################################################
     def setUp(self):
+        """Set up test"""
         super().setUp()
         self.caster.add_action(Aid())
 
