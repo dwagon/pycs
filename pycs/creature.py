@@ -68,6 +68,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.reactions = []
         self.conditions = set()
         self.effects = {}
+        for effect in kwargs.get("effects", []):
+            effect.owner = self
+            self.effects[effect.name] = effect
         self.target = None
         self.coords = None
         self.statistics = []
@@ -76,6 +79,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.damage_this_turn = []
         self.damage_last_turn = []
         self.gear = []
+        print(f"{self.effects=}")
 
     ##########################################################################
     @property
@@ -351,6 +355,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         critical: bool,  # pylint: disable=unused-argument
     ) -> None:
         """Creature has fallen unconscious"""
+        keep_going = True
+        for _, eff in self.effects.items():
+            if not eff.hook_fallen_unconscious(dmg, dmg_type, critical):
+                keep_going = False
+        if not keep_going:
+            return
         self.hp = 0
         if self.state == "UNCONSCIOUS":
             return
@@ -391,7 +401,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def add_effect(self, effect):
         """Add an effect"""
         self.effects[effect.name] = effect
-        effect.source = self
+        effect.owner = self
         effect.initial(self)
 
     ##########################################################################

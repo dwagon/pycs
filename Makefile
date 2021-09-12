@@ -54,7 +54,7 @@ lint: ## check style with flake8
 	flake8 pycs tests
 
 test:
-	coverage run -m pytest tests pycs/spells/*.py
+	coverage run -m pytest tests pycs/*/*.py
 	coverage report -m
 
 test-all: ## run tests on every Python version with tox

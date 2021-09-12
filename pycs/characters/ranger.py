@@ -1,11 +1,8 @@
 """ https://www.dndbeyond.com/classes/ranger """
 import colors
-import dice
 from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionType
-from pycs.constant import Condition
-from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.gear import Potion_Healing
@@ -31,7 +28,6 @@ class Ranger(Character):
         self.spell_slots = {}
         kwargs.update(
             {
-                "race": Race.HALFLING,
                 "str": 12,
                 "dex": 17,
                 "con": 13,
@@ -68,9 +64,6 @@ class Ranger(Character):
             kwargs["attacks_per_action"] = 2
 
         super().__init__(**kwargs)
-
-        self.add_effect(Brave())
-        self.add_effect(Lucky())
         if level >= 2:
             self.add_effect(ArcheryFightingStyle())
             self.add_action(CureWounds())
@@ -202,48 +195,6 @@ class ArcheryFightingStyle(Effect):
         if issubclass(kwargs["action"].__class__, RangedAttack):
             eff += 2
         return eff
-
-
-##############################################################################
-##############################################################################
-##############################################################################
-class Brave(Effect):
-    """You have advantage on saving throws against being frightened."""
-
-    ########################################################################
-    def __init__(self, **kwargs):
-        """Initialise"""
-        super().__init__("Brave", **kwargs)
-
-    ########################################################################
-    def hook_saving_throw(self, stat, **kwargs):
-        """Advantage Frightened"""
-        eff = super().hook_saving_throw(stat, **kwargs)
-        if kwargs.get("effect") == Condition.FRIGHTENED:
-            eff["advantage"] = True
-        return eff
-
-
-##############################################################################
-##############################################################################
-##############################################################################
-class Lucky(Effect):
-    """When you roll a 1 on the d20 for an attack roll, ability check,
-    or saving throw, you can reroll the die and must use the new roll."""
-
-    ########################################################################
-    def __init__(self, **kwargs):
-        """Initialise"""
-        super().__init__("Lucky", **kwargs)
-
-    ########################################################################
-    def hook_d20(self, val, reason):
-        """Reroll ones"""
-        if reason in ("attack", "ability", "save"):
-            if val == 1:
-                val = int(dice.roll("d20"))
-                print(f"Lucky - reroll 1 to {val}")
-        return val
 
 
 # EOF

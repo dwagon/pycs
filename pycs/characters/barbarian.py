@@ -1,9 +1,5 @@
 """ Barbarian """
 import colors
-from pycs.gear import Greataxe
-from pycs.gear import Potion_Healing
-from pycs.gear import Javelin
-from pycs.gear import Hide
 from pycs.action import Action
 from pycs.attack import MeleeAttack
 from pycs.character import Character
@@ -12,6 +8,10 @@ from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.effect import Effect
+from pycs.gear import Greataxe
+from pycs.gear import Hide
+from pycs.gear import Javelin
+from pycs.gear import Potion_Healing
 
 
 ##############################################################################

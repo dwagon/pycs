@@ -20,6 +20,7 @@ from pycs.monsters import Skeleton
 from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
+from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
 from pycs.characters import Barbarian
 from pycs.characters import Cleric
@@ -133,6 +134,8 @@ def combat_test():
     arena.add_combatant(
         AdultGoldDragon(arena=arena, name="Adult Gold Dragon", side="Dragon")
     )
+    for i in range(3):
+        arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Dragon"))
 
     arena.add_combatant(BarbedDevil(arena=arena, name="Barbed Devil", side="Monsters"))
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
@@ -142,24 +145,34 @@ def combat_test():
     arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
-    for i in range(3):
-        arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Monsters"))
-    for i in range(3):
+    for i in range(4):
         arena.add_combatant(Orc(arena=arena, name=f"Orc{i}", side="Monsters"))
-    for i in range(3):
+    for i in range(4):
         arena.add_combatant(Goblin(arena=arena, name=f"Goblin{i}", side="Monsters"))
-    for i in range(3):
+    for i in range(4):
         arena.add_combatant(
             Hobgoblin(arena=arena, name=f"Hobgoblin{i}", side="Monsters")
         )
 
-    arena.add_combatant(Barbarian(arena=arena, name="Barbara", level=5, side="Humans"))
+    arena.add_combatant(
+        Barbarian(arena=arena, name="Barbara", level=5, side="Humans", race=Elf)
+    )
     arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))
-    arena.add_combatant(Fighter(arena=arena, name="Frank", level=5, side="Humans"))
-    arena.add_combatant(Paladin(arena=arena, name="Patty", level=5, side="Humans"))
-    arena.add_combatant(Ranger(arena=arena, name="Renee", level=5, side="Humans"))
-    arena.add_combatant(Rogue(arena=arena, name="Rowena", level=5, side="Humans"))
-    arena.add_combatant(Warlock(arena=arena, name="Wendy", level=5, side="Humans"))
+    arena.add_combatant(
+        Fighter(arena=arena, name="Frank", level=5, side="Humans", race=Human)
+    )
+    arena.add_combatant(
+        Paladin(arena=arena, name="Patty", level=5, side="Humans", race=HalfOrc)
+    )
+    arena.add_combatant(
+        Ranger(arena=arena, name="Renee", level=5, side="Humans", race=Halfling)
+    )
+    arena.add_combatant(
+        Rogue(arena=arena, name="Rowena", level=5, side="Humans", race=Elf)
+    )
+    arena.add_combatant(
+        Warlock(arena=arena, name="Wendy", level=5, side="Humans", race=HalfElf)
+    )
 
     arena.do_initiative()
     print(f"{arena}")
