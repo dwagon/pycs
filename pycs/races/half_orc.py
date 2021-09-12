@@ -1,6 +1,11 @@
 """https://www.dndbeyond.com/races/half-orc"""
-from pycs.race import Race
+import unittest
+
+from pycs.constant import DamageType
+from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.race import Race
 
 
 ##############################################################################
@@ -38,6 +43,40 @@ class RelentlessEndurance(Effect):
         self.owner.hp = 1
         self._relentless_used = True
         return False
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestRelentlessEndurance(unittest.TestCase):
+    """Test Relentless Endurance"""
+
+    def setUp(self):
+        kwargs = {
+            "str": 6,
+            "int": 7,
+            "dex": 8,
+            "wis": 18,
+            "con": 11,
+            "cha": 15,
+            "hp": 30,
+            "ac": 10,
+            "spellcast_bonus_stat": Stat.WIS,
+            "race": HalfOrc,
+            "name": "Half Orc",
+            "side": "a",
+        }
+        self.orc = Creature(None, **kwargs)
+        self.orc.add_effect(RelentlessEndurance())
+
+    ########################################################################
+    def test_go_uncon(self):
+        """Test what happens when we go uncon"""
+        self.assertTrue(self.orc.has_effect("Relentless Endurance"))
+        self.orc.hit(40, DamageType.FIRE, self.orc, False, "test")
+        self.assertEqual(self.orc.hp, 1)
+        self.orc.hit(40, DamageType.FIRE, self.orc, False, "test")
+        self.assertEqual(self.orc.hp, 0)
 
 
 # EOF
