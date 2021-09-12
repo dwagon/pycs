@@ -7,11 +7,6 @@ from pycs.constant import MonsterType
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.gear import Chainmail
-from pycs.gear import Light_Crossbow
-from pycs.gear import Potion_Healing
-from pycs.gear import Mace
-from pycs.gear import Shield
 from pycs.spells import Aid
 from pycs.spells import Beacon_Of_Hope
 from pycs.spells import Bless
@@ -94,12 +89,6 @@ class Cleric(Character):
             self.add_action(Beacon_Of_Hope())  # Life Domain freebie
             self.add_action(MassHealingWord())
             self.add_action(Spirit_Guardians())
-
-        self.add_gear(Shield(magic_bonus=1))
-        self.add_gear(Chainmail(magic_bonus=1))
-        self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Mace(magic_bonus=1))
-        self.add_gear(Light_Crossbow())
 
     ##########################################################################
     def report(self):

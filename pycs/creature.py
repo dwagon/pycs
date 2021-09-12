@@ -79,6 +79,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.damage_this_turn = []
         self.damage_last_turn = []
         self.gear = []
+        for gear in kwargs.get("gear", []):
+            self.add_gear(gear)
 
     ##########################################################################
     @property
@@ -382,7 +384,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
-        if draw:
+        if draw and self.state == "OK":
             print(self.arena)
 
     ##########################################################################

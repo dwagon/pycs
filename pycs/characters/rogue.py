@@ -5,10 +5,6 @@ from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.gear import Leather
-from pycs.gear import Potion_Healing
-from pycs.gear import Longbow
-from pycs.gear import Shortsword
 
 
 ##############################################################################
@@ -56,11 +52,6 @@ class Rogue(Character):
         if level >= 5:
             self.sneak_attack_dmg = "3d6"
             self.add_action(UncannyDodge())
-
-        self.add_gear(Shortsword())
-        self.add_gear(Potion_Healing(ammo=2))
-        self.add_gear(Longbow())
-        self.add_gear(Leather())
 
     ##########################################################################
     def shortrepr(self):

@@ -7,10 +7,6 @@ from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.gear import Longsword
-from pycs.gear import Plate
-from pycs.gear import Potion_Healing
-from pycs.gear import Shield
 
 
 ##############################################################################
@@ -56,11 +52,6 @@ class Fighter(Character):
 
         if level >= 2:
             self.add_action(ActionSurge())
-
-        self.add_gear(Longsword(magic_bonus=1))
-        self.add_gear(Potion_Healing(ammo=3))
-        self.add_gear(Plate(magic_bonus=1))
-        self.add_gear(Shield(magic_bonus=1))
 
         self.add_action(SecondWind())
         self.add_effect(DuelingFightingStyle())

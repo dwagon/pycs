@@ -5,11 +5,7 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.gear import Potion_Healing
 from pycs.effect import Effect
-from pycs.gear import Leather
-from pycs.gear import Longbow
-from pycs.gear import Shortsword
 
 # from pycs.spells import Absorb_Elements
 from pycs.spells import CureWounds
@@ -73,11 +69,6 @@ class Ranger(Character):
             # self.add_action(Absorb_Elements())
         if level >= 5:
             self.add_action(LesserRestoration())
-
-        self.add_gear(Shortsword())
-        self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Longbow(magic_bonus=3))
-        self.add_gear(Leather())
 
     ##########################################################################
     def spell_available(self, spell):

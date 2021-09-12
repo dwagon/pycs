@@ -8,10 +8,6 @@ from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.gear import Greataxe
-from pycs.gear import Hide
-from pycs.gear import Javelin
-from pycs.gear import Potion_Healing
 
 
 ##############################################################################
@@ -57,10 +53,6 @@ class Barbarian(Character):
             kwargs["speed"] = 40
             kwargs["attacks_per_action"] = 2
         super().__init__(**kwargs)
-        self.add_gear(Greataxe(magic_bonus=3))
-        self.add_gear(Javelin(ammo=3))
-        self.add_gear(Hide())
-        self.add_gear(Potion_Healing(ammo=1))
         self.add_action(BarbarianRage())
         if level >= 2:
             self.add_effect(BarbarianDangerSenseEffect())

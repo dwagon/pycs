@@ -1,18 +1,11 @@
 """ Paladin """
 import colors
-import dice
 from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Condition
-from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.gear import Chainmail
-from pycs.gear import Javelin
-from pycs.gear import Longsword
-from pycs.gear import Potion_Healing
-from pycs.gear import Shield
 from pycs.spells import Bless
 from pycs.spells import BrandingSmite
 from pycs.spells import CureWounds
@@ -101,17 +94,6 @@ class Paladin(Character):
             self.add_action(BrandingSmite())
             self.add_action(LesserRestoration())
         #            self.add_action(Protection_From_Poison())
-        self.add_gear(Chainmail(magic_bonus=1))
-        self.add_gear(Shield(magic_bonus=1))
-        self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Longsword(side_effect=self.flaming_sword))
-        self.add_gear(Javelin(ammo=3))
-
-    ########################################################################
-    def flaming_sword(self, source, target, dmg):
-        """Add some extra spice"""
-        dmg = int(dice.roll("1d6"))
-        target.hit(dmg, DamageType.FIRE, source, False, "Flaming Sword")
 
     ########################################################################
     def spell_available(self, spell):
