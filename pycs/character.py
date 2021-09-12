@@ -1,7 +1,7 @@
 """ Base Player character """
 from pycs.creature import Creature
 from pycs.spell import SpellAction
-from pycs.constant import Race
+from pycs.races import Human
 
 
 ##############################################################################
@@ -9,11 +9,13 @@ class Character(Creature):
     """Base character class"""
 
     def __init__(self, **kwargs):
-        self.race = kwargs.get("race", Race.HUMAN)
         self.level = kwargs.get("level", 1)
+        self.race = kwargs.get("race", Human)()
+        self.race.owner = self
         if "prof_bonus" not in kwargs:
             profb = int((kwargs.get("level", 1) - 1) / 4) + 2
             kwargs.update({"prof_bonus": profb})
+        kwargs["effects"] = self.race.effects
         super().__init__(**kwargs)
 
     ##########################################################################

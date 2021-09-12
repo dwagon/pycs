@@ -56,7 +56,7 @@ class PackTactics(Effect):
     ##########################################################################
     def hook_gives_advantage(self, target):
         """Do pack tactics apply?"""
-        allies = [_ for _ in target.pick_closest_enemy() if _ != self.source]
+        allies = [_ for _ in target.pick_closest_enemy() if _ != self.owner]
         if allies:
             if allies[0].distance(target) <= 1:
                 return True

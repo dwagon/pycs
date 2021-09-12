@@ -129,7 +129,7 @@ class GiantFrogSwallowEffect(Effect):
         self.target.hit(
             dmg=dmg,
             dmg_type=DamageType.ACID,
-            source=self.source,
+            source=self.owner,
             critical=False,
             atkname="Frog Acid",
         )

@@ -15,5 +15,5 @@ jobs:
         pip install -r requirements_dev.txt
     - name: Test
       run: |
-        coverage run -m pytest tests pycs/spells/*.py
+        coverage run -m pytest tests pycs/*/*.py
         coverage report -m

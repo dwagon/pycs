@@ -14,7 +14,7 @@ class Effect:
         self.name = name
         self.cause = kwargs.get("cause")
         self.caster = kwargs.get("caster")
-        self.source = None  # Set when added to a creature
+        self.owner = None  # Set when added to a creature
 
     ##########################################################################
     def hook_heuristic_mod(self, action, actor):  # pylint: disable=unused-argument
@@ -117,6 +117,15 @@ class Effect:
         * Damage Type. If DamageType is None, use the existing damage type of the attack
         """
         return ("", 0, None)
+
+    ##########################################################################
+    def hook_fallen_unconscious(
+        self, dmg: int, dmg_type, critical: bool  # pylint: disable=unused-argument
+    ) -> bool:
+        """The owner of the effect has fallen unconscious
+        Return True is creature still falls unconscious after hook
+        """
+        return True
 
 
 # EOF

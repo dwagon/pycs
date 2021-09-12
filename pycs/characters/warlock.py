@@ -4,7 +4,6 @@ import colors
 # from pycs.spells import Command
 from pycs.character import Character
 from pycs.constant import ActionType
-from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.gear import Light_Crossbow
@@ -37,7 +36,6 @@ class Warlock(Character):
                 "wis": 11,
                 "cha": 17,
                 "stat_prof": [Stat.WIS, Stat.CHA],
-                "race": Race.HALFELF,
                 "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {
                     SpellType.RANGED: 5,
@@ -59,7 +57,6 @@ class Warlock(Character):
             kwargs["hp"] = 38
 
         super().__init__(**kwargs)
-
         if level >= 1:
             self.spell_slots = 1
             self.add_action(Eldritch_Blast())

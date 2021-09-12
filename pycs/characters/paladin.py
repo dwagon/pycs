@@ -6,10 +6,8 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Condition
 from pycs.constant import DamageType
-from pycs.constant import Race
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.effect import Effect
 from pycs.gear import Chainmail
 from pycs.gear import Javelin
 from pycs.gear import Longsword
@@ -46,7 +44,6 @@ class Paladin(Character):
                 "cha": 14,
                 "stat_prof": [Stat.WIS, Stat.CHA],
                 "spellcast_bonus_stat": Stat.CHA,
-                "race": Race.HALFORC,
                 "action_preference": {
                     LayOnHands: 2,
                     SpellType.HEALING: 2,
@@ -115,13 +112,6 @@ class Paladin(Character):
         """Add some extra spice"""
         dmg = int(dice.roll("1d6"))
         target.hit(dmg, DamageType.FIRE, source, False, "Flaming Sword")
-
-    ########################################################################
-    def fallen_unconscious(self, dmg, dmg_type, critical):
-        if self.has_effect("Relentless Endurance"):
-            super().fallen_unconscious(dmg, dmg_type, critical)
-        else:
-            self.add_effect(RelentlessEndurance())
 
     ########################################################################
     def spell_available(self, spell):
@@ -205,24 +195,6 @@ class LayOnHands(Action):
         if friends:
             return friends[0]
         return None
-
-
-##############################################################################
-##############################################################################
-##############################################################################
-class RelentlessEndurance(Effect):
-    """Relentless Endurance - When you are reduced to 0 HP but not
-    killed, you can drop to 1 HP instead once per long rest."""
-
-    ########################################################################
-    def __init__(self, **kwargs):
-        """Initialise"""
-        super().__init__("Relentless Endurance", **kwargs)
-
-    ########################################################################
-    def initial(self, target):
-        print(f"{target}'s Relentless Endurance kicks in")
-        target.hp = 1
 
 
 # EOF

@@ -3,7 +3,6 @@ import colors
 from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionCategory
-from pycs.constant import Race
 from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.gear import Leather
@@ -22,7 +21,6 @@ class Rogue(Character):
         self.level = level
         kwargs.update(
             {
-                "race": Race.ELF,
                 "str": 12,
                 "dex": 17,
                 "con": 13,
@@ -47,7 +45,6 @@ class Rogue(Character):
             kwargs["hp"] = 38
 
         super().__init__(**kwargs)
-
         self.sneak_attack_dmg = "1d6"
         if level >= 2:
             self.add_effect(SneakAttack())
@@ -181,7 +178,7 @@ class SneakAttack(Effect):
                 return ("", 0, None)
             print("We have advantage on attack")
         self._used_this_turn = True
-        return (self.source.sneak_attack_dmg, 0, None)
+        return (self.owner.sneak_attack_dmg, 0, None)
 
 
 # EOF
