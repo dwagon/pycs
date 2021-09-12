@@ -168,7 +168,7 @@ def combat_test():
     # Undead Army
     arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Undead"))
     arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Undead"))
-    for i in range(4):
+    for i in range(9):
         arena.add_combatant(Skeleton(arena=arena, name=f"Skeleton{i}", side="Undead"))
     arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Undead"))
     arena.add_combatant(Zombie(arena=arena, name="Zombie", side="Undead"))
