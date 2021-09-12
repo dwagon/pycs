@@ -63,14 +63,20 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.hp = self.roll_hp()
         self.max_hp = self.hp
         self.has_grappled = None
-        self.actions = []
+
         self.bonus_actions = []
         self.reactions = []
+        self.actions = []
+        for act in kwargs.get("actions", []):
+            self.add_action(act)
+
         self.conditions = set()
+
         self.effects = {}
         for effect in kwargs.get("effects", []):
             effect.owner = self
             self.effects[effect.name] = effect
+
         self.target = None
         self.coords = None
         self.statistics = []
@@ -78,7 +84,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.concentration = None
         self.damage_this_turn = []
         self.damage_last_turn = []
+
         self.gear = []
+        for gear in kwargs.get("gear", []):
+            self.add_gear(gear)
 
     ##########################################################################
     @property
@@ -382,7 +391,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
-        if draw:
+        if draw and self.state == "OK":
             print(self.arena)
 
     ##########################################################################

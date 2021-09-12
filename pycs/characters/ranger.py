@@ -5,11 +5,7 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.gear import Potion_Healing
 from pycs.effect import Effect
-from pycs.gear import Leather
-from pycs.gear import Longbow
-from pycs.gear import Shortsword
 
 # from pycs.spells import Absorb_Elements
 from pycs.spells import CureWounds
@@ -36,6 +32,8 @@ class Ranger(Character):
                 "cha": 11,
                 "stat_prof": [Stat.STR, Stat.DEX],
                 "speed": 25,
+                "actions": [],
+                "effects": [],
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     ActionType.RANGED: 5,
@@ -49,10 +47,14 @@ class Ranger(Character):
         if level >= 2:
             kwargs["hp"] = 18
             self.spell_slots = {1: 2}
+            kwargs["effects"].append(ArcheryFightingStyle())
+            kwargs["actions"].append(CureWounds())
+            kwargs["actions"].append(HuntersMark())
         if level >= 3:
             kwargs["hp"] = 25
             # Ranger Archetype: Hunter
-            # Hunter's Prey: Colossus Slayer
+            kwargs["effects"].append(ColossusSlayer())
+            # self.add_action(Absorb_Elements())
             self.spell_slots = {1: 3}
         if level >= 4:
             kwargs["hp"] = 36
@@ -62,22 +64,9 @@ class Ranger(Character):
             self.spell_slots = {1: 4, 2: 2}
             kwargs["hp"] = 44
             kwargs["attacks_per_action"] = 2
+            kwargs["actions"].append(LesserRestoration())
 
         super().__init__(**kwargs)
-        if level >= 2:
-            self.add_effect(ArcheryFightingStyle())
-            self.add_action(CureWounds())
-            self.add_action(HuntersMark())
-        if level >= 3:
-            self.add_effect(ColossusSlayer())
-            # self.add_action(Absorb_Elements())
-        if level >= 5:
-            self.add_action(LesserRestoration())
-
-        self.add_gear(Shortsword())
-        self.add_gear(Potion_Healing(ammo=1))
-        self.add_gear(Longbow(magic_bonus=3))
-        self.add_gear(Leather())
 
     ##########################################################################
     def spell_available(self, spell):

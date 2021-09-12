@@ -6,6 +6,7 @@ __email__ = "dougal.scott@gmail.com"
 from collections import defaultdict
 from prettytable import PrettyTable
 import colors
+import dice
 
 from pycs.monsters import AdultGoldDragon
 from pycs.monsters import BarbedDevil
@@ -20,6 +21,7 @@ from pycs.monsters import Skeleton
 from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
 from pycs.monsters import Wraith
+from pycs.monsters import Zombie
 from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
 from pycs.characters import Barbarian
@@ -30,7 +32,25 @@ from pycs.characters import Ranger
 from pycs.characters import Rogue
 from pycs.characters import Warlock
 
+from pycs.constant import DamageType
+
 from pycs.arena import Arena
+
+from pycs.gear import Chainmail
+from pycs.gear import Greataxe
+from pycs.gear import Hide
+from pycs.gear import Javelin
+from pycs.gear import Leather
+from pycs.gear import Light_Crossbow
+from pycs.gear import Longbow
+from pycs.gear import Longsword
+from pycs.gear import Mace
+from pycs.gear import Plate
+from pycs.gear import Potion_Healing
+from pycs.gear import Quarterstaff
+from pycs.gear import Shield
+from pycs.gear import Shortsword
+from pycs.gear import Studded
 
 
 ##############################################################################
@@ -53,6 +73,13 @@ def win_report(stats, rounds):
         tbl.add_row([side, wins, 100.0 * wins / rounds])
 
     print(tbl)
+
+
+##############################################################################
+def flaming_weapon(source, target, dmg):
+    """Add some extra spice"""
+    dmg = int(dice.roll("1d6"))
+    target.hit(dmg, DamageType.FIRE, source, False, "Flaming Sword")
 
 
 ##############################################################################
@@ -131,19 +158,25 @@ def combat_test():
     print("#" * 80)
     arena = Arena(max_x=45, max_y=25)
 
+    # Dragon Army
     arena.add_combatant(
         AdultGoldDragon(arena=arena, name="Adult Gold Dragon", side="Dragon")
     )
     for i in range(3):
         arena.add_combatant(Kobold(arena=arena, name=f"Kobold{i}", side="Dragon"))
 
+    # Undead Army
+    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Undead"))
+    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Undead"))
+    for i in range(9):
+        arena.add_combatant(Skeleton(arena=arena, name=f"Skeleton{i}", side="Undead"))
+    arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Undead"))
+    arena.add_combatant(Zombie(arena=arena, name="Zombie", side="Undead"))
+
+    # Monsters
     arena.add_combatant(BarbedDevil(arena=arena, name="Barbed Devil", side="Monsters"))
-    arena.add_combatant(Ghast(arena=arena, name="Ghast", side="Monsters"))
-    arena.add_combatant(Ghoul(arena=arena, name="Ghoul", side="Monsters"))
     arena.add_combatant(GiantFrog(arena=arena, name="Giant Frog", side="Monsters"))
-    arena.add_combatant(Skeleton(arena=arena, name="Skeleton", side="Monsters"))
     arena.add_combatant(VioletFungus(arena=arena, name="Violet", side="Monsters"))
-    arena.add_combatant(Wraith(arena=arena, name="Wraith", side="Monsters"))
     arena.add_combatant(Troll(arena=arena, name="Troll", side="Monsters"))
     for i in range(4):
         arena.add_combatant(Orc(arena=arena, name=f"Orc{i}", side="Monsters"))
@@ -154,24 +187,112 @@ def combat_test():
             Hobgoblin(arena=arena, name=f"Hobgoblin{i}", side="Monsters")
         )
 
+    # Murder Hobos
     arena.add_combatant(
-        Barbarian(arena=arena, name="Barbara", level=5, side="Humans", race=Elf)
+        Barbarian(
+            arena=arena,
+            name="Barbara",
+            level=5,
+            side="Humans",
+            race=Elf,
+            gear=[
+                Greataxe(magic_bonus=1),
+                Javelin(ammo=2),
+                Hide(magic_bonus=2),
+                Potion_Healing(ammo=1),
+            ],
+        )
     )
-    arena.add_combatant(Cleric(arena=arena, name="Charlise", level=5, side="Humans"))
     arena.add_combatant(
-        Fighter(arena=arena, name="Frank", level=5, side="Humans", race=Human)
+        Cleric(
+            arena=arena,
+            name="Charlise",
+            level=5,
+            side="Humans",
+            gear=[
+                Shield(magic_bonus=1),
+                Chainmail(magic_bonus=1),
+                Potion_Healing(ammo=1),
+                Mace(magic_bonus=1, side_effect=flaming_weapon),
+                Light_Crossbow(),
+            ],
+        )
     )
     arena.add_combatant(
-        Paladin(arena=arena, name="Patty", level=5, side="Humans", race=HalfOrc)
+        Fighter(
+            arena=arena,
+            name="Frank",
+            level=5,
+            side="Humans",
+            race=Human,
+            gear=[
+                Longsword(magic_bonus=2),
+                Potion_Healing(ammo=1),
+                Plate(magic_bonus=1),
+                Shield(magic_bonus=1),
+            ],
+        )
     )
     arena.add_combatant(
-        Ranger(arena=arena, name="Renee", level=5, side="Humans", race=Halfling)
+        Paladin(
+            arena=arena,
+            name="Patty",
+            level=5,
+            side="Humans",
+            race=HalfOrc,
+            gear=[
+                Chainmail(magic_bonus=1),
+                Shield(magic_bonus=1),
+                Potion_Healing(ammo=1),
+                Longsword(magic_bonus=2, side_effect=flaming_weapon),
+                Javelin(ammo=3),
+            ],
+        )
     )
     arena.add_combatant(
-        Rogue(arena=arena, name="Rowena", level=5, side="Humans", race=Elf)
+        Ranger(
+            arena=arena,
+            name="Renee",
+            level=5,
+            side="Humans",
+            race=Halfling,
+            gear=[
+                Shortsword(),
+                Potion_Healing(ammo=1),
+                Longbow(magic_bonus=3),
+                Leather(),
+            ],
+        )
     )
     arena.add_combatant(
-        Warlock(arena=arena, name="Wendy", level=5, side="Humans", race=HalfElf)
+        Rogue(
+            arena=arena,
+            name="Rowena",
+            level=5,
+            side="Humans",
+            race=Elf,
+            gear=[
+                Shortsword(magic_bonus=1),
+                Potion_Healing(ammo=2),
+                Longbow(),
+                Leather(magic_bonus=1),
+            ],
+        )
+    )
+    arena.add_combatant(
+        Warlock(
+            arena=arena,
+            name="Wendy",
+            level=5,
+            side="Humans",
+            race=HalfElf,
+            gear=[
+                Studded(magic_bonus=1),
+                Light_Crossbow(),
+                Quarterstaff(),
+                Potion_Healing(ammo=2),
+            ],
+        )
     )
 
     arena.do_initiative()

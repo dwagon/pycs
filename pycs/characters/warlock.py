@@ -6,10 +6,6 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.gear import Light_Crossbow
-from pycs.gear import Potion_Healing
-from pycs.gear import Quarterstaff
-from pycs.gear import Studded
 from pycs.spells import Burning_Hands
 from pycs.spells import Eldritch_Blast
 from pycs.spells import Fireball
@@ -35,6 +31,8 @@ class Warlock(Character):
                 "int": 12,
                 "wis": 11,
                 "cha": 17,
+                "actions": [],
+                "effects": [],
                 "stat_prof": [Stat.WIS, Stat.CHA],
                 "spellcast_bonus_stat": Stat.CHA,
                 "action_preference": {
@@ -45,49 +43,42 @@ class Warlock(Character):
                 },
             }
         )
-        if level == 1:
-            kwargs["hp"] = 10
-        if level == 2:
-            kwargs["hp"] = 17
-        if level == 3:
-            kwargs["hp"] = 24
-        if level == 4:
-            kwargs["hp"] = 31
-        if level == 5:
-            kwargs["hp"] = 38
-
-        super().__init__(**kwargs)
         if level >= 1:
+            kwargs["hp"] = 10
+            kwargs["actions"].append(Eldritch_Blast())
+            kwargs["actions"].append(Frostbite())
+            kwargs["actions"].append(PoisonSpray())
+            kwargs["actions"].append(Burning_Hands())
+            kwargs["actions"].append(Hellish_Rebuke())
             self.spell_slots = 1
-            self.add_action(Eldritch_Blast())
-            self.add_action(Frostbite())
-            self.add_action(PoisonSpray())
-            self.add_action(Burning_Hands())
-            self.add_action(Hellish_Rebuke())
         if level >= 2:
             self.spell_slots = 2
-            # self.add_action(Command())
-            # Agonizing Blast
-            # When you cast eldritch blast, add your Charisma modifier to the
-            # damage it deals on a hit.
-            # Armor of Shadows
-            # You can cast mage armor on yourself at will, without expending
-            # a spell slot or material components.
+            kwargs["hp"] = 17
+            kwargs["actions"].append(ScorchingRay())
         if level >= 3:
-            self.add_action(ScorchingRay())
-            # Pact Boon: Pact of the Blades
-            # Summon magical weapon
+            kwargs["hp"] = 24
         if level >= 4:
-            self.add_action(Shatter())
-            self.add_action(Thunderclap())
-            self.stats[Stat.CHA] = 19
+            kwargs["hp"] = 31
+            kwargs["actions"].append(Shatter())
+            kwargs["actions"].append(Thunderclap())
+            kwargs["cha"] = 19
         if level >= 5:
-            self.add_action(Fireball())
+            kwargs["hp"] = 38
+            kwargs["actions"].append(Fireball())
 
-        self.add_gear(Studded())
-        self.add_gear(Light_Crossbow())
-        self.add_gear(Quarterstaff())
-        self.add_gear(Potion_Healing(ammo=2))
+        super().__init__(**kwargs)
+        # L2
+        # self.add_action(Command())
+        # Agonizing Blast
+        # When you cast eldritch blast, add your Charisma modifier to the
+        # damage it deals on a hit.
+        # Armor of Shadows
+        # You can cast mage armor on yourself at will, without expending
+        # a spell slot or material components.
+
+        # L3
+        # Pact Boon: Pact of the Blades
+        # Summon magical weapon
 
     ##########################################################################
     def report(self):

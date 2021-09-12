@@ -7,10 +7,6 @@ from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.effect import Effect
-from pycs.gear import Longsword
-from pycs.gear import Plate
-from pycs.gear import Potion_Healing
-from pycs.gear import Shield
 
 
 ##############################################################################
@@ -32,6 +28,8 @@ class Fighter(Character):
                 "wis": 13,
                 "cha": 9,
                 "stat_prof": [Stat.STR, Stat.CON],
+                "actions": [SecondWind()],
+                "effects": [DuelingFightingStyle()],
             }
         )
         if level >= 1:
@@ -39,6 +37,7 @@ class Fighter(Character):
             # Fighting Style: Dueling
         if level >= 2:
             kwargs["hp"] = 20
+            kwargs["actions"].append(ActionSurge())
         if level >= 3:
             kwargs["hp"] = 28
             # Martial Archetype: Champion
@@ -53,17 +52,6 @@ class Fighter(Character):
             kwargs["attacks_per_action"] = 2
 
         super().__init__(**kwargs)
-
-        if level >= 2:
-            self.add_action(ActionSurge())
-
-        self.add_gear(Longsword(magic_bonus=1))
-        self.add_gear(Potion_Healing(ammo=3))
-        self.add_gear(Plate(magic_bonus=1))
-        self.add_gear(Shield(magic_bonus=1))
-
-        self.add_action(SecondWind())
-        self.add_effect(DuelingFightingStyle())
 
     ##########################################################################
     def shortrepr(self):
