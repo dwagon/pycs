@@ -79,7 +79,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.damage_this_turn = []
         self.damage_last_turn = []
         self.gear = []
-        print(f"{self.effects=}")
 
     ##########################################################################
     @property

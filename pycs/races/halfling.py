@@ -1,8 +1,13 @@
 """https://www.dndbeyond.com/races/halfling"""
+import io
+import unittest
+from unittest.mock import patch
 import dice
 from pycs.constant import Condition
-from pycs.race import Race
+from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.race import Race
 
 
 ##############################################################################
@@ -56,6 +61,77 @@ class Brave(Effect):
         if kwargs.get("effect") == Condition.FRIGHTENED:
             eff["advantage"] = True
         return eff
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestLucky(unittest.TestCase):
+    """Test Lucky"""
+
+    def setUp(self):
+        kwargs = {
+            "str": 6,
+            "int": 7,
+            "dex": 11,
+            "wis": 18,
+            "con": 11,
+            "cha": 15,
+            "hp": 30,
+            "ac": 10,
+            "race": Halfling,
+            "name": "Hobbit",
+            "side": "a",
+        }
+        self.hobbit = Creature(None, **kwargs)
+        self.hobbit.add_effect(Lucky())
+
+    ########################################################################
+    def test_not_lucky(self):
+        """Test what happens when we roll a 1 - but doesn't apply"""
+        with patch.object(dice, "roll") as mock:
+            mock.return_value = 1
+            init = self.hobbit.roll_initiative()
+            self.assertEqual(init, 1)
+
+    ########################################################################
+    def test_lucky(self):
+        """Test what happens when we roll a 1 - but does apply"""
+        with patch.object(dice, "roll") as mock:
+            mock.side_effect = [1, 10]
+            svth = self.hobbit.saving_throw(Stat.STR, dc=5)
+            self.assertTrue(svth)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestBrave(unittest.TestCase):
+    """Test Brave"""
+
+    def setUp(self):
+        kwargs = {
+            "str": 6,
+            "int": 7,
+            "dex": 11,
+            "wis": 18,
+            "con": 11,
+            "cha": 15,
+            "hp": 30,
+            "ac": 10,
+            "race": Halfling,
+            "name": "Hobbit",
+            "side": "a",
+        }
+        self.hobbit = Creature(None, **kwargs)
+        self.hobbit.add_effect(Brave())
+
+    ########################################################################
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    def test_brave(self, mock_stdout):
+        """Do some saving throws"""
+        self.hobbit.saving_throw(Stat.STR, 10, effect=Condition.FRIGHTENED)
+        self.assertTrue("with advantage" in mock_stdout.getvalue())
 
 
 # EOF
