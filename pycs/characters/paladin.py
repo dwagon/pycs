@@ -37,6 +37,7 @@ class Paladin(Character):
                 "cha": 14,
                 "stat_prof": [Stat.WIS, Stat.CHA],
                 "spellcast_bonus_stat": Stat.CHA,
+                "actions": [],
                 "action_preference": {
                     LayOnHands: 2,
                     SpellType.HEALING: 2,
@@ -54,46 +55,46 @@ class Paladin(Character):
         if level >= 2:
             kwargs["hp"] = 20
             kwargs["ac"] = 19  # Defense fighting style
+            self.lay_on_hands = 5
             self.spell_slots = {1: 2}
+            kwargs["actions"].append(CureWounds())
+            kwargs["actions"].append(Bless())
+            kwargs["actions"].append(ShieldOfFaith())
+            kwargs["actions"].append(LayOnHands())
         if level >= 3:
             kwargs["hp"] = 28
             self.spell_slots = {1: 3}
             self.lay_on_hands = 15
             self.channel_divinity = 1
+            kwargs["actions"].append(Sanctuary())
         if level >= 4:
             kwargs["hp"] = 36
             kwargs["str"] = 19
             self.lay_on_hands = 20
         if level >= 5:
-            # Prof Bonus = 3
             kwargs["attacks_per_action"] = 2
             kwargs["hp"] = 44
             kwargs["str"] = 19
             self.spell_slots = {1: 4, 2: 2}
             self.lay_on_hands = 25
+            kwargs["actions"].append(BrandingSmite())
+            kwargs["actions"].append(LesserRestoration())
 
         super().__init__(**kwargs)
-        if level >= 2:
-            self.lay_on_hands = 5
-            self.add_action(CureWounds())
-            self.add_action(Bless())
-            self.add_action(ShieldOfFaith())
-            # Divine Smite
-            # Starting at 2nd level, when you hit a creature with a melee weapon
-            # attack, you can expend one spell slot to deal radiant damage to the
-            # target, in addition to the weapon’s damage. The extra damage is 2d8
-            # for a 1st-level spell slot, plus 1d8 for each spell level higher
-            # than 1st, to a maximum of 5d8. The damage increases by 1d8 if the
-            # target is an undead or a fiend, to a maximum of 6d8.
-            self.add_action(LayOnHands())
-        if level >= 3:
-            self.add_action(Sanctuary())
-            # Add Action Channel Divinity : Sacred Weapon
-            # Add Action Channel Divinity : Turn the Unholy
-        if level >= 5:
-            self.add_action(BrandingSmite())
-            self.add_action(LesserRestoration())
-        #            self.add_action(Protection_From_Poison())
+        # Divine Smite
+        # Starting at 2nd level, when you hit a creature with a melee weapon
+        # attack, you can expend one spell slot to deal radiant damage to the
+        # target, in addition to the weapon’s damage. The extra damage is 2d8
+        # for a 1st-level spell slot, plus 1d8 for each spell level higher
+        # than 1st, to a maximum of 5d8. The damage increases by 1d8 if the
+        # target is an undead or a fiend, to a maximum of 6d8.
+
+        # L3:
+        # Add Action Channel Divinity : Sacred Weapon
+        # Add Action Channel Divinity : Turn the Unholy
+
+        # L5
+        # Protection_From_Poison
 
     ########################################################################
     def spell_available(self, spell):

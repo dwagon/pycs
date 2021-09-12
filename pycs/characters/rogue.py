@@ -25,13 +25,19 @@ class Rogue(Character):
                 "cha": 10,
                 "stat_prof": [Stat.DEX, Stat.INT],
                 "speed": 35,
+                "actions": [],
+                "effects": [],
             }
         )
         if level >= 1:
             kwargs["hp"] = 9
+            self.sneak_attack_dmg = "1d6"
         if level >= 2:
             kwargs["hp"] = 15
+            kwargs["effects"].append(SneakAttack())
         if level >= 3:
+            self.sneak_attack_dmg = "2d6"
+            kwargs["actions"].append(CunningAction())
             kwargs["hp"] = 21
         if level >= 4:
             kwargs["hp"] = 31
@@ -39,19 +45,10 @@ class Rogue(Character):
             kwargs["con"] = 14
         if level >= 5:
             kwargs["hp"] = 38
+            self.sneak_attack_dmg = "3d6"
+            kwargs["actions"].append(UncannyDodge())
 
         super().__init__(**kwargs)
-        self.sneak_attack_dmg = "1d6"
-        if level >= 2:
-            self.add_effect(SneakAttack())
-        if level >= 3:
-            self.sneak_attack_dmg = "2d6"
-            self.add_action(CunningAction())
-        if level >= 4:
-            pass
-        if level >= 5:
-            self.sneak_attack_dmg = "3d6"
-            self.add_action(UncannyDodge())
 
     ##########################################################################
     def shortrepr(self):

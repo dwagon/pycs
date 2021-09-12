@@ -28,6 +28,8 @@ class Fighter(Character):
                 "wis": 13,
                 "cha": 9,
                 "stat_prof": [Stat.STR, Stat.CON],
+                "actions": [SecondWind()],
+                "effects": [DuelingFightingStyle()],
             }
         )
         if level >= 1:
@@ -35,6 +37,7 @@ class Fighter(Character):
             # Fighting Style: Dueling
         if level >= 2:
             kwargs["hp"] = 20
+            kwargs["actions"].append(ActionSurge())
         if level >= 3:
             kwargs["hp"] = 28
             # Martial Archetype: Champion
@@ -49,12 +52,6 @@ class Fighter(Character):
             kwargs["attacks_per_action"] = 2
 
         super().__init__(**kwargs)
-
-        if level >= 2:
-            self.add_action(ActionSurge())
-
-        self.add_action(SecondWind())
-        self.add_effect(DuelingFightingStyle())
 
     ##########################################################################
     def shortrepr(self):

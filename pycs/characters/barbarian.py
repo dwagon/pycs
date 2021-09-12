@@ -28,6 +28,8 @@ class Barbarian(Character):
                 "wis": 13,
                 "cha": 9,
                 "stat_prof": [Stat.STR, Stat.CON],
+                "actions": [BarbarianRage()],
+                "effects": [],
                 "action_preference": {
                     BarbarianRage: 9,
                     ActionType.MELEE: 8,
@@ -38,13 +40,10 @@ class Barbarian(Character):
         if level >= 1:
             kwargs["hp"] = 14
         if level >= 2:
-            # Reckless attack
-            # Danger Sense
             kwargs["hp"] = 23
+            kwargs["effects"].append(BarbarianDangerSenseEffect())
         if level >= 3:
             kwargs["hp"] = 32
-            # Primal path - Path of the beserker
-            # Frenzy
         if level >= 4:
             kwargs["hp"] = 41
             kwargs["str"] = 18
@@ -53,9 +52,6 @@ class Barbarian(Character):
             kwargs["speed"] = 40
             kwargs["attacks_per_action"] = 2
         super().__init__(**kwargs)
-        self.add_action(BarbarianRage())
-        if level >= 2:
-            self.add_effect(BarbarianDangerSenseEffect())
 
     ##########################################################################
     def report(self):

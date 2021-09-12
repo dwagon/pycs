@@ -51,44 +51,42 @@ class Cleric(Character):
                     SpellType.MELEE: 1,
                     ActionType.MELEE: 1,
                 },
+                "actions": [
+                    Bless(),  # Life Domain freebie
+                    CureWounds(),  # Life Domain freebie
+                    Sacred_Flame(),
+                    Guiding_Bolt(),
+                    HealingWord(),
+                    ShieldOfFaith(),
+                ],
             }
         )
-        if level == 1:
+        if level >= 1:
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10
-        elif level == 2:
+        if level >= 2:
             self.spell_slots = {1: 3}
             kwargs["hp"] = 17
-        elif level == 3:
+            kwargs["actions"].append(TurnUndead())
+        if level >= 3:
             self.spell_slots = {1: 4, 2: 2}
             kwargs["hp"] = 24
-        elif level == 4:
+            kwargs["actions"].append(Aid())
+            kwargs["actions"].append(LesserRestoration())  # Life Domain freebie
+            kwargs["actions"].append(Enhance_Ability())
+            kwargs["actions"].append(Spiritual_Weapon())  # Life Domain freebie
+            kwargs["actions"].append(HoldPerson())
+        if level >= 4:
             kwargs["hp"] = 31
             self.spell_slots = {1: 4, 2: 3}
-        elif level == 5:
+            kwargs["wis"] = 18
+        if level >= 5:
             kwargs["hp"] = 38
             self.spell_slots = {1: 4, 2: 3, 3: 2}
+            kwargs["actions"].append(Beacon_Of_Hope())  # Life Domain freebie
+            kwargs["actions"].append(MassHealingWord())
+            kwargs["actions"].append(Spirit_Guardians())
         super().__init__(**kwargs)
-        self.add_action(Bless())  # Life Domain freebie
-        self.add_action(CureWounds())  # Life Domain freebie
-        self.add_action(Sacred_Flame())
-        self.add_action(Guiding_Bolt())
-        self.add_action(HealingWord())
-        self.add_action(ShieldOfFaith())
-        if level >= 2:
-            self.add_action(TurnUndead())
-        if level >= 3:
-            self.add_action(Aid())
-            self.add_action(LesserRestoration())  # Life Domain freebie
-            self.add_action(Enhance_Ability())
-            self.add_action(Spiritual_Weapon())  # Life Domain freebie
-            self.add_action(HoldPerson())
-        if level >= 4:
-            self.stats[Stat.WIS] = 18
-        if level >= 5:
-            self.add_action(Beacon_Of_Hope())  # Life Domain freebie
-            self.add_action(MassHealingWord())
-            self.add_action(Spirit_Guardians())
 
     ##########################################################################
     def report(self):
