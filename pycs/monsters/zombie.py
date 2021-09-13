@@ -26,17 +26,17 @@ class Zombie(Monster):
                 "wis": 6,
                 "cha": 5,
                 "immunity": [DamageType.POISON],
+                "actions": [
+                    MeleeAttack(
+                        "Slam",
+                        reach=5,
+                        dmg=("1d6", 0),
+                        dmg_type=DamageType.BLUDGEONING,
+                    )
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Slam",
-                reach=5,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.BLUDGEONING,
-            )
-        )
 
     ##########################################################################
     def fallen_unconscious(self, dmg, dmg_type, critical):

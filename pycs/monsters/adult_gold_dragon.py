@@ -36,11 +36,10 @@ class AdultGoldDragon(Monster):
                 "wis": 15,
                 "cha": 24,
                 "immunity": [DamageType.FIRE],
+                "actions": [DragonMultiAttack(), DragonFireBreath()],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(DragonMultiAttack())
-        self.add_action(DragonFireBreath())
 
     ##########################################################################
     def hook_start_turn(self):

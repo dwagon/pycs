@@ -48,19 +48,19 @@ class Wraith(Monster):
                     Condition.PRONE,
                     Condition.RESTRAINED,
                 ],
+                "actions": [
+                    MeleeAttack(
+                        "Life Drain",
+                        use_stat=Stat.DEX,
+                        reach=5,
+                        dmg=("4d8", 0),
+                        dmg_type=DamageType.NECROTIC,
+                        side_effect=self.life_drain,
+                    )
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Life Drain",
-                use_stat=Stat.DEX,
-                reach=5,
-                dmg=("4d8", 0),
-                dmg_type=DamageType.NECROTIC,
-                side_effect=self.life_drain,
-            )
-        )
 
     ##########################################################################
     def life_drain(self, source, target, dmg):  # pylint: disable=unused-argument

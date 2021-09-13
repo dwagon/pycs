@@ -28,19 +28,19 @@ class GiantFrog(Monster):
                 "int": 2,
                 "wis": 10,
                 "cha": 3,
+                "actions": [
+                    MeleeAttack(
+                        "Bite",
+                        reach=5,
+                        dmg=("1d6", 0),
+                        dmg_type=DamageType.PIERCING,
+                        heuristic=self.frog_bite,
+                        side_effect=self.swallow,
+                    )
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Bite",
-                reach=5,
-                dmg=("1d6", 0),
-                dmg_type=DamageType.PIERCING,
-                heuristic=self.frog_bite,
-                side_effect=self.swallow,
-            )
-        )
         self._swallowed = None
 
     ##########################################################################

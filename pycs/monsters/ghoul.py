@@ -30,28 +30,26 @@ class Ghoul(Monster):
                 "wis": 10,
                 "cha": 6,
                 "immunity": [DamageType.POISON],
+                "actions": [
+                    MeleeAttack(
+                        "Bite",
+                        reach=5,
+                        heuristic=self.ghoul_bite,
+                        dmg=("2d6", 0),
+                        dmg_type=DamageType.PIERCING,
+                    ),
+                    MeleeAttack(
+                        "Claw",
+                        reach=5,
+                        dmg=("2d4", 0),
+                        heuristic=self.ghoul_claw,
+                        dmg_type=DamageType.SLASHING,
+                        side_effect=self.se_ghoul_claws,
+                    ),
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Bite",
-                reach=5,
-                heuristic=self.ghoul_bite,
-                dmg=("2d6", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
-        self.add_action(
-            MeleeAttack(
-                "Claw",
-                reach=5,
-                dmg=("2d4", 0),
-                heuristic=self.ghoul_claw,
-                dmg_type=DamageType.SLASHING,
-                side_effect=self.se_ghoul_claws,
-            )
-        )
 
     ##########################################################################
     def se_ghoul_claws(self, source, target, dmg):  # pylint: disable=unused-argument

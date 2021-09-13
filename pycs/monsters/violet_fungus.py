@@ -30,20 +30,20 @@ class VioletFungus(Monster):
                     Condition.DEAFENED,
                     Condition.FRIGHTENED,
                 ],
+                "actions": [
+                    MeleeAttack(
+                        "rotting touch",
+                        attacks_per_action=("1d4", 0),
+                        reach=10,
+                        dmg=("1d8", 0),
+                        dmg_type=DamageType.NECROTIC,
+                        attack_modifier=2,
+                        damage_modifier=0,
+                    )
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "rotting touch",
-                attacks_per_action=("1d4", 0),
-                reach=10,
-                dmg=("1d8", 0),
-                dmg_type=DamageType.NECROTIC,
-                attack_modifier=2,
-                damage_modifier=0,
-            )
-        )
 
     ##########################################################################
     def shortrepr(self):

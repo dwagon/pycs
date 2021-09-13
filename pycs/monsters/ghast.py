@@ -36,26 +36,24 @@ class Ghast(Monster):
                     Condition.EXHAUSTION,
                     Condition.POISONED,
                 ],
+                "actions": [
+                    MeleeAttack(
+                        "Bite",
+                        reach=5,
+                        dmg=("2d8", 0),
+                        dmg_type=DamageType.PIERCING,
+                    ),
+                    MeleeAttack(
+                        "Claw",
+                        reach=5,
+                        dmg=("2d6", 0),
+                        dmg_type=DamageType.SLASHING,
+                        side_effect=self.ghast_claws,
+                    ),
+                ],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(
-            MeleeAttack(
-                "Bite",
-                reach=5,
-                dmg=("2d8", 0),
-                dmg_type=DamageType.PIERCING,
-            )
-        )
-        self.add_action(
-            MeleeAttack(
-                "Claw",
-                reach=5,
-                dmg=("2d6", 0),
-                dmg_type=DamageType.SLASHING,
-                side_effect=self.ghast_claws,
-            )
-        )
 
     ##########################################################################
     def start_others_turn(self, creat):

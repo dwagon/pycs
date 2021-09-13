@@ -26,12 +26,11 @@ class Kobold(Monster):
                 "int": 8,
                 "wis": 7,
                 "cha": 8,
+                "gear": [Dagger(), Sling()],
+                "effects": [PackTactics()],
             }
         )
         super().__init__(**kwargs)
-        self.add_gear(Dagger())
-        self.add_gear(Sling())
-        self.add_effect(PackTactics())
 
     ##########################################################################
     def shortrepr(self):

@@ -28,14 +28,11 @@ class Hobgoblin(Monster):
                 "int": 10,
                 "wis": 10,
                 "cha": 9,
+                "gear": [Longsword(), Longbow(), Chainmail(), Shield()],
+                "effects": [MartialAdvantage()],
             }
         )
         super().__init__(**kwargs)
-        self.add_effect(MartialAdvantage())
-        self.add_gear(Longsword())
-        self.add_gear(Longbow())
-        self.add_gear(Chainmail())
-        self.add_gear(Shield())
 
     ##########################################################################
     def shortrepr(self):
