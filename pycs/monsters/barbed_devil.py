@@ -37,10 +37,10 @@ class BarbedDevil(Monster):
                 ],
                 "immunity": [DamageType.FIRE, DamageType.POISON],
                 "cond_immunity": [Condition.POISONED],
+                "actions": [BDMeleeAttack(), BDRangedAttack()],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(BDMeleeAttack())
 
     ##########################################################################
     def shortrepr(self):

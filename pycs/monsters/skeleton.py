@@ -26,11 +26,10 @@ class Skeleton(Monster):
                 "wis": 8,
                 "cha": 5,
                 "vulnerable": [DamageType.BLUDGEONING],
+                "gear": [Shortsword(), Shortbow()],
             }
         )
         super().__init__(**kwargs)
-        self.add_gear(Shortsword())
-        self.add_gear(Shortbow())
 
     ##########################################################################
     def shortrepr(self):

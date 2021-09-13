@@ -24,12 +24,10 @@ class Orc(Monster):
                 "int": 7,
                 "wis": 11,
                 "cha": 10,
+                "gear": [Javelin(ammo=4), Greataxe(), Hide()],
             }
         )
         super().__init__(**kwargs)
-        self.add_gear(Javelin(ammo=4))
-        self.add_gear(Greataxe())
-        self.add_gear(Hide())
 
     ##########################################################################
     def shortrepr(self):

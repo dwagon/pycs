@@ -25,13 +25,10 @@ class Goblin(Monster):
                 "int": 10,
                 "wis": 8,
                 "cha": 8,
+                "gear": [Scimitar(), Shortbow(), Leather(), Shield()],
             }
         )
         super().__init__(**kwargs)
-        self.add_gear(Scimitar())
-        self.add_gear(Shortbow())
-        self.add_gear(Leather())
-        self.add_gear(Shield())
 
     ##########################################################################
     def shortrepr(self):

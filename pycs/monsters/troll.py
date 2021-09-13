@@ -31,10 +31,10 @@ class Troll(Monster):
                 "wis": 9,
                 "cha": 7,
                 "prof_bonus": 3,
+                "actions": [TrollMultiAttack()],
             }
         )
         super().__init__(**kwargs)
-        self.add_action(TrollMultiAttack())
 
     ##########################################################################
     def hook_start_turn(self):
