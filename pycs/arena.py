@@ -72,6 +72,7 @@ class Arena(AStar):
     ##############################################################################
     def add_combatant(self, comb, coords=None) -> None:
         """Add a combatant"""
+        comb.arena = self
         self.combatants.append(comb)
         if coords is None:
             while True:
