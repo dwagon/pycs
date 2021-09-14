@@ -19,8 +19,7 @@ from pycs.spells import LesserRestoration
 class Ranger(Character):
     """Ranger class"""
 
-    def __init__(self, level=1, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         self.spell_slots = {}
         kwargs.update(
             {
@@ -42,6 +41,7 @@ class Ranger(Character):
                 },
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 11
         if level >= 2:

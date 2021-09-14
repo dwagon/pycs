@@ -4,12 +4,13 @@
 
 
 import unittest
-from unittest.mock import Mock, patch, call
+from unittest.mock import patch, call
+from pycs.action import Action
+from pycs.arena import Arena
+from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
-from pycs.constant import DamageType
 from pycs.creature import Creature
-from pycs.action import Action
 from pycs.effect import Effect
 from pycs.equipment import Equipment
 
@@ -23,7 +24,7 @@ class TestAction(unittest.TestCase):
     ########################################################################
     def setUp(self):
         """Set up test fixtures, if any."""
-        self.arena = Mock(max_x=21, max_y=21)
+        self.arena = Arena(max_x=21, max_y=21)
         kwargs = {
             "str": 6,
             "int": 7,
@@ -37,7 +38,8 @@ class TestAction(unittest.TestCase):
             "type": MonsterType.UNDEAD,
             "spellcast_bonus_stat": Stat.WIS,
         }
-        self.creat = Creature(self.arena, **kwargs)
+        self.alpha = Creature(**kwargs)
+        self.arena.add_combatant(self.alpha)
         kwargs = {
             "str": 6,
             "int": 7,
@@ -48,7 +50,8 @@ class TestAction(unittest.TestCase):
             "side": "b",
             "hp": 10,
         }
-        self.source = Creature(self.arena, **kwargs)
+        self.beta = Creature(**kwargs)
+        self.arena.add_combatant(self.beta)
 
     ########################################################################
     def tearDown(self):
@@ -58,7 +61,7 @@ class TestAction(unittest.TestCase):
     def test_check_criticals(self):
         """Test check_criticals"""
         act = DummyAction()
-        self.source.add_action(act)
+        self.beta.add_action(act)
         self.assertEqual(act.check_criticals(10), (False, False))
         self.assertEqual(act.check_criticals(1), (False, True))
         self.assertEqual(act.check_criticals(20), (True, False))
@@ -67,10 +70,10 @@ class TestAction(unittest.TestCase):
     def test_roll_to_hit(self):
         """test roll_to_hit()"""
         act = DummyAction()
-        self.source.add_action(act)
+        self.beta.add_action(act)
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 18
-            to_hit, crit_hit, crit_miss = act.roll_to_hit(self.creat)
+            to_hit, crit_hit, crit_miss = act.roll_to_hit(self.alpha)
         self.assertEqual(to_hit, 18 + 5)
         self.assertFalse(crit_hit)
         self.assertFalse(crit_miss)
@@ -78,10 +81,10 @@ class TestAction(unittest.TestCase):
     ########################################################################
     def test_calculate_to_hit(self):
         """Test calculate_to_hit()"""
-        self.source.add_effect(DummyEffect())
+        self.beta.add_effect(DummyEffect())
         act = DummyAction()
-        self.source.add_action(act)
-        to_hit, msg = act.calculate_to_hit("msg_0", 10, self.creat)
+        self.beta.add_action(act)
+        to_hit, msg = act.calculate_to_hit("msg_0", 10, self.alpha)
         self.assertEqual(to_hit, 10 + 5 + 3)
         self.assertEqual(msg, "Creature rolled 10msg_0 +5 (+3 from Dummy Effect)")
 
@@ -89,19 +92,19 @@ class TestAction(unittest.TestCase):
     def test_buff_attack_damage(self):
         """Test buff_attack_damage()"""
         act = DummyAction()
-        self.source.add_action(act)
+        self.beta.add_action(act)
         with patch.object(Creature, "hit") as mock:
-            self.source.add_effect(DummyEffect())
-            self.source.add_action(act)
-            self.creat.add_effect(DummyEffect())
-            act.buff_attack_damage(self.creat)
+            self.beta.add_effect(DummyEffect())
+            self.beta.add_action(act)
+            self.alpha.add_effect(DummyEffect())
+            act.buff_attack_damage(self.alpha)
 
             self.assertEqual(
                 mock.call_args_list[0],
                 call(
                     2,
                     DamageType.FIRE,
-                    self.source,
+                    self.beta,
                     critical=False,
                     atkname="Dummy Effect",
                 ),
@@ -111,7 +114,7 @@ class TestAction(unittest.TestCase):
                 call(
                     4,
                     DamageType.ACID,
-                    self.source,
+                    self.beta,
                     critical=False,
                     atkname="Dummy Effect",
                 ),

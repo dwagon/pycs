@@ -15,8 +15,7 @@ from pycs.effect import Effect
 class Fighter(Character):
     """Fighter class"""
 
-    def __init__(self, level=1, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         self.second_wind = 1
         self.action_surge = 1
         kwargs.update(
@@ -32,6 +31,7 @@ class Fighter(Character):
                 "effects": [DuelingFightingStyle()],
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 12
             # Fighting Style: Dueling

@@ -23,8 +23,7 @@ class Paladin(Character):
     """Paladin class"""
 
     ########################################################################
-    def __init__(self, level, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         self.channel_divinity = 0
         self.lay_on_hands = 0
         kwargs.update(
@@ -49,6 +48,7 @@ class Paladin(Character):
                 # "immunity": DISEASE
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 14
             self.spell_slots = {}

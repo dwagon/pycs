@@ -5,6 +5,7 @@ from pycs.attack import RangedAttack
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
+from pycs.util import check_args
 
 
 ##############################################################################
@@ -16,6 +17,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         self.name = name
         self.owner = None  # Set by add_gear()
         self.ammo = kwargs.get("ammo")
@@ -24,6 +26,11 @@ class Equipment:  # pylint: disable=too-few-public-methods
     ##########################################################################
     def __repr__(self):
         return f"{self.name}"
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return {"ammo"}
 
 
 ##############################################################################
@@ -35,9 +42,15 @@ class Weapon(Equipment):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         self.magic_bonus = kwargs.get("magic_bonus", 0)
         self.side_effect = kwargs.get("side_effect")
         super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {"magic_bonus", "side_effect"}
 
     ##########################################################################
     def hook_attack_to_hit(self, target):  # pylint: disable=unused-argument
@@ -59,6 +72,7 @@ class MeleeWeapon(Weapon):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.actions = [
             MeleeAttack(
@@ -72,6 +86,18 @@ class MeleeWeapon(Weapon):
             )
         ]
 
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {
+            "dmg",
+            "dmg_type",
+            "magic_bonus",
+            "reach",
+            "side_effect",
+            "use_stat",
+        }
+
 
 ##############################################################################
 ##############################################################################
@@ -82,6 +108,7 @@ class RangedWeapon(Weapon):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.actions = [
             RangedAttack(
@@ -91,10 +118,24 @@ class RangedWeapon(Weapon):
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
                 l_range=kwargs.get("l_range"),
+                side_effect=kwargs.get("side_effect"),
                 s_range=kwargs.get("s_range"),
                 use_stat=kwargs.get("use_stat", Stat.DEX),
             )
         ]
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {
+            "magic_bonus",
+            "dmg",
+            "dmg_type",
+            "l_range",
+            "s_range",
+            "side_effect",
+            "use_stat",
+        }
 
 
 ##############################################################################
@@ -106,12 +147,24 @@ class Armour(Equipment):  # pylint: disable=too-few-public-methods
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         self.ac = kwargs.get("ac", 0)  # pylint: disable=invalid-name
         self.ac_bonus = kwargs.get("ac_bonus", 0)
         self.dex_bonus = kwargs.get("dex_bonus", False)
         self.max_dex_bonus = kwargs.get("max_dex_bonus", 999)
         self.magic_bonus = kwargs.get("magic_bonus", 0)
         super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {
+            "ac",
+            "magic_bonus",
+            "ac_bonus",
+            "dex_bonus",
+            "max_dex_bonus",
+        }
 
 
 ##############################################################################
@@ -123,6 +176,7 @@ class Potion(Equipment):
     ##########################################################################
     def __init__(self, name, **kwargs):  # pylint: disable=useless-super-delegation
         """init"""
+        check_args(self.valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.act = DrinkPotion(f"Drink {name}")
         self.act.heuristic = kwargs.get("heuristic", self.heuristic)
@@ -130,6 +184,14 @@ class Potion(Equipment):
         self.act.category = ActionCategory.BONUS
         self.act.ammo = self.ammo
         self.actions = [self.act]
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {
+            "heuristic",
+            "perform_action",
+        }
 
     ##########################################################################
     def perform_action(self):
@@ -164,6 +226,13 @@ class HealingPotion(Potion):
     def heuristic(self):
         """Should we drink the potion"""
         return self.owner.max_hp - self.owner.hp
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super().valid_args() | {
+            "curing",
+        }
 
 
 ##############################################################################

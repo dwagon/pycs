@@ -79,11 +79,10 @@ class TestLucky(unittest.TestCase):
             "cha": 15,
             "hp": 30,
             "ac": 10,
-            "race": Halfling,
             "name": "Hobbit",
             "side": "a",
         }
-        self.hobbit = Creature(None, **kwargs)
+        self.hobbit = Creature(**kwargs)
         self.hobbit.add_effect(Lucky())
 
     ########################################################################
@@ -119,11 +118,10 @@ class TestBrave(unittest.TestCase):
             "cha": 15,
             "hp": 30,
             "ac": 10,
-            "race": Halfling,
             "name": "Hobbit",
             "side": "a",
         }
-        self.hobbit = Creature(None, **kwargs)
+        self.hobbit = Creature(**kwargs)
         self.hobbit.add_effect(Brave())
 
     ########################################################################

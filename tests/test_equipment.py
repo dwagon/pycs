@@ -37,7 +37,7 @@ class TestEquipment(unittest.TestCase):
             "type": MonsterType.UNDEAD,
             "spellcast_bonus_stat": Stat.WIS,
         }
-        self.creat = Creature(self.arena, **kwargs)
+        self.creat = Creature(**kwargs)
 
     ########################################################################
     def tearDown(self):

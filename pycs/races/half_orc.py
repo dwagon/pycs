@@ -62,11 +62,10 @@ class TestRelentlessEndurance(unittest.TestCase):
             "hp": 30,
             "ac": 10,
             "spellcast_bonus_stat": Stat.WIS,
-            "race": HalfOrc,
             "name": "Half Orc",
             "side": "a",
         }
-        self.orc = Creature(None, **kwargs)
+        self.orc = Creature(**kwargs)
         self.orc.add_effect(RelentlessEndurance())
 
     ########################################################################

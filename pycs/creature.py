@@ -18,6 +18,7 @@ from pycs.constant import Stat
 from pycs.constant import Statistics
 from pycs.equipment import Armour
 from pycs.spell import SpellAction
+from pycs.util import check_args
 
 
 ##############################################################################
@@ -26,9 +27,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     """Parent class for all creatures - monsters and characters"""
 
     ##########################################################################
-    def __init__(self, arena, **kwargs):
-        self.arena = arena
-        self.vulnerable = kwargs.get("vulnerable", [])
+    def __init__(self, **kwargs):
+        check_args(self.valid_args(), self.__class__.__name__, kwargs)
+        self.arena = None  # Set by adding to arena
         self.name = kwargs.get("name", self.__class__.__name__)
         self._ac = kwargs.get("ac", None)
         self.speed = int(kwargs.get("speed", 30) / 5)
@@ -88,6 +89,38 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.gear = []
         for gear in kwargs.get("gear", []):
             self.add_gear(gear)
+
+    ##########################################################################
+    def valid_args(self):
+        """What is valid in this class for kwargs"""
+        return {
+            "name",
+            "ac",
+            "speed",
+            "type",
+            "size",
+            "critical",
+            "prof_bonus",
+            "side",
+            "str",
+            "int",
+            "dex",
+            "wis",
+            "con",
+            "cha",
+            "stat_prof",
+            "spellcast_bonus_stat",
+            "action_preference",
+            "attacks_per_action",
+            "vulnerable",
+            "resistant",
+            "immunity",
+            "cond_immunity",
+            "hp",
+            "actions",
+            "effects",
+            "gear",
+        }
 
     ##########################################################################
     @property

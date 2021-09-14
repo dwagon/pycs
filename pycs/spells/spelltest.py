@@ -28,16 +28,16 @@ class SpellTest(unittest.TestCase):
             "ac": 10,
             "spellcast_bonus_stat": Stat.WIS,
         }
-        self.caster = Creature(self.arena, name="caster", side="a", **kwargs)
+        self.caster = Creature(name="caster", side="a", **kwargs)
         self.arena.add_combatant(self.caster)
         self.caster.spell_available = Mock(return_value=True)
         self.caster.cast = Mock(return_value=True)
 
-        self.friend = Creature(self.arena, name="friend", side="a", **kwargs)
+        self.friend = Creature(name="friend", side="a", **kwargs)
         self.arena.add_combatant(self.friend)
         self.friend.add_gear(Longsword())
 
-        self.enemy = Creature(self.arena, name="enemy", side="b", **kwargs)
+        self.enemy = Creature(name="enemy", side="b", **kwargs)
         self.arena.add_combatant(self.enemy)
         self.enemy.add_gear(Longsword())
 
