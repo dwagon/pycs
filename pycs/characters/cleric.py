@@ -30,8 +30,7 @@ class Cleric(Character):
     """Cleric class"""
 
     ##########################################################################
-    def __init__(self, level=1, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         kwargs.update(
             {
                 "str": 14,
@@ -61,6 +60,7 @@ class Cleric(Character):
                 ],
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10

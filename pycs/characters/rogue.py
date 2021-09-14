@@ -13,8 +13,7 @@ from pycs.effect import Effect
 class Rogue(Character):
     """Rogue class"""
 
-    def __init__(self, level=1, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         kwargs.update(
             {
                 "str": 12,
@@ -29,6 +28,7 @@ class Rogue(Character):
                 "effects": [],
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 9
             self.sneak_attack_dmg = "1d6"

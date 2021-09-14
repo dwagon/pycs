@@ -21,8 +21,7 @@ from pycs.spells import Thunderclap
 class Warlock(Character):
     """Warlock class"""
 
-    def __init__(self, level, **kwargs):
-        self.level = level
+    def __init__(self, **kwargs):
         kwargs.update(
             {
                 "str": 8,
@@ -43,6 +42,7 @@ class Warlock(Character):
                 },
             }
         )
+        level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 10
             kwargs["actions"].append(Eldritch_Blast())
