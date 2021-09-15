@@ -1,11 +1,15 @@
-""" Ghoul Monster Class """
+"""https://www.dndbeyond.com/monsters/ghoul"""
+import unittest
+from unittest.mock import patch
 import colors
-from pycs.effect import Effect
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
-from pycs.constant import DamageType
 from pycs.constant import Condition
-from pycs.constant import Stat
+from pycs.constant import DamageType
 from pycs.constant import MonsterType
+from pycs.constant import Stat
+from pycs.creature import Creature
+from pycs.effect import Effect
 from pycs.monster import Monster
 
 
@@ -13,7 +17,7 @@ from pycs.monster import Monster
 ##############################################################################
 ##############################################################################
 class Ghoul(Monster):
-    """Ghoul - https://www.dndbeyond.com/monsters/ghoul"""
+    """Ghoul Monster Class"""
 
     ##########################################################################
     def __init__(self, **kwargs):
@@ -34,7 +38,7 @@ class Ghoul(Monster):
                     MeleeAttack(
                         "Bite",
                         reach=5,
-                        heuristic=self.ghoul_bite,
+                        heuristic=self.heuristic_ghoul_bite,
                         dmg=("2d6", 0),
                         dmg_type=DamageType.PIERCING,
                     ),
@@ -42,7 +46,7 @@ class Ghoul(Monster):
                         "Claw",
                         reach=5,
                         dmg=("2d4", 0),
-                        heuristic=self.ghoul_claw,
+                        heuristic=self.heuristic_ghoul_claw,
                         dmg_type=DamageType.SLASHING,
                         side_effect=self.se_ghoul_claws,
                     ),
@@ -52,24 +56,24 @@ class Ghoul(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def se_ghoul_claws(self, source, target, dmg):  # pylint: disable=unused-argument
+    def se_ghoul_claws(self, source, target, dmg):
         """Implement Side Effect of Ghoul Claws"""
         svth = target.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if not svth:
-            print(f"{target} got paralysed by {source}")
+            print(f"{target} got paralysed by {source} (+{dmg} dmg)")
             target.add_effect(GhoulClawEffect())
         else:
             print(f"{target} resisted Ghoul claws")
 
     ##########################################################################
-    def ghoul_bite(self, actor):  # pylint: disable=unused-argument
+    def heuristic_ghoul_bite(self):
         """When is Ghoul bite good"""
         if self.target.has_condition(Condition.PARALYZED):
             return 2
         return 1
 
     ##########################################################################
-    def ghoul_claw(self, actor):  # pylint: disable=unused-argument
+    def heuristic_ghoul_claw(self):
         """When is Ghoul claw good"""
         if not self.target.has_condition(Condition.PARALYZED):
             return 2
@@ -107,8 +111,48 @@ class GhoulClawEffect(Effect):
         svth = victim.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if svth:
             print(f"{victim} resisted Ghoul claws")
+            victim.remove_condition(Condition.PARALYZED)
             return True
         return False
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestGhoul(unittest.TestCase):
+    """Test Ghoul"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the crypt"""
+        self.arena = Arena()
+        self.beast = Ghoul(side="a")
+        self.arena.add_combatant(self.beast, coords=(1, 1))
+        self.victim = Monster(
+            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
+        )
+        self.arena.add_combatant(self.victim, coords=(1, 2))
+
+    ##########################################################################
+    def test_claws(self):
+        """Test claws"""
+        claws = self.beast.pick_attack_by_name("Claw")
+        self.beast.target = self.victim
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [20, 1]
+            claws.perform_action()
+            self.assertTrue(self.victim.has_effect("Ghoul Claws"))
+            self.assertTrue(self.victim.has_condition(Condition.PARALYZED))
+        # Keep the effect on a failed save
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 2
+            self.victim.end_turn()
+            self.assertTrue(self.victim.has_condition(Condition.PARALYZED))
+        # Remove the effect on a good save
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            self.victim.end_turn()
+            self.assertFalse(self.victim.has_condition(Condition.PARALYZED))
 
 
 # EOF
