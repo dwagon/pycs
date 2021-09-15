@@ -1,9 +1,14 @@
 """ Zombie Monster Class """
+import unittest
+from unittest.mock import patch, Mock
 import colors
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
+from pycs.constant import Condition
 from pycs.constant import DamageType
-from pycs.constant import Stat
 from pycs.constant import MonsterType
+from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.monster import Monster
 
 
@@ -58,6 +63,39 @@ class Zombie(Monster):
         if self.is_alive():
             return colors.red("Z", bg="green")
         return colors.green("Z", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestZombie(unittest.TestCase):
+    """Test Zombie"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the graveyard"""
+        self.arena = Arena()
+        self.beast = Zombie(side="a")
+        self.arena.add_combatant(self.beast)
+
+    ##########################################################################
+    def test_zombie_fortitude(self):
+        """Test being hit unconscious and recovering"""
+        self.beast.hp = 1
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            self.beast.hit(6, DamageType.PIERCING, Mock(), False, "DummyAttack")
+            self.assertEqual(self.beast.hp, 1)
+
+    ##########################################################################
+    def test_zombie_no_fort(self):
+        """Test being hit unconscious"""
+        self.beast.hp = 1
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            self.beast.hit(6, DamageType.RADIANT, Mock(), False, "DummyAttack")
+            self.assertEqual(self.beast.hp, 0)
+            self.assertTrue(self.beast.has_condition(Condition.UNCONSCIOUS))
 
 
 # EOF
