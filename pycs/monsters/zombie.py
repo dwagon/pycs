@@ -58,7 +58,7 @@ class Zombie(Monster):
         super().fallen_unconscious(dmg, dmg_type, critical)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.red("Z", bg="green")

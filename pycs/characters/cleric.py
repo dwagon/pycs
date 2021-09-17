@@ -114,7 +114,7 @@ class Cleric(Character):
         return True
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a cleric looks like in the arena"""
         if self.is_alive():
             return colors.blue("C", bg="green")

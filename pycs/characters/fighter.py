@@ -54,7 +54,7 @@ class Fighter(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("F", bg="green")

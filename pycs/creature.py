@@ -285,7 +285,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if dmg and self.concentration:
             svth = self.saving_throw(Stat.CON, max(10, int(dmg / 2)))
             if not svth:
-                print(f"{self} failed concentration save")
+                print(f"{self} failed concentration save on {self.concentration}")
                 self.remove_concentration()
 
         source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))

@@ -60,7 +60,7 @@ class Troll(Monster):
             self.heal("", 10)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("T")

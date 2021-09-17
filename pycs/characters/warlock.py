@@ -102,7 +102,7 @@ class Warlock(Character):
         self.spell_slots -= 1
 
     ########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a warlock looks like in the arena"""
         if self.is_alive():
             return colors.blue("W", bg="green")

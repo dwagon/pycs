@@ -81,7 +81,7 @@ class Ghast(Monster):
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each
         of its turns, ending the effect on itself on a success."""
-        self.target.add_effect(GhastClawEffect(cause=self))
+        target.add_effect(GhastClawEffect(cause=self))
 
     ##########################################################################
     def pick_best_attack(self):
@@ -91,7 +91,7 @@ class Ghast(Monster):
         return self.pick_attack_by_name("Claw")
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What it looks like on the arena"""
         if self.is_alive():
             return colors.yellow("G", style="bold")

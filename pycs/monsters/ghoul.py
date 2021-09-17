@@ -80,7 +80,7 @@ class Ghoul(Monster):
         return 1
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("G", style="bold")
