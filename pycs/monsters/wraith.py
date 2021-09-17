@@ -1,10 +1,14 @@
 """ Wraith Monster Class """
+import unittest
+from unittest.mock import patch
 import colors
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Condition
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.monster import Monster
 
 
@@ -76,11 +80,52 @@ class Wraith(Monster):
             target.max_hp = max(target.max_hp - dmg, 0)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a wraith looks like on the arena"""
         if self.is_alive():
             return colors.red("W")
         return colors.green("W", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestWraith(unittest.TestCase):
+    """Test Wraith"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the crypt"""
+        self.arena = Arena()
+        self.beast = Wraith(side="a")
+        self.arena.add_combatant(self.beast, coords=(1, 1))
+        self.victim = Monster(
+            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
+        )
+        self.arena.add_combatant(self.victim, coords=(1, 2))
+
+    ##########################################################################
+    def test_drain(self):
+        """Test life drain"""
+        lfdr = self.beast.pick_attack_by_name("Life Drain")
+        self.beast.target = self.victim
+
+        # Ensure we hit
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [19, 19]
+            lfdr.perform_action()
+            self.assertLess(self.victim.hp, 50)
+
+            # Victim saves
+            self.assertEqual(self.victim.max_hp, 50)
+
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [19, 1]
+            lfdr.perform_action()
+            self.assertLess(self.victim.hp, 50)
+
+            # Victim fails to save
+            self.assertLess(self.victim.max_hp, 50)
 
 
 # EOF

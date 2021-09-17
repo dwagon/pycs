@@ -61,7 +61,7 @@ class Barbarian(Character):
         print(f"|  Javelins: {javs.ammo}")
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("B", bg="green")

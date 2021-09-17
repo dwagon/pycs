@@ -119,7 +119,7 @@ class Paladin(Character):
         print(f"|  Spells: {self.spell_slots}")
 
     ########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What we look like in the arena"""
         if self.is_alive():
             return colors.blue("P", bg="green")

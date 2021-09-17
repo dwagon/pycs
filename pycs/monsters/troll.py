@@ -1,7 +1,10 @@
 """ Troll Monster Class """
+import unittest
 import colors
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
+from pycs.constant import Damage
 from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
@@ -57,7 +60,7 @@ class Troll(Monster):
             self.heal("", 10)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("T")
@@ -97,6 +100,35 @@ class TrollMultiAttack(Action):
         bite.do_attack()
         claw1.do_attack()
         claw2.do_attack()
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestTroll(unittest.TestCase):
+    """Test Troll"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the bridge"""
+        self.arena = Arena()
+        self.troll = Troll(side="a")
+        self.arena.add_combatant(self.troll)
+
+    ##########################################################################
+    def test_regen(self):
+        """Test the regeneration"""
+        self.troll.hp = 20
+        self.troll.start_turn()
+        self.assertEqual(self.troll.hp, 30)
+
+    ##########################################################################
+    def test_noregen(self):
+        """Test the regeneration with acid attak"""
+        self.troll.hp = 20
+        self.troll.damage_this_turn.append(Damage(1, DamageType.FIRE))
+        self.troll.start_turn()
+        self.assertEqual(self.troll.hp, 20)
 
 
 # EOF

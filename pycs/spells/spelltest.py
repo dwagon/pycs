@@ -1,4 +1,4 @@
-"""https://www.dndbeyond.com/spells/bless"""
+""" Parent Test for Spell """
 
 import unittest
 from unittest.mock import Mock

@@ -1,5 +1,7 @@
 """ https://www.dndbeyond.com/monsters/kobold"""
+import unittest
 import colors
+from pycs.arena import Arena
 from pycs.gear import Dagger
 from pycs.gear import Sling
 from pycs.effect import Effect
@@ -33,8 +35,8 @@ class Kobold(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
-        """What a goblin looks like on the arena"""
+    def shortrepr(self):  # pragma: no cover
+        """What a kobold looks like on the arena"""
         if self.is_alive():
             return colors.green("k")
         return colors.green("k", bg="red")
@@ -60,6 +62,33 @@ class PackTactics(Effect):
             if allies[0].distance(target) <= 1:
                 return True
         return False
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestKobold(unittest.TestCase):
+    """Test Kobold"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the lair"""
+        self.arena = Arena()
+        self.beast = Kobold(side="a")
+        self.arena.add_combatant(self.beast, coords=(5, 5))
+        self.victim = Monster(
+            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
+        )
+        self.arena.add_combatant(self.victim, coords=(1, 2))
+
+    ##########################################################################
+    def test_pack(self):
+        """Test pack tactics"""
+        sling = self.beast.pick_attack_by_name("Sling")
+        self.assertFalse(sling.has_advantage(self.victim, 3))
+        friend = Kobold(side="a")
+        self.arena.add_combatant(friend, coords=(1, 3))
+        self.assertTrue(sling.has_advantage(self.victim, 3))
 
 
 # EOF

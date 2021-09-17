@@ -51,7 +51,7 @@ class Rogue(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pragma: no cover
         """What a rogue looks like in the arena"""
         if self.is_alive():
             return colors.black("R", bg="green")
