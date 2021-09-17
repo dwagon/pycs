@@ -169,12 +169,13 @@ def combat_test():
     for i in range(9):
         arena.add_combatant(Skeleton(name=f"Skeleton{i}", side="Undead"))
     arena.add_combatant(Wraith(name="Wraith", side="Undead"))
-    arena.add_combatant(Zombie(name="Zombie", side="Undead"))
+    for i in range(9):
+        arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
 
     # Monsters
     arena.add_combatant(BarbedDevil(name="Barbed Devil", side="Monsters"))
     arena.add_combatant(GiantFrog(name="Giant Frog", side="Monsters"))
-    arena.add_combatant(VioletFungus(name="Violet", side="Monsters"))
+    arena.add_combatant(VioletFungus(name="Violet Fungus", side="Monsters"))
     arena.add_combatant(Troll(name="Troll", side="Monsters"))
     for i in range(4):
         arena.add_combatant(Orc(name=f"Orc{i}", side="Monsters"))
