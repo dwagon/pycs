@@ -10,6 +10,8 @@ from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
 from pycs.attack import MeleeAttack
+from pycs.attack import RangedAttack
+from pycs.gear import Scimitar
 from pycs.creature import DamageType
 from pycs.effect import Effect
 
@@ -70,6 +72,30 @@ class TestCreature(unittest.TestCase):
         """Spell cast details"""
         self.assertEqual(self.creat.spellcast_bonus_stat, Stat.WIS)
         self.assertEqual(self.creat.spellcast_save, 14)
+
+    ########################################################################
+    def test_pick_attack_by_name(self):
+        """Test pick_attack_by_name()"""
+        alpha = MeleeAttack("alpha")
+        beta = RangedAttack("beta")
+        self.creat.add_action(alpha)
+        self.creat.add_action(beta)
+        atk = self.creat.pick_attack_by_name("alpha")
+        self.assertEqual(atk, alpha)
+        atk2 = self.creat.pick_attack_by_name("beta")
+        self.assertEqual(atk2, beta)
+        atk3 = self.creat.pick_attack_by_name("gamma")
+        self.assertIsNone(atk3)
+
+    ########################################################################
+    def test_add_gear(self):
+        """Test add_gear()"""
+        self.assertEqual(self.creat.gear, [])
+        self.assertEqual(self.creat.actions, [])
+        self.creat.add_gear(Scimitar())
+        self.assertEqual(self.creat.gear[0].name, "Scimitar")
+        self.assertEqual(self.creat.gear[0].owner, self.creat)
+        self.assertEqual(self.creat.actions[0].name, "Scimitar")
 
     ########################################################################
     def test_ac(self):
