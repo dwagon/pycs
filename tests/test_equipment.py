@@ -8,6 +8,7 @@ from unittest.mock import Mock
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.gear import Dagger
 from pycs.gear import Javelin
 from pycs.gear import Leather
 from pycs.gear import Potion_Healing
@@ -52,6 +53,18 @@ class TestEquipment(unittest.TestCase):
         jav_action = self.creat.actions[0]
         self.assertEqual(jav_action.name, "Javelin")
         self.assertEqual(jav_action.ammo, 3)
+
+    ########################################################################
+    def test_finesse_weapon(self):
+        """Test weapons with finesse"""
+        self.creat.add_gear(Dagger())
+        att = self.creat.pick_attack_by_name("Dagger")
+        self.creat.stats[Stat.STR] = 9
+        self.creat.stats[Stat.DEX] = 19
+        self.assertEqual(att.use_stat, Stat.DEX)
+        self.creat.stats[Stat.STR] = 19
+        self.creat.stats[Stat.DEX] = 9
+        self.assertEqual(att.use_stat, Stat.STR)
 
     ########################################################################
     def test_potion(self):
