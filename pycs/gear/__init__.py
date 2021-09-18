@@ -13,7 +13,12 @@ from .longbow import Longbow
 from .longsword import Longsword
 from .mace import Mace
 from .plate import Plate
-from .potion_healing import PotionHealing, PotionGreaterHealing, PotionSuperiorHealing, PotionSupremeHealing
+from .potion_healing import (
+    PotionHealing,
+    PotionGreaterHealing,
+    PotionSuperiorHealing,
+    PotionSupremeHealing,
+)
 from .quarterstaff import Quarterstaff
 from .ringmail import Ringmail
 from .scale import Scale

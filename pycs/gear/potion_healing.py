@@ -44,4 +44,6 @@ class PotionSupremeHealing(HealingPotion):
     def __init__(self, **kwargs):
         kwargs["curing"] = ("10d4", 20)
         super().__init__("Potion of Supreme Healing", **kwargs)
+
+
 # EOF
