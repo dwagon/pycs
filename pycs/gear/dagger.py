@@ -12,6 +12,7 @@ class Dagger(MeleeWeapon):
     def __init__(self, **kwargs):
         kwargs["reach"] = 5
         kwargs["dmg"] = ("1d4", 0)
+        kwargs["finesse"] = True
         kwargs["dmg_type"] = DamageType.PIERCING
 
         super().__init__("Dagger", **kwargs)

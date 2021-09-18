@@ -55,7 +55,7 @@ class Wraith(Monster):
                 "actions": [
                     MeleeAttack(
                         "Life Drain",
-                        use_stat=Stat.DEX,
+                        finesse=True,
                         reach=5,
                         dmg=("4d8", 0),
                         dmg_type=DamageType.NECROTIC,

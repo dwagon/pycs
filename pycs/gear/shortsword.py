@@ -11,6 +11,7 @@ class Shortsword(MeleeWeapon):
 
     def __init__(self, **kwargs):
         kwargs["reach"] = 5
+        kwargs["finesse"] = True
         kwargs["dmg"] = ("1d6", 0)
         kwargs["dmg_type"] = DamageType.PIERCING
 
