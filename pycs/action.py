@@ -17,7 +17,6 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ########################################################################
     def __init__(self, name: str, **kwargs):
         self.name = name
-        self.use_stat = None
         self.available = True
         self.type = ActionType.UNKNOWN
         self.category = kwargs.get("category", ActionCategory.ACTION)
@@ -32,6 +31,18 @@ class Action:  # pylint: disable=too-many-instance-attributes
         self.gear = None  # Gear that induced the action (set when added)
         # Creature owning the action (set when added) or sometimes explicitly
         self.owner = kwargs.get("owner", None)
+        if not hasattr(self, "preferred_stat"):
+            self.preferred_stat = None
+
+    ########################################################################
+    @property
+    def use_stat(self):
+        """What stat to use"""
+        # Set from the equipment
+        if self.gear:
+            return self.gear.use_stat
+        # Default for attack type
+        return self.preferred_stat
 
     ########################################################################
     def modifier(self, attacker):  # pylint: disable=unused-argument

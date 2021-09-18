@@ -20,7 +20,6 @@ class Equipment:  # pylint: disable=too-few-public-methods
         check_args(self.valid_args(), name, kwargs)
         self.name = name
         self.owner = None  # Set by add_gear()
-        self.ammo = kwargs.get("ammo")
         self.actions = []
 
     ##########################################################################
@@ -30,7 +29,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
     ##########################################################################
     def valid_args(self):
         """What is valid in this class for kwargs"""
-        return {"ammo"}
+        return set()
 
 
 ##############################################################################
@@ -43,14 +42,15 @@ class Weapon(Equipment):
     def __init__(self, name, **kwargs):
         """init"""
         check_args(self.valid_args(), name, kwargs)
+        super().__init__(name, **kwargs)
         self.magic_bonus = kwargs.get("magic_bonus", 0)
         self.side_effect = kwargs.get("side_effect")
-        super().__init__(name, **kwargs)
+        self.actions = kwargs.get("actions", [])
 
     ##########################################################################
     def valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {"magic_bonus", "side_effect"}
+        return super().valid_args() | {"magic_bonus", "side_effect", "actions"}
 
     ##########################################################################
     def hook_attack_to_hit(self, target):  # pylint: disable=unused-argument
@@ -74,7 +74,8 @@ class MeleeWeapon(Weapon):
         """init"""
         check_args(self.valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
-        self.actions = [
+        self.finesse = kwargs.get("finesse", False)
+        self.actions.append(
             MeleeAttack(
                 name,
                 magic_bonus=kwargs.get("magic_bonus"),
@@ -82,9 +83,17 @@ class MeleeWeapon(Weapon):
                 dmg_type=kwargs.get("dmg_type"),
                 reach=kwargs.get("reach"),
                 side_effect=kwargs.get("side_effect"),
-                use_stat=kwargs.get("use_stat", Stat.STR),
             )
-        ]
+        )
+
+    ##########################################################################
+    @property
+    def use_stat(self):
+        """Stat to use for weapon"""
+        if self.finesse:
+            if self.owner.stats[Stat.STR] < self.owner.stats[Stat.DEX]:
+                return Stat.DEX
+        return Stat.STR
 
     ##########################################################################
     def valid_args(self):
@@ -92,10 +101,10 @@ class MeleeWeapon(Weapon):
         return super().valid_args() | {
             "dmg",
             "dmg_type",
+            "finesse",
             "magic_bonus",
             "reach",
             "side_effect",
-            "use_stat",
         }
 
 
@@ -110,32 +119,37 @@ class RangedWeapon(Weapon):
         """init"""
         check_args(self.valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
-        self.actions = [
+        self.actions.append(
             RangedAttack(
                 name,
                 magic_bonus=kwargs.get("magic_bonus"),
-                ammo=self.ammo,
+                ammo=kwargs.get("ammo"),
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
                 l_range=kwargs.get("l_range"),
                 side_effect=kwargs.get("side_effect"),
                 s_range=kwargs.get("s_range"),
-                use_stat=kwargs.get("use_stat", Stat.DEX),
             )
-        ]
+        )
 
     ##########################################################################
     def valid_args(self):
         """What is valid in this class for kwargs"""
         return super().valid_args() | {
+            "ammo",
             "magic_bonus",
             "dmg",
             "dmg_type",
             "l_range",
             "s_range",
             "side_effect",
-            "use_stat",
         }
+
+    ##########################################################################
+    @property
+    def use_stat(self):
+        """Stat to use for weapon"""
+        return Stat.DEX
 
 
 ##############################################################################
@@ -148,12 +162,12 @@ class Armour(Equipment):  # pylint: disable=too-few-public-methods
     def __init__(self, name, **kwargs):
         """init"""
         check_args(self.valid_args(), name, kwargs)
+        super().__init__(name, **kwargs)
         self.ac = kwargs.get("ac", 0)  # pylint: disable=invalid-name
         self.ac_bonus = kwargs.get("ac_bonus", 0)
         self.dex_bonus = kwargs.get("dex_bonus", False)
         self.max_dex_bonus = kwargs.get("max_dex_bonus", 999)
         self.magic_bonus = kwargs.get("magic_bonus", 0)
-        super().__init__(name, **kwargs)
 
     ##########################################################################
     def valid_args(self):
@@ -182,16 +196,13 @@ class Potion(Equipment):
         self.act.heuristic = kwargs.get("heuristic", self.heuristic)
         self.act.perform_action = kwargs.get("perform_action", self.perform_action)
         self.act.category = ActionCategory.BONUS
-        self.act.ammo = self.ammo
+        self.act.ammo = kwargs.get("ammo")
         self.actions = [self.act]
 
     ##########################################################################
     def valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {
-            "heuristic",
-            "perform_action",
-        }
+        return super().valid_args() | {"heuristic", "perform_action", "ammo"}
 
     ##########################################################################
     def perform_action(self):
