@@ -16,9 +16,9 @@ class BarbedDevil(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "13d8+52"
         kwargs.update(
             {
+                "hitdice": "13d8+52",
                 "ac": 15,
                 "speed": 30,
                 "type": MonsterType.FIEND,

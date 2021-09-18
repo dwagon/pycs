@@ -21,9 +21,9 @@ class Ghoul(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "5d8"
         kwargs.update(
             {
+                "hitdice": "5d8",
                 "ac": 12,
                 "speed": 30,
                 "type": MonsterType.UNDEAD,

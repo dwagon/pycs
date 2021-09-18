@@ -13,9 +13,9 @@ class Orc(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d8+6"
         kwargs.update(
             {
+                "hitdice": "2d8+6",
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 16,

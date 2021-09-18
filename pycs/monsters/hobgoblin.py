@@ -22,9 +22,9 @@ class Hobgoblin(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d8+2"
         kwargs.update(
             {
+                "hitdice": "2d8+2",
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 13,

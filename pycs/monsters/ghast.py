@@ -21,9 +21,9 @@ class Ghast(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "8d8"
         kwargs.update(
             {
+                "hitdice": "8d8",
                 "ac": 13,
                 "speed": 30,
                 "type": MonsterType.UNDEAD,

@@ -14,9 +14,9 @@ class Goblin(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d6"
         kwargs.update(
             {
+                "hitdice": "2d6",
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 8,

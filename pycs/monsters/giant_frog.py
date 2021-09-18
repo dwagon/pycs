@@ -16,9 +16,9 @@ class GiantFrog(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "4d8"
         kwargs.update(
             {
+                "hitdice": "4d8",
                 "ac": 11,
                 "speed": 30,
                 "type": MonsterType.BEAST,

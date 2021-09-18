@@ -18,9 +18,9 @@ class Zombie(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "3d8+9"
         kwargs.update(
             {
+                "hitdice": "3d8+9",
                 "ac": 8,
                 "speed": 20,
                 "type": MonsterType.UNDEAD,

@@ -19,10 +19,10 @@ class Troll(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "8d10+40"
         self._regen = 5
         kwargs.update(
             {
+                "hitdice": "8d10+40",
                 "ac": 15,
                 "size": MonsterSize.LARGE,
                 "speed": 30,

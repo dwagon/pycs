@@ -19,11 +19,11 @@ class AdultGoldDragon(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "19d12+133"
         self.immune_fp = set()
         self.breath = True
         kwargs.update(
             {
+                "hitdice": "19d12+133",
                 "prof_bonus": 6,
                 "ac": 19,
                 "stat_prof": [Stat.DEX, Stat.CON, Stat.WIS, Stat.CHA],

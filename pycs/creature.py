@@ -58,10 +58,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.immunity = kwargs.get("immunity", [])
         self.cond_immunity = kwargs.get("cond_immunity", [])
         self.state = "OK"
-        if "hp" in kwargs:
-            self.hp = kwargs["hp"]  # pylint: disable=invalid-name
-        else:
-            self.hp = self.roll_hp()
+        self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         self.max_hp = self.hp
         self.has_grappled = None
 
@@ -369,13 +366,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.reactions.append(action)
         else:
             self.actions.append(action)
-
-    ##########################################################################
-    def roll_hp(self) -> int:
-        """Roll the initial hitpoints"""
-        if not hasattr(self, "hitdice"):
-            self.hitdice = ""
-        return max(1, int(dice.roll(self.hitdice)))
 
     ##########################################################################
     def is_alive(self) -> bool:

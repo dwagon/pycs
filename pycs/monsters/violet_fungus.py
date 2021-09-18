@@ -13,9 +13,9 @@ class VioletFungus(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "4d8"
         kwargs.update(
             {
+                "hitdice": "4d8",
                 "ac": 5,
                 "speed": 5,
                 "type": MonsterType.PLANT,

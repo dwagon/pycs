@@ -163,11 +163,12 @@ def combat_test():
 
     # Dragon Army
     arena.add_combatant(AdultGoldDragon(name="Adult Gold Dragon", side="Dragon"))
-    for i in range(3):
+    for i in range(9):
         arena.add_combatant(Kobold(name=f"Kobold{i}", side="Dragon"))
 
     # Undead Army
-    arena.add_combatant(Ghast(name="Ghast", side="Undead"))
+    for i in range(9):
+        arena.add_combatant(Ghast(name=f"Ghast{i}", side="Undead"))
     arena.add_combatant(Ghoul(name="Ghoul", side="Undead"))
     for i in range(9):
         arena.add_combatant(Skeleton(name=f"Skeleton{i}", side="Undead"))
@@ -296,6 +297,7 @@ def combat_test():
         arena.turn()
         turn += 1
         assert turn < 100
+    print(f"{turn=}")
     statistics_report(arena)
 
     return arena.winning_side()

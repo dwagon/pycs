@@ -13,9 +13,9 @@ class Skeleton(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d8+4"
         kwargs.update(
             {
+                "hitdice": "2d8+4",
                 "ac": 13,
                 "speed": 30,
                 "type": MonsterType.UNDEAD,
