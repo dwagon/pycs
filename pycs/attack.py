@@ -12,8 +12,7 @@ class Attack(Action):
     """generic attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
-        self.use_stat = None
+    def __init__(self, name, **kwargs):  # pylint: disable=useless-super-delegation
         super().__init__(name, **kwargs)
 
     ########################################################################
@@ -63,7 +62,7 @@ class MeleeAttack(Attack):
     def __init__(self, name, **kwargs):
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
-        self.use_stat = kwargs.get("use_stat", Stat.STR)
+        self.preferred_stat = Stat.STR
         self.type = ActionType.MELEE
 
     ########################################################################
@@ -105,7 +104,7 @@ class RangedAttack(Attack):
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
         self.l_range = int(kwargs.get("l_range", 999) / 5)
-        self.use_stat = kwargs.get("use_stat", Stat.DEX)
+        self.preferred_stat = Stat.DEX
         self.type = ActionType.RANGED
 
     ########################################################################

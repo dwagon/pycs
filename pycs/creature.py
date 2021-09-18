@@ -259,6 +259,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for atk in self.actions:
             if atk.name == name:
                 return atk
+        print(f"{self}: pick_attack_by_name({name=}) - none found")
         return None
 
     ##########################################################################
