@@ -18,9 +18,9 @@ class Wraith(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "9d8+27"
         kwargs.update(
             {
+                "hitdice": "9d8+27",
                 "ac": 13,
                 "speed": 60,
                 "type": MonsterType.UNDEAD,

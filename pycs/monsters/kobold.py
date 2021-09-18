@@ -17,9 +17,9 @@ class Kobold(Monster):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        self.hitdice = "2d6-2"
         kwargs.update(
             {
+                "hitdice": "2d6-2",
                 "speed": 30,
                 "type": MonsterType.HUMANOID,
                 "str": 7,
