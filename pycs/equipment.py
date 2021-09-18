@@ -1,4 +1,5 @@
 """ All sorts of equipment """
+import dice
 from pycs.action import Action
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
@@ -236,7 +237,8 @@ class HealingPotion(Potion):
     ##########################################################################
     def heuristic(self):
         """Should we drink the potion"""
-        return self.owner.max_hp - self.owner.hp
+        maxcure = int(dice.roll_max(self.curing[0])) + self.curing[1]
+        return min(self.owner.max_hp - self.owner.hp, maxcure)
 
     ##########################################################################
     def valid_args(self):
