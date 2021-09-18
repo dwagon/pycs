@@ -13,7 +13,7 @@ from .longbow import Longbow
 from .longsword import Longsword
 from .mace import Mace
 from .plate import Plate
-from .potion_healing import Potion_Healing
+from .potion_healing import PotionHealing, PotionGreaterHealing, PotionSuperiorHealing, PotionSupremeHealing
 from .quarterstaff import Quarterstaff
 from .ringmail import Ringmail
 from .scale import Scale
@@ -40,7 +40,10 @@ __all__ = [
     "Longsword",
     "Mace",
     "Plate",
-    "Potion_Healing",
+    "PotionHealing",
+    "PotionGreaterHealing",
+    "PotionSuperiorHealing",
+    "PotionSupremeHealing",
     "Quarterstaff",
     "Ringmail",
     "Scale",

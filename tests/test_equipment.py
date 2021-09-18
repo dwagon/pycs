@@ -11,7 +11,7 @@ from pycs.creature import Creature
 from pycs.gear import Dagger
 from pycs.gear import Javelin
 from pycs.gear import Leather
-from pycs.gear import Potion_Healing
+from pycs.gear import PotionHealing
 from pycs.gear import Shield
 from pycs.gear import Splint
 
@@ -70,7 +70,7 @@ class TestEquipment(unittest.TestCase):
     def test_potion(self):
         """Test adding potion"""
         self.assertEqual(len(self.creat.bonus_actions), 0)
-        self.creat.add_gear(Potion_Healing(ammo=1))
+        self.creat.add_gear(PotionHealing(ammo=1))
         self.assertEqual(len(self.creat.bonus_actions), 1)
         hp_action = self.creat.bonus_actions[0]
         self.assertEqual(hp_action.name, "Drink Potion of Healing")

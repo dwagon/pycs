@@ -46,7 +46,10 @@ from pycs.gear import Longbow
 from pycs.gear import Longsword
 from pycs.gear import Mace
 from pycs.gear import Plate
-from pycs.gear import Potion_Healing
+from pycs.gear import PotionHealing
+from pycs.gear import PotionGreaterHealing
+from pycs.gear import PotionSuperiorHealing
+from pycs.gear import PotionSupremeHealing
 from pycs.gear import Quarterstaff
 from pycs.gear import Shield
 from pycs.gear import Shortsword
@@ -195,7 +198,7 @@ def combat_test():
                 Greataxe(magic_bonus=1),
                 Javelin(ammo=2),
                 Hide(magic_bonus=2),
-                Potion_Healing(ammo=1),
+                PotionGreaterHealing(ammo=1),
             ],
         )
     )
@@ -207,7 +210,7 @@ def combat_test():
             gear=[
                 Shield(magic_bonus=1),
                 Chainmail(magic_bonus=1),
-                Potion_Healing(ammo=1),
+                PotionHealing(ammo=1),
                 Mace(magic_bonus=1, side_effect=flaming_weapon),
                 Light_Crossbow(),
             ],
@@ -221,7 +224,7 @@ def combat_test():
             race=Human,
             gear=[
                 Longsword(magic_bonus=2),
-                Potion_Healing(ammo=1),
+                PotionSuperiorHealing(ammo=1),
                 Plate(magic_bonus=1),
                 Shield(magic_bonus=1),
             ],
@@ -236,7 +239,7 @@ def combat_test():
             gear=[
                 Chainmail(magic_bonus=1),
                 Shield(magic_bonus=1),
-                Potion_Healing(ammo=1),
+                PotionHealing(ammo=1),
                 Longsword(magic_bonus=2, side_effect=flaming_weapon),
                 Javelin(ammo=3),
             ],
@@ -250,7 +253,7 @@ def combat_test():
             race=Halfling,
             gear=[
                 Shortsword(),
-                Potion_Healing(ammo=1),
+                PotionHealing(ammo=1),
                 Longbow(magic_bonus=3),
                 Leather(),
             ],
@@ -264,7 +267,7 @@ def combat_test():
             race=Elf,
             gear=[
                 Shortsword(magic_bonus=1),
-                Potion_Healing(ammo=2),
+                PotionSupremeHealing(ammo=2),
                 Longbow(),
                 Leather(magic_bonus=1),
             ],
@@ -280,7 +283,7 @@ def combat_test():
                 Studded(magic_bonus=1),
                 Light_Crossbow(),
                 Quarterstaff(),
-                Potion_Healing(ammo=2),
+                PotionHealing(ammo=2),
             ],
         )
     )
