@@ -28,7 +28,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def __init__(self, **kwargs):
-        check_args(self.valid_args(), self.__class__.__name__, kwargs)
+        check_args(self._valid_args(), self.__class__.__name__, kwargs)
         self.arena = None  # Set by adding to arena
         self.name = kwargs.get("name", self.__class__.__name__)
         self._ac = kwargs.get("ac", None)
@@ -88,7 +88,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.add_gear(gear)
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
         return {
             "name",
@@ -375,9 +375,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def shortrepr(self):
         """What it looks like on the arena"""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} needs to implement shortrepr()"
-        )
+        return "?"
 
     ##########################################################################
     def fallen_unconscious(

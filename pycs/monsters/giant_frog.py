@@ -72,7 +72,7 @@ class GiantFrog(Monster):
             print(f"| Swallowed: {self._swallowed}")
 
     ##########################################################################
-    def frog_bite(self, actor):  # pylint: disable=unused-argument
+    def frog_bite(self):
         """When is it good to bite"""
         if self.has_grappled:
             return 0

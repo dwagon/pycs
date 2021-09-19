@@ -1,7 +1,8 @@
 """https://www.dndbeyond.com/spells/spiritual-weapon"""
 
-from pycs.spell import SpellAction
+from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.spell import SpellAction
 
 
 ##############################################################################
@@ -14,7 +15,7 @@ class Spiritual_Weapon(SpellAction):
         name = "Spiritual Weapon"
         kwargs.update(
             {
-                "casting": "bonus",
+                "category": ActionCategory.BONUS,
                 "reach": 60,
                 "level": 1,
                 "type": SpellType.BUFF,

@@ -3,6 +3,7 @@ from collections import namedtuple
 import dice
 from pycs.action import Action
 from pycs.constant import SpellType
+from pycs.util import check_args
 
 
 ##############################################################################
@@ -13,6 +14,7 @@ class SpellAction(Action):
 
     ########################################################################
     def __init__(self, name, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.reach = kwargs.get("reach", 0) / 5
         self.type = kwargs.get("type")
@@ -21,6 +23,17 @@ class SpellAction(Action):
         self.concentration = kwargs.get("concentration")
         self.caster = None
         self.target = None
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super()._valid_args() | {
+            "reach",
+            "type",
+            "cure_hp",
+            "level",
+            "concentration",
+        }
 
     ########################################################################
     def failed_save(self, source, target, dmg):
@@ -113,13 +126,17 @@ class AttackSpell(SpellAction):
 
     ########################################################################
     def __init__(self, name, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
-        self.reach = int(kwargs.get("reach", 5) / 5)
-        self.level = kwargs.get("level", 99)
         self.style = kwargs.get("style", SpellType.TOHIT)
         self.type = kwargs.get("type")
         self.save_stat = kwargs.get("save_stat")
         self.save_dc = kwargs.get("save_dc")
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super()._valid_args() | {"style", "type", "save_stat", "save_dc"}
 
     ########################################################################
     def stat_dmg_bonus(self, attacker):

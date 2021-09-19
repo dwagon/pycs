@@ -1,7 +1,8 @@
 """https://www.dndbeyond.com/spells/sanctuary"""
 
-from pycs.spell import SpellAction
+from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.spell import SpellAction
 
 
 ##############################################################################
@@ -12,10 +13,9 @@ class Sanctuary(SpellAction):
         name = "Sanctuary"
         kwargs.update(
             {
-                "casting": "bonus",
+                "category": ActionCategory.BONUS,
                 "reach": 30,
                 "level": 1,
-                "style": "save",
                 "type": SpellType.BUFF,
             }
         )

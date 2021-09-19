@@ -10,7 +10,7 @@ class Character(Creature):
     """Base character class"""
 
     def __init__(self, **kwargs):
-        check_args(self.valid_args(), self.__class__.__name__, kwargs)
+        check_args(self._valid_args(), self.__class__.__name__, kwargs)
         self.level = kwargs.get("level", 1)
         self.race = kwargs.get("race", Human)()
         self.race.owner = self
@@ -20,9 +20,9 @@ class Character(Creature):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {"level", "race"}
+        return super()._valid_args() | {"level", "race"}
 
     ##########################################################################
     def shortrepr(self):
