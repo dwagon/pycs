@@ -5,7 +5,7 @@ from pycs.spell import pick_heal_target
 from pycs.spell import healing_heuristic
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
@@ -32,7 +32,7 @@ class HealingWord(SpellAction):
     ########################################################################
     def cast(self):
         """Do the spell"""
-        self.owner.target.heal("1d4", self.modifier(self.owner))
+        self.owner.target.heal("1d4", self.spell_modifier(self.owner))
         return True
 
     ########################################################################

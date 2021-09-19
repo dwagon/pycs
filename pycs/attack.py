@@ -44,20 +44,24 @@ class Attack(Action):
         return response
 
     ########################################################################
-    def modifier(self, attacker) -> int:
-        """The modifier to hit"""
-        raise NotImplementedError(f"Attack.{__class__.__name__} needs modifier()")
+    def atk_modifier(self, attacker):
+        """The ranged attack modifier"""
+        if self.attack_modifier:
+            return self.attack_modifier
+        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):
-        """The damage bonus modifier"""
+    def dmg_modifier(self, attacker):
+        """The ranged damage modifier"""
         if self.damage_modifier:
             return self.damage_modifier
-        bonus = 0
-        if self.gear:
-            bonus += self.gear.magic_bonus
-        bonus += attacker.stat_bonus(self.use_stat)
-        return bonus
+        return attacker.stat_bonus(self.use_stat)
+
+    ########################################################################
+    def heuristic(self):
+        raise NotImplementedError(
+            f"{self.__class__.__name__} hasn't implemented heuristic()"
+        )
 
 
 ##############################################################################
@@ -83,13 +87,6 @@ class MeleeAttack(Attack):
     def range(self):
         """Return the range of the attack"""
         return self.reach, self.reach
-
-    ########################################################################
-    def modifier(self, attacker):
-        """The melee attack modifier"""
-        if self.attack_modifier:
-            return self.attack_modifier
-        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def is_available(self):
@@ -140,13 +137,6 @@ class RangedAttack(Attack):
         if dist <= 1:
             return 0
         return self.max_dmg()
-
-    ########################################################################
-    def modifier(self, attacker):
-        """The ranged attack modifier"""
-        if self.attack_modifier:
-            return self.attack_modifier
-        return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def range(self):

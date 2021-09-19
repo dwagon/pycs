@@ -70,17 +70,17 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return self.preferred_stat
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=unused-argument
-        """Modifier to the action dice roll"""
+    def atk_modifier(self, attacker):  # pylint: disable=unused-argument
+        """Modifier to the attack dice roll"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented modifier()")
+        print(f"{__class__.__name__} hasn't implemented atk_modifier()")
         return 0
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument
+    def dmg_modifier(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented stat_dmg_bonus()")
+        print(f"{__class__.__name__} hasn't implemented dmg_modifier()")
         return 0
 
     ########################################################################
@@ -178,30 +178,31 @@ class Action:  # pylint: disable=too-many-instance-attributes
             msg += " (critical hit)"
         elif crit_miss:
             msg += " (critical miss)"
+            msg1 = ""
         print(f"{self.owner} got {to_hit} to hit ({msg} {msg1})")
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
     def calculate_to_hit(self, to_hit_roll, target):
         """Calculate the to_hit"""
-        msg = ""
+        msg = []
         rnge = self.owner.distance(target)
-        modifier = self.modifier(self.owner)
-        msg += f"+{modifier} (modifier)"
+        modifier = self.atk_modifier(self.owner)
+        msg.append(f"+{modifier} (modifier)")
         profbon = self.owner.prof_bonus
-        msg += f" +{profbon} (prof bonus)"
+        msg.append(f"+{profbon} (prof bonus)")
         to_hit = to_hit_roll + modifier + profbon
         for name, eff in self.owner.effects.items():
             mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
             if mod:
                 to_hit += mod
-                msg += f" +{mod} from {name}"
+                msg.append(f"+{mod} from {name}")
         if self.gear:
             mod = self.gear.hook_attack_to_hit(target=target)
             if mod:
                 to_hit += mod
-                msg += f" +{mod} from {self.gear}"
-        return to_hit, msg
+                msg.append(f"+{mod} from {self.gear}")
+        return to_hit, ", ".join(msg)
 
     ########################################################################
     def buff_attack_damage(self, target) -> None:
@@ -273,7 +274,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         dmg = int(dice.roll_max(self.dmg[0]))
         if self.dmg[1]:
             dmg += self.dmg[1]
-        dmg_bon = self.stat_dmg_bonus(self.owner)
+        dmg_bon = self.dmg_modifier(self.owner)
         if dmg_bon:
             dmg += dmg_bon
         return max(dmg, 0)
@@ -283,7 +284,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         """All the damage bonuses"""
         bonus = []
         if self.use_stat:
-            dmg_bon = self.stat_dmg_bonus(self.owner)
+            dmg_bon = self.dmg_modifier(self.owner)
             if dmg_bon:
                 bonus.append((dmg_bon, f"{self.use_stat.value[:3]}"))
         if self.gear:

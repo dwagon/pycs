@@ -54,9 +54,19 @@ class SpellAction(Action):
         return self.reach, self.reach
 
     ########################################################################
-    def modifier(self, attacker):
+    def spell_modifier(self, attacker):
+        """Spell Casting modifier"""
+        return attacker.stat_bonus(attacker.spellcast_bonus_stat)
+
+    ########################################################################
+    def atk_modifier(self, attacker):
         """Attack modifier"""
-        return attacker.stat_bonus(attacker.spellcast_bonus_stat) + attacker.prof_bonus
+        return self.spell_modifier(attacker)
+
+    ########################################################################
+    def dmg_modifier(self, attacker):
+        """Damage modifier"""
+        return 0
 
     ########################################################################
     def perform_action(self):
