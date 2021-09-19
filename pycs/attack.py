@@ -89,7 +89,7 @@ class MeleeAttack(Attack):
         """The melee attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier
-        return attacker.prof_bonus + attacker.stat_bonus(self.use_stat)
+        return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
     def is_available(self):

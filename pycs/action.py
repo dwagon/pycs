@@ -150,6 +150,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def roll_to_hit(self, target) -> Tuple[int, bool, bool]:
         """Roll to hit with the attack"""
+        msg = ""
         rnge = self.owner.distance(target)
         balance = 0
         if self.has_disadvantage(target, rnge):
@@ -158,48 +159,48 @@ class Action:  # pylint: disable=too-many-instance-attributes
             balance += 1
 
         if balance < 0:
-            to_hit_roll = min(
-                self.owner.rolld20("attack"), self.owner.rolld20("attack")
-            )
-            msg_0 = " with disadvantage"
+            roll1 = self.owner.rolld20("attack")
+            roll2 = self.owner.rolld20("attack")
+            to_hit_roll = min(roll1, roll2)
+            msg += f"Rolled {to_hit_roll}; [{roll1}, {roll2}] with disadvantage"
         elif balance > 0:
-            to_hit_roll = max(
-                self.owner.rolld20("attack"), self.owner.rolld20("attack")
-            )
-            msg_0 = " with advantage"
+            roll1 = self.owner.rolld20("attack")
+            roll2 = self.owner.rolld20("attack")
+            to_hit_roll = max(roll1, roll2)
+            msg += f"Rolled {to_hit_roll}; [{roll1}, {roll2}] with advantage"
         else:
             to_hit_roll = self.owner.rolld20("attack")
-            msg_0 = ""
+            msg += f"Rolled {to_hit_roll};"
 
         crit_hit, crit_miss = self.check_criticals(to_hit_roll)
-        to_hit, msg = self.calculate_to_hit(msg_0, to_hit_roll, target=target)
+        to_hit, msg1 = self.calculate_to_hit(to_hit_roll, target=target)
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
             msg += " (critical miss)"
-        else:
-            msg += f" = {to_hit}"
-        print(msg)
+        print(f"{self.owner} got {to_hit} to hit ({msg} {msg1})")
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def calculate_to_hit(self, msg_0, to_hit_roll, target):
+    def calculate_to_hit(self, to_hit_roll, target):
         """Calculate the to_hit"""
+        msg = ""
         rnge = self.owner.distance(target)
-        msg = f"{self.owner} rolled {to_hit_roll}{msg_0}"
         modifier = self.modifier(self.owner)
-        to_hit = to_hit_roll + modifier
-        msg += f" +{self.modifier(self.owner)}"
+        msg += f"+{modifier} (modifier)"
+        profbon = self.owner.prof_bonus
+        msg += f" +{profbon} (prof bonus)"
+        to_hit = to_hit_roll + modifier + profbon
         for name, eff in self.owner.effects.items():
             mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
             if mod:
                 to_hit += mod
-                msg += f" (+{mod} from {name})"
+                msg += f" +{mod} from {name}"
         if self.gear:
             mod = self.gear.hook_attack_to_hit(target=target)
             if mod:
                 to_hit += mod
-                msg += f" (+{mod} from {self.gear})"
+                msg += f" +{mod} from {self.gear}"
         return to_hit, msg
 
     ########################################################################
