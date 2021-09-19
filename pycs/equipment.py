@@ -18,7 +18,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         self.name = name
         self.owner = None  # Set by add_gear()
         self.actions = []
@@ -28,7 +28,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
         return f"{self.name}"
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
         return set()
 
@@ -42,16 +42,16 @@ class Weapon(Equipment):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.magic_bonus = kwargs.get("magic_bonus", 0)
         self.side_effect = kwargs.get("side_effect")
         self.actions = kwargs.get("actions", [])
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {"magic_bonus", "side_effect", "actions"}
+        return super()._valid_args() | {"magic_bonus", "side_effect", "actions"}
 
     ##########################################################################
     def hook_attack_to_hit(self, target):  # pylint: disable=unused-argument
@@ -73,13 +73,12 @@ class MeleeWeapon(Weapon):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.finesse = kwargs.get("finesse", False)
         self.actions.append(
             MeleeAttack(
                 name,
-                magic_bonus=kwargs.get("magic_bonus"),
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
                 reach=kwargs.get("reach"),
@@ -97,9 +96,9 @@ class MeleeWeapon(Weapon):
         return Stat.STR
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {
+        return super()._valid_args() | {
             "dmg",
             "dmg_type",
             "finesse",
@@ -118,12 +117,11 @@ class RangedWeapon(Weapon):
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.actions.append(
             RangedAttack(
                 name,
-                magic_bonus=kwargs.get("magic_bonus"),
                 ammo=kwargs.get("ammo"),
                 dmg=kwargs.get("dmg"),
                 dmg_type=kwargs.get("dmg_type"),
@@ -134,9 +132,9 @@ class RangedWeapon(Weapon):
         )
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {
+        return super()._valid_args() | {
             "ammo",
             "magic_bonus",
             "dmg",
@@ -162,7 +160,7 @@ class Armour(Equipment):  # pylint: disable=too-few-public-methods
     ##########################################################################
     def __init__(self, name, **kwargs):
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.ac = kwargs.get("ac", 0)  # pylint: disable=invalid-name
         self.ac_bonus = kwargs.get("ac_bonus", 0)
@@ -171,9 +169,9 @@ class Armour(Equipment):  # pylint: disable=too-few-public-methods
         self.magic_bonus = kwargs.get("magic_bonus", 0)
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {
+        return super()._valid_args() | {
             "ac",
             "magic_bonus",
             "ac_bonus",
@@ -191,7 +189,7 @@ class Potion(Equipment):
     ##########################################################################
     def __init__(self, name, **kwargs):  # pylint: disable=useless-super-delegation
         """init"""
-        check_args(self.valid_args(), name, kwargs)
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.act = DrinkPotion(f"Drink {name}")
         self.act.heuristic = kwargs.get("heuristic", self.heuristic)
@@ -201,9 +199,9 @@ class Potion(Equipment):
         self.actions = [self.act]
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {"heuristic", "perform_action", "ammo"}
+        return super()._valid_args() | {"heuristic", "perform_action", "ammo"}
 
     ##########################################################################
     def perform_action(self):
@@ -241,9 +239,9 @@ class HealingPotion(Potion):
         return min(self.owner.max_hp - self.owner.hp, maxcure)
 
     ##########################################################################
-    def valid_args(self):
+    def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super().valid_args() | {
+        return super()._valid_args() | {
             "curing",
         }
 

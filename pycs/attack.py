@@ -3,6 +3,7 @@ import dice
 from pycs.action import Action
 from pycs.constant import ActionType
 from pycs.constant import Stat
+from pycs.util import check_args
 
 
 ##############################################################################
@@ -12,8 +13,15 @@ class Attack(Action):
     """generic attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):  # pylint: disable=useless-super-delegation
+    def __init__(self, name, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
+        self.finesse = kwargs.get("finesse", False)
         super().__init__(name, **kwargs)
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super()._valid_args() | {"finesse"}
 
     ########################################################################
     def perform_action(self):
@@ -60,10 +68,16 @@ class MeleeAttack(Attack):
 
     ########################################################################
     def __init__(self, name, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
         self.preferred_stat = Stat.STR
         self.type = ActionType.MELEE
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super()._valid_args() | {"reach"}
 
     ########################################################################
     def range(self):
@@ -101,11 +115,17 @@ class RangedAttack(Attack):
 
     ########################################################################
     def __init__(self, name, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
         self.l_range = int(kwargs.get("l_range", 999) / 5)
         self.preferred_stat = Stat.DEX
         self.type = ActionType.RANGED
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return super()._valid_args() | {"s_range", "l_range"}
 
     ########################################################################
     def heuristic(self):

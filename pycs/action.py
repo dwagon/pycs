@@ -1,11 +1,13 @@
 """ Handle non-attack Actions """
 from typing import Tuple
 import dice
-from pycs.constant import ActionType
 from pycs.constant import ActionCategory
+from pycs.constant import ActionType
 from pycs.constant import Condition
 from pycs.constant import DamageType
+from pycs.constant import Stat
 from pycs.constant import Statistics
+from pycs.util import check_args
 
 
 ##############################################################################
@@ -16,6 +18,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
 
     ########################################################################
     def __init__(self, name: str, **kwargs):
+        check_args(self._valid_args(), name, kwargs)
         self.name = name
         self.available = True
         self.type = ActionType.UNKNOWN
@@ -23,16 +26,35 @@ class Action:  # pylint: disable=too-many-instance-attributes
         self.side_effect = kwargs.get("side_effect")
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.action_cost = kwargs.get("action_cost", 1)
+        self.finesse = kwargs.get("finesse", False)
         self.dmg = kwargs.get("dmg", "")
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
+        self.heuristic = kwargs.get("heuristic", self.heuristic)
         self.ammo = kwargs.get("ammo", None)
         self.gear = None  # Gear that induced the action (set when added)
         # Creature owning the action (set when added) or sometimes explicitly
         self.owner = kwargs.get("owner", None)
         if not hasattr(self, "preferred_stat"):
             self.preferred_stat = None
+
+    ##########################################################################
+    def _valid_args(self):
+        """What is valid in this class for kwargs"""
+        return {
+            "action_cost",
+            "ammo",
+            "attack_modifier",
+            "attacks_per_action",
+            "category",
+            "damage_modifier",
+            "dmg",
+            "dmg_type",
+            "heuristic",
+            "owner",
+            "side_effect",
+        }
 
     ########################################################################
     @property
@@ -42,6 +64,9 @@ class Action:  # pylint: disable=too-many-instance-attributes
         if self.gear:
             return self.gear.use_stat
         # Default for attack type
+        if self.finesse:
+            if self.owner.stats[Stat.STR] < self.owner.stats[Stat.DEX]:
+                return Stat.DEX
         return self.preferred_stat
 
     ########################################################################
@@ -76,7 +101,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return heur
 
     ########################################################################
-    def heuristic(self):  # pylint: disable=unused-argument
+    def heuristic(self):  # pylint: disable=method-hidden
         """Should we do this thing"""
         raise NotImplementedError(
             f"{self.name} {__class__.__name__}.heuristic() not implemented"
