@@ -8,7 +8,7 @@ from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.gear import Shortbow
 from pycs.spell import SpellAction
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
@@ -47,11 +47,7 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def heuristic(self):
         """Should we do the spell"""
-        for enemy in self.owner.pick_closest_enemy():
-            if self.owner.distance(enemy) > self.range()[0]:
-                continue
-            if enemy.has_effect("Hunters Mark"):
-                return 0
+        if self.pick_target():
             return 6
         print("No enemy in range")
         return 0
@@ -62,6 +58,8 @@ class HuntersMark(SpellAction):
         for enemy in self.owner.pick_closest_enemy():
             if self.owner.distance(enemy) > self.range()[0]:
                 continue
+            if enemy.has_effect("Hunters Mark"):
+                continue
             self.target = enemy
             return enemy
         return None
@@ -69,8 +67,9 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def cast(self):
         """Do the spell"""
-        self.target.add_effect(HuntersMarkEffect(caster=self.owner))
         self._victim = self.target
+        self._victim.add_effect(HuntersMarkEffect(caster=self.owner))
+        print(f"Cast Hunters Mark on {self._victim}")
 
     ##########################################################################
     def end_concentration(self):
@@ -123,9 +122,11 @@ class TestHuntersMark(SpellTest):
     ##########################################################################
     def test_effect(self):
         """Test the effect of casting the spell"""
+        print(self.caster.arena)
         self.caster.moves = 99
         self.caster.options_this_turn = [ActionCategory.BONUS, ActionCategory.ACTION]
         self.caster.do_stuff(categ=ActionCategory.BONUS, moveto=True)
+        self.assertTrue(self.enemy.has_effect("Hunters Mark"))
         self.caster.add_gear(Shortbow())
         self.assertEqual(len(self.enemy.damage_this_turn), 0)
         with patch.object(Creature, "rolld20") as mock:
@@ -133,6 +134,7 @@ class TestHuntersMark(SpellTest):
             with patch.object(dice, "roll") as mock_dice:
                 mock_dice.return_value = 5
                 self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
+        print(f"{self.enemy.damage_this_turn=}")
         self.assertEqual(len(self.enemy.damage_this_turn), 2)
 
     ##########################################################################

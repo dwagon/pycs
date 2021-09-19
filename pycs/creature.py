@@ -375,9 +375,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def shortrepr(self):
         """What it looks like on the arena"""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} needs to implement shortrepr()"
-        )
+        return "?"
 
     ##########################################################################
     def fallen_unconscious(
