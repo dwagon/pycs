@@ -238,10 +238,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
             return False
+        print(f"{self.owner} attacking {target} with {self}")
         to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
-        print(
-            f"{self.owner} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
-        )
 
         if to_hit >= target.ac and not crit_miss:
             dmg = self.roll_dmg(target, crit_hit)
@@ -287,7 +285,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         if self.use_stat:
             dmg_bon = self.stat_dmg_bonus(self.owner)
             if dmg_bon:
-                bonus.append((dmg_bon, f"{self.use_stat.value} stat"))
+                bonus.append((dmg_bon, f"{self.use_stat.value[:3]}"))
         if self.gear:
             dmg_bon = self.gear.hook_source_additional_damage()
             if dmg_bon:
@@ -297,19 +295,24 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ########################################################################
     def roll_dmg(self, _, critical=False) -> int:
         """Roll the damage of the attack"""
+        msg = ""
         if critical:
             dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
         else:
             dmg = int(dice.roll(self.dmg[0]))
-        print(f"{self.owner} rolled {dmg} on {self.dmg[0]} for damage")
+        rolled = dmg
         if self.dmg[1]:
             dmg += self.dmg[1]
-            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+            msg += f"{self.dmg[1]} "
         dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
             dmg += bonus
-            print(f"Adding bonus from {cause} of {bonus} -> {dmg}")
-        return max(dmg, 0)
+            msg += f"+{bonus} ({cause}) "
+        dmg = max(dmg, 0)
+        print(
+            f"{self.owner} got {dmg} damage (Rolled {rolled} on {self.dmg[0]}; {msg.strip()})"
+        )
+        return dmg
 
     ########################################################################
     def has_disadvantage(self, target, _: int) -> bool:
