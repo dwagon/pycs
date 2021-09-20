@@ -280,10 +280,12 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return max(dmg, 0)
 
     ########################################################################
-    def dmg_bonus(self):
+    def dmg_bonus(self) -> list:
         """All the damage bonuses"""
         bonus = []
-        if self.use_stat:
+        if self.damage_modifier is not None:
+            bonus.append((self.damage_modifier, "DmgMod"))
+        elif self.use_stat:
             dmg_bon = self.dmg_modifier(self.owner)
             if dmg_bon:
                 bonus.append((dmg_bon, f"{self.use_stat.value[:3]}"))
