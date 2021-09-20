@@ -394,7 +394,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = 0
         if self.state == "UNCONSCIOUS":
             return
-        print(f"{self} has fallen unconscious")
         self.remove_concentration()
         self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)

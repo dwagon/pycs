@@ -70,17 +70,17 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return self.preferred_stat
 
     ########################################################################
-    def modifier(self, attacker):  # pylint: disable=unused-argument
-        """Modifier to the action dice roll"""
+    def atk_modifier(self, attacker):  # pylint: disable=unused-argument
+        """Modifier to the attack dice roll"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented modifier()")
+        print(f"{__class__.__name__} hasn't implemented atk_modifier()")
         return 0
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):  # pylint: disable=unused-argument
+    def dmg_modifier(self, attacker):  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented stat_dmg_bonus()")
+        print(f"{__class__.__name__} hasn't implemented dmg_modifier()")
         return 0
 
     ########################################################################
@@ -150,6 +150,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def roll_to_hit(self, target) -> Tuple[int, bool, bool]:
         """Roll to hit with the attack"""
+        msg = ""
         rnge = self.owner.distance(target)
         balance = 0
         if self.has_disadvantage(target, rnge):
@@ -158,49 +159,50 @@ class Action:  # pylint: disable=too-many-instance-attributes
             balance += 1
 
         if balance < 0:
-            to_hit_roll = min(
-                self.owner.rolld20("attack"), self.owner.rolld20("attack")
-            )
-            msg_0 = " with disadvantage"
+            roll1 = self.owner.rolld20("attack")
+            roll2 = self.owner.rolld20("attack")
+            to_hit_roll = min(roll1, roll2)
+            msg += f"Rolled {to_hit_roll}; [{roll1}, {roll2}] with disadvantage"
         elif balance > 0:
-            to_hit_roll = max(
-                self.owner.rolld20("attack"), self.owner.rolld20("attack")
-            )
-            msg_0 = " with advantage"
+            roll1 = self.owner.rolld20("attack")
+            roll2 = self.owner.rolld20("attack")
+            to_hit_roll = max(roll1, roll2)
+            msg += f"Rolled {to_hit_roll}; [{roll1}, {roll2}] with advantage"
         else:
             to_hit_roll = self.owner.rolld20("attack")
-            msg_0 = ""
+            msg += f"Rolled {to_hit_roll};"
 
         crit_hit, crit_miss = self.check_criticals(to_hit_roll)
-        to_hit, msg = self.calculate_to_hit(msg_0, to_hit_roll, target=target)
+        to_hit, msg1 = self.calculate_to_hit(to_hit_roll, target=target)
         if crit_hit:
             msg += " (critical hit)"
         elif crit_miss:
             msg += " (critical miss)"
-        else:
-            msg += f" = {to_hit}"
-        print(msg)
+            msg1 = ""
+        print(f"{self.owner} got {to_hit} to hit ({msg} {msg1})")
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def calculate_to_hit(self, msg_0, to_hit_roll, target):
+    def calculate_to_hit(self, to_hit_roll, target):
         """Calculate the to_hit"""
+        msg = []
         rnge = self.owner.distance(target)
-        msg = f"{self.owner} rolled {to_hit_roll}{msg_0}"
-        modifier = self.modifier(self.owner)
-        to_hit = to_hit_roll + modifier
-        msg += f" +{self.modifier(self.owner)}"
+        modifier = self.atk_modifier(self.owner)
+        msg.append(f"+{modifier} (modifier)")
+        profbon = self.owner.prof_bonus
+        msg.append(f"+{profbon} (prof bonus)")
+        to_hit = to_hit_roll + modifier + profbon
         for name, eff in self.owner.effects.items():
             mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
             if mod:
                 to_hit += mod
-                msg += f" (+{mod} from {name})"
+                msg.append(f"+{mod} from {name}")
         if self.gear:
             mod = self.gear.hook_attack_to_hit(target=target)
             if mod:
                 to_hit += mod
-                msg += f" (+{mod} from {self.gear})"
-        return to_hit, msg
+                msg.append(f"+{mod} from {self.gear}")
+        return to_hit, ", ".join(msg)
 
     ########################################################################
     def buff_attack_damage(self, target) -> None:
@@ -237,10 +239,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
             return False
+        print(f"{self.owner} attacking {target} with {self}")
         to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
-        print(
-            f"{self.owner} attacking {target} @ {target.coords} with {self} (Range: {rnge})"
-        )
 
         if to_hit >= target.ac and not crit_miss:
             dmg = self.roll_dmg(target, crit_hit)
@@ -274,7 +274,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         dmg = int(dice.roll_max(self.dmg[0]))
         if self.dmg[1]:
             dmg += self.dmg[1]
-        dmg_bon = self.stat_dmg_bonus(self.owner)
+        dmg_bon = self.dmg_modifier(self.owner)
         if dmg_bon:
             dmg += dmg_bon
         return max(dmg, 0)
@@ -284,9 +284,9 @@ class Action:  # pylint: disable=too-many-instance-attributes
         """All the damage bonuses"""
         bonus = []
         if self.use_stat:
-            dmg_bon = self.stat_dmg_bonus(self.owner)
+            dmg_bon = self.dmg_modifier(self.owner)
             if dmg_bon:
-                bonus.append((dmg_bon, f"{self.use_stat.value} stat"))
+                bonus.append((dmg_bon, f"{self.use_stat.value[:3]}"))
         if self.gear:
             dmg_bon = self.gear.hook_source_additional_damage()
             if dmg_bon:
@@ -296,19 +296,24 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ########################################################################
     def roll_dmg(self, _, critical=False) -> int:
         """Roll the damage of the attack"""
+        msg = ""
         if critical:
             dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
         else:
             dmg = int(dice.roll(self.dmg[0]))
-        print(f"{self.owner} rolled {dmg} on {self.dmg[0]} for damage")
+        rolled = dmg
         if self.dmg[1]:
             dmg += self.dmg[1]
-            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+            msg += f"{self.dmg[1]} "
         dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
             dmg += bonus
-            print(f"Adding bonus from {cause} of {bonus} -> {dmg}")
-        return max(dmg, 0)
+            msg += f"+{bonus} ({cause}) "
+        dmg = max(dmg, 0)
+        print(
+            f"{self.owner} got {dmg} damage (Rolled {rolled} on {self.dmg[0]}; {msg.strip()})"
+        )
+        return dmg
 
     ########################################################################
     def has_disadvantage(self, target, _: int) -> bool:

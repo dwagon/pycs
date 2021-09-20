@@ -74,7 +74,8 @@ class TestAction(unittest.TestCase):
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 18
             to_hit, crit_hit, crit_miss = act.roll_to_hit(self.alpha)
-        self.assertEqual(to_hit, 18 + 5)
+        # 5 for DummyAction atk_bonus, 2 for prof bonus
+        self.assertEqual(to_hit, 18 + 5 + 2)
         self.assertFalse(crit_hit)
         self.assertFalse(crit_miss)
 
@@ -84,9 +85,10 @@ class TestAction(unittest.TestCase):
         self.beta.add_effect(DummyEffect())
         act = DummyAction()
         self.beta.add_action(act)
-        to_hit, msg = act.calculate_to_hit("msg_0", 10, self.alpha)
-        self.assertEqual(to_hit, 10 + 5 + 3)
-        self.assertEqual(msg, "Creature rolled 10msg_0 +5 (+3 from Dummy Effect)")
+        to_hit, msg = act.calculate_to_hit(10, self.alpha)
+        # 5 for DummyAction atk_bonus, 2 for prof bonus, 3 for dummy effect
+        self.assertEqual(to_hit, 10 + 5 + 2 + 3)
+        self.assertEqual(msg, "+5 (modifier), +2 (prof bonus), +3 from Dummy Effect")
 
     ########################################################################
     def test_buff_attack_damage(self):
@@ -150,7 +152,7 @@ class DummyAction(Action):
     def perform_action(self):
         """Required"""
 
-    def modifier(self, _):
+    def atk_modifier(self, _):
         return 5
 
     def heuristic(self):

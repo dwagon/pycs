@@ -3,7 +3,7 @@
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.spell import SpellAction
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
@@ -43,11 +43,11 @@ class MassHealingWord(SpellAction):
         for creat in self.owner.pick_closest_friends():
             if creat.hp < creat.max_hp:
                 cured += 1
-                creat.heal("1d4", self.modifier(self.owner))
+                creat.heal("1d4", self.spell_modifier(self.owner))
             if cured >= 6:
                 break
         if cured <= 6 and self.owner.hp < self.owner.max_hp:
-            self.owner.heal("1d4", self.modifier(self.owner))
+            self.owner.heal("1d4", self.spell_modifier(self.owner))
         return True
 
 
