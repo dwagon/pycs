@@ -53,8 +53,6 @@ class Attack(Action):
     ########################################################################
     def dmg_modifier(self, attacker):
         """The ranged damage modifier"""
-        if self.damage_modifier:
-            return self.damage_modifier
         return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
