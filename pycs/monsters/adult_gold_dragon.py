@@ -146,7 +146,7 @@ class DragonFireBreath(Attack):
         super().__init__("Fire Breath", **kwargs)
 
     ##########################################################################
-    def modifier(self, attacker):
+    def atk_modifier(self, attacker):
         return 0
 
     ##########################################################################
