@@ -6,6 +6,7 @@ from pycs.monsters.ghoul import Ghoul
 from pycs.monsters.giant_frog import GiantFrog
 from pycs.monsters.gnoll import Gnoll
 from pycs.monsters.gnoll_pack_lord import GnollPackLord
+from pycs.monsters.gnoll_fang import GnollFangOfYeenoghu
 from pycs.monsters.goblin import Goblin
 from pycs.monsters.hobgoblin import Hobgoblin
 from pycs.monsters.kobold import Kobold
@@ -24,6 +25,7 @@ __all__ = [
     "GiantFrog",
     "Gnoll",
     "GnollPackLord",
+    "GnollFangOfYeenoghu",
     "Goblin",
     "Hobgoblin",
     "Kobold",
