@@ -1,6 +1,5 @@
 """https://www.dndbeyond.com/spells/scorching-ray"""
 
-import random
 from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
