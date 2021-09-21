@@ -113,7 +113,7 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return 0, 0
 
     ##########################################################################
-    def is_available(self):  # pylint: disable=unused-argument
+    def is_available(self):
         """Is this action currently available to the creature"""
         if self.ammo is not None and not self.ammo:
             return False
