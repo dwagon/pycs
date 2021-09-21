@@ -19,7 +19,7 @@ from pycs.spells import LesserRestoration
 from pycs.spells import MassHealingWord
 from pycs.spells import Sacred_Flame
 from pycs.spells import ShieldOfFaith
-from pycs.spells import Spirit_Guardians
+from pycs.spells import SpiritGuardians
 from pycs.spells import Spiritual_Weapon
 
 
@@ -85,7 +85,7 @@ class Cleric(Character):
             self.spell_slots = {1: 4, 2: 3, 3: 2}
             kwargs["actions"].append(Beacon_Of_Hope())  # Life Domain freebie
             kwargs["actions"].append(MassHealingWord())
-            kwargs["actions"].append(Spirit_Guardians())
+            kwargs["actions"].append(SpiritGuardians())
         super().__init__(**kwargs)
 
     ##########################################################################

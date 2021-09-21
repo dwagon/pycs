@@ -1,17 +1,21 @@
 """https://www.dndbeyond.com/spells/spirit-guardians"""
 
+from unittest.mock import patch
 import dice
 from pycs.constant import DamageType
+from pycs.creature import Creature
 from pycs.constant import SpellType
+from pycs.constant import ActionCategory
 from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.spell import SpellAction
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Spirit_Guardians(SpellAction):
+class SpiritGuardians(SpellAction):
     """You call forth spirits to protect you. They flit around you to
     a distance of 15 feet for the duration. If you are good or neutral,
     their spectral form appears angelic or fey (your choice). If you
@@ -45,11 +49,11 @@ class Spirit_Guardians(SpellAction):
         the more people it can effect the more we should do it"""
         if self.owner.has_effect("Spirit Guardian"):
             return 0
-        heur = 0
+        heur = 10  # Ongoing effect
         for enem in self.owner.pick_closest_enemy():
             if self.owner.distance(enem) < self.range()[0]:
                 heur += 24  # 3d8
-        return heur * 2
+        return heur
 
     ##########################################################################
     def pick_target(self):
@@ -99,6 +103,48 @@ class SpiritGuardianEffect(Effect):
         if creat.saving_throw(Stat.WIS, self.caster.spellcast_save):
             dmg /= 2
         creat.hit(dmg, DamageType.RADIANT, self.caster, False, "Spirit Guardian")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestSpiritGuardians(SpellTest):
+    """Test Spell"""
+
+    ##########################################################################
+    def setUp(self):
+        super().setUp()
+        self.caster.add_action(SpiritGuardians())
+
+    ##########################################################################
+    def test_cast(self):
+        """Test casting"""
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        self.assertTrue(self.caster.has_effect("Spirit Guardian"))
+        self.caster.remove_concentration()
+        self.assertFalse(self.caster.has_effect("Spirit Guardian"))
+
+    ##########################################################################
+    def test_saved(self):
+        """Test casting where the victim makes their save"""
+        self.arena[self.enemy.coords] = None
+        self.arena[self.caster.coords] = None
+        self.arena[self.friend.coords] = None
+        self.arena[(0, 0)] = self.enemy
+        self.enemy.coords = (0, 0)
+        self.arena[(1, 1)] = self.friend
+        self.friend.coords = (1, 1)
+        self.arena[(2, 2)] = self.caster
+        self.caster.coords = (2, 2)
+        print(self.arena)
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19
+            self.enemy.start_turn()
+            self.assertNotEqual(self.enemy.hp, self.enemy.max_hp)
+            self.friend.start_turn()
+            self.assertEqual(self.friend.hp, self.friend.max_hp)
 
 
 # EOF
