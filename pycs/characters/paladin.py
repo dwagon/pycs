@@ -155,8 +155,7 @@ class LayOnHands(Action):
         chp = min(
             self.owner.lay_on_hands, self.owner.target.max_hp - self.owner.target.hp
         )
-        self.owner.target.heal("", chp)
-        self.owner.lay_on_hands -= self.owner.target.heal(0, chp)
+        self.owner.lay_on_hands -= self.owner.target.heal("", chp)
 
     ########################################################################
     def heuristic(self):

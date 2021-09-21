@@ -88,7 +88,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.add_gear(gear)
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self):  # pylint: disable=no-self-use
         """What is valid in this class for kwargs"""
         return {
             "name",
@@ -373,7 +373,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.hp > 0
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self):  # pylint: disable=no-self-use
         """What it looks like on the arena"""
         return "?"
 
@@ -470,7 +470,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
-    def damage_summary(self, dmglist):
+    def damage_summary(self, dmglist):  # pylint: disable=no-self-use
         """Summarise damage"""
         if not dmglist:
             return "None"
@@ -507,7 +507,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(self, spell) -> bool:  # pylint: disable=unused-argument
+    def spell_available(  # pylint: disable=no-self-use
+        self, spell  # pylint: disable=unused-argument
+    ) -> bool:
         """Spell casters should redefine this"""
         return False
 

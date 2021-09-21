@@ -60,6 +60,7 @@ class HoldPerson(SpellAction):
         svth = self.owner.target.saving_throw(
             Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED
         )
+        # TO DO: If the saving throw is made the spell should end
         if not svth:
             self.owner.target.add_effect(HoldPersonEffect(caster=self.owner))
             self._victim = self.owner.target
@@ -69,7 +70,7 @@ class HoldPerson(SpellAction):
     def end_concentration(self):
         """What happens when we stop concentrating"""
         # They could have saved in the meantime
-        if self._victim.has_effect("Hold Person"):
+        if self._victim and self._victim.has_effect("Hold Person"):
             print(f"Removing Hold Person from {self._victim}")
             self._victim.remove_effect("Hold Person")
         self._victim = None
