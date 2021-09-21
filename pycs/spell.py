@@ -36,6 +36,11 @@ class SpellAction(Action):
         }
 
     ########################################################################
+    def is_available(self):
+        """Is this action available?"""
+        return self.owner.spell_available(self)
+
+    ########################################################################
     def failed_save(self, source, target, dmg):
         """Called when the target failed save"""
 
@@ -204,11 +209,6 @@ class AttackSpell(SpellAction):
     def range(self):
         """Return the range of the attack"""
         return self.reach, self.reach
-
-    ########################################################################
-    def is_available(self):
-        """Is this action available?"""
-        return self.owner.spell_available(self)
 
     ########################################################################
     def cast(self):
