@@ -131,5 +131,10 @@ class TestHobgoblin(unittest.TestCase):
                 self.assertEqual(self.victim.hp, 48)  # 2 for sword
                 self.assertFalse(self.beast.effects["Martial Advantage"].used_this_turn)
 
+    ##########################################################################
+    def test_ac(self):
+        """Test that the AC matches equipment"""
+        self.assertEqual(self.beast.ac, 18)
+
 
 # EOF
