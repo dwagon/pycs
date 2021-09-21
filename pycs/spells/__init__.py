@@ -1,41 +1,37 @@
 """ Spells """
-# from .command import Command
-# from .absorb_elements import Absorb_Elements
-from .aid import Aid
-from .beacon_of_hope import Beacon_Of_Hope
-from .bless import Bless
-from .branding_smite import BrandingSmite
-from .burning_hands import Burning_Hands
-from .cure_wounds import CureWounds
-from .eldritch_blast import Eldritch_Blast
-from .enhance_ability import Enhance_Ability
-from .fireball import Fireball
-from .frostbite import Frostbite
-from .guiding_bolt import Guiding_Bolt
-from .healing_word import HealingWord
-from .hellish_rebuke import Hellish_Rebuke
-from .hold_person import HoldPerson
-from .hunters_mark import HuntersMark
-from .lesser_restoration import LesserRestoration
-from .mass_healing_word import MassHealingWord
-from .poison_spray import PoisonSpray
-from .sacred_flame import Sacred_Flame
-from .sanctuary import Sanctuary
-from .scorching_ray import ScorchingRay
-from .shatter import Shatter
-from .shield_of_faith import ShieldOfFaith
-from .spirit_guardians import Spirit_Guardians
-from .spiritual_weapon import Spiritual_Weapon
-from .thunderclap import Thunderclap
+from pycs.spells.aid import Aid
+from pycs.spells.beacon_of_hope import Beacon_Of_Hope
+from pycs.spells.bless import Bless
+from pycs.spells.branding_smite import BrandingSmite
+from pycs.spells.burning_hands import Burning_Hands
+from pycs.spells.cure_wounds import CureWounds
+from pycs.spells.eldritch_blast import Eldritch_Blast
+from pycs.spells.enhance_ability import Enhance_Ability
+from pycs.spells.fireball import Fireball
+from pycs.spells.frostbite import Frostbite
+from pycs.spells.guiding_bolt import Guiding_Bolt
+from pycs.spells.healing_word import HealingWord
+from pycs.spells.hellish_rebuke import Hellish_Rebuke
+from pycs.spells.hold_person import HoldPerson
+from pycs.spells.hunters_mark import HuntersMark
+from pycs.spells.lesser_restoration import LesserRestoration
+from pycs.spells.mass_healing_word import MassHealingWord
+from pycs.spells.poison_spray import PoisonSpray
+from pycs.spells.sacred_flame import Sacred_Flame
+from pycs.spells.sanctuary import Sanctuary
+from pycs.spells.scorching_ray import ScorchingRay
+from pycs.spells.shatter import Shatter
+from pycs.spells.shield_of_faith import ShieldOfFaith
+from pycs.spells.spirit_guardians import SpiritGuardians
+from pycs.spells.spiritual_weapon import Spiritual_Weapon
+from pycs.spells.thunderclap import Thunderclap
 
 __all__ = [
     "Aid",
-    # "Absorb_Elements",
     "Beacon_Of_Hope",
     "Bless",
     "BrandingSmite",
     "Burning_Hands",
-    # "Command",
     "CureWounds",
     "Eldritch_Blast",
     "Enhance_Ability",
@@ -54,7 +50,7 @@ __all__ = [
     "ScorchingRay",
     "Shatter",
     "ShieldOfFaith",
-    "Spirit_Guardians",
+    "SpiritGuardians",
     "Spiritual_Weapon",
     "Thunderclap",
 ]

@@ -117,6 +117,7 @@ class TestHoldPerson(SpellTest):
 
     ##########################################################################
     def setUp(self):
+        """Setup tests"""
         super().setUp()
         self.caster.add_action(HoldPerson())
 

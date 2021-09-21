@@ -1,5 +1,7 @@
 """ https://www.dndbeyond.com/monsters/goblin"""
+import unittest
 import colors
+from pycs.arena import Arena
 from pycs.gear import Shortbow
 from pycs.gear import Scimitar
 from pycs.gear import Leather
@@ -36,6 +38,25 @@ class Goblin(Monster):
         if self.is_alive():
             return colors.green("g")
         return colors.green("g", bg="red")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestGoblin(unittest.TestCase):
+    """Test oblin"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the lair"""
+        self.arena = Arena()
+        self.beast = Goblin(side="a")
+        self.arena.add_combatant(self.beast, coords=(5, 5))
+
+    ##########################################################################
+    def test_ac(self):
+        """Test that the AC matches equipment"""
+        self.assertEqual(self.beast.ac, 15)
 
 
 # EOF

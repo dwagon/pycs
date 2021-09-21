@@ -90,5 +90,10 @@ class TestKobold(unittest.TestCase):
         self.arena.add_combatant(friend, coords=(1, 3))
         self.assertTrue(sling.has_advantage(self.victim, 3))
 
+    ##########################################################################
+    def test_ac(self):
+        """Test that the AC matches equipment"""
+        self.assertEqual(self.beast.ac, 12)
+
 
 # EOF

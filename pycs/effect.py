@@ -107,6 +107,11 @@ class Effect:
         return ("", 0, None)
 
     ##########################################################################
+    def hook_start_in_range(self, creat):  # pylint: disable=unused-argument
+        """Did we start our turn in range of any effect"""
+        return
+
+    ##########################################################################
     def hook_target_additional_damage(
         self, attack, source, target  # pylint: disable=unused-argument
     ) -> Optional[Tuple[str, int, Optional[DamageType]]]:

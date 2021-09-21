@@ -242,6 +242,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if rnge and dist <= rnge:
                 return
 
+            # Have to check every move if we are in any effect area
+            for part in self.arena.combatants:
+                for eff in part.effects.values():
+                    for comb in self.arena.combatants:
+                        eff.hook_start_in_range(comb)
+
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
@@ -570,6 +576,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.moves = self.speed
         for eff in self.effects.copy().values():
             eff.hook_start_turn()
+
+        for part in self.arena.combatants:
+            for eff in part.effects.values():
+                for comb in self.arena.combatants:
+                    eff.hook_start_in_range(comb)
 
         for creat in self.arena.combatants:
             if creat == self:
