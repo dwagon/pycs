@@ -3,6 +3,7 @@ from pycs.gear.breastplate import Breastplate
 from pycs.gear.chain_shirt import ChainShirt
 from pycs.gear.chainmail import Chainmail
 from pycs.gear.dagger import Dagger
+from pycs.gear.glaive import Glaive
 from pycs.gear.greataxe import Greataxe
 from pycs.gear.halfplate import HalfPlate
 from pycs.gear.hide import Hide
@@ -36,6 +37,7 @@ __all__ = [
     "ChainShirt",
     "Chainmail",
     "Dagger",
+    "Glaive",
     "Greataxe",
     "HalfPlate",
     "Hide",
