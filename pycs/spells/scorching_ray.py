@@ -49,7 +49,7 @@ class ScorchingRay(AttackSpell):
                     targets.append(enemy)
             if not targets:
                 return
-            target = random.choice(targets)
+            target = targets[0]
             print(f"Targeting {target} with Scorching Ray")
             to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
             if to_hit >= target.ac and not crit_miss:
