@@ -1,13 +1,13 @@
 """https://www.dndbeyond.com/spells/spirit-guardians"""
 
 from pycs.constant import SpellType
-from pycs.spell import SpellAction
+from pycs.spell import AttackSpell
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Spirit_Guardians(SpellAction):
+class Spirit_Guardians(AttackSpell):
     """You call forth spirits to protect you. They flit around you to
     a distance of 15 feet for the duration. If you are good or neutral,
     their spectral form appears angelic or fey (your choice). If you
@@ -29,6 +29,7 @@ class Spirit_Guardians(SpellAction):
             {
                 "reach": 15,
                 "level": 3,
+                "style": SpellType.SAVE_HALF,
                 "type": SpellType.RANGED,
                 "concentration": SpellType.CONCENTRATION,
             }
@@ -46,8 +47,6 @@ class Spirit_Guardians(SpellAction):
     ##########################################################################
     def pick_target(self):
         """Who should we do the spell to"""
-        # Pick three people near where we are
-        # TO DO - better this to move to where we can get 3 peeps
         return self.owner
 
     ##########################################################################
