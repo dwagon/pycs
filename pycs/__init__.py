@@ -15,6 +15,7 @@ from pycs.monsters import Ghoul
 from pycs.monsters import GiantFrog
 from pycs.monsters import Gnoll
 from pycs.monsters import GnollPackLord
+from pycs.monsters import GnollFangOfYeenoghu
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
@@ -56,6 +57,13 @@ from pycs.gear import Quarterstaff
 from pycs.gear import Shield
 from pycs.gear import Shortsword
 from pycs.gear import Studded
+
+
+DRAGON_ARMY = False
+UNDEAD_ARMY = False
+MONSTER_ARMY = False
+GNOLL_ARMY = True
+HUMAN_ARMY = True
 
 
 ##############################################################################
@@ -157,18 +165,16 @@ def participant_report(arena):
 
 
 ##############################################################################
-def combat_test():
-    """Run through a combat"""
-    turn = 0
-    print("#" * 80)
-    arena = Arena(max_x=45, max_y=25)
-
-    # Dragon Army
+def dragon_army(arena):
+    """Dragon and friends"""
     arena.add_combatant(AdultGoldDragon(name="Adult Gold Dragon", side="Dragon"))
     for i in range(9):
         arena.add_combatant(Kobold(name=f"Kobold{i}", side="Dragon"))
 
-    # Undead Army
+
+##############################################################################
+def undead_army(arena):
+    """Not a pulse amongst them"""
     for i in range(9):
         arena.add_combatant(Ghast(name=f"Ghast{i}", side="Undead"))
     arena.add_combatant(Ghoul(name="Ghoul", side="Undead"))
@@ -178,7 +184,10 @@ def combat_test():
     for i in range(9):
         arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
 
-    # Monsters
+
+##############################################################################
+def monster_army(arena):
+    """Just a bunch of guys"""
     arena.add_combatant(BarbedDevil(name="Barbed Devil", side="Monsters"))
     arena.add_combatant(GiantFrog(name="Giant Frog", side="Monsters"))
     arena.add_combatant(VioletFungus(name="Violet Fungus", side="Monsters"))
@@ -190,13 +199,21 @@ def combat_test():
     for i in range(4):
         arena.add_combatant(Hobgoblin(name=f"Hobgoblin{i}", side="Monsters"))
 
-    # Gnoll Army
-    for i in range(15):
-        arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
-    for i in range(2):
-        arena.add_combatant(GnollPackLord(name=f"GnollPackLord{i}", side="Gnoll"))
 
-    # Murder Hobos
+##############################################################################
+def gnoll_army(arena):
+    """The hunger"""
+    for i in range(20):
+        arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
+    for i in range(4):
+        arena.add_combatant(GnollPackLord(name=f"GnollPackLord{i}", side="Gnoll"))
+    for i in range(1):
+        arena.add_combatant(GnollFangOfYeenoghu(name=f"GnollFang{i}", side="Gnoll"))
+
+
+##############################################################################
+def human_army(arena):
+    """Murder Hobos"""
     arena.add_combatant(
         Barbarian(
             name="Barbara",
@@ -296,6 +313,29 @@ def combat_test():
             ],
         )
     )
+
+
+##############################################################################
+def combat_test():
+    """Run through a combat"""
+    turn = 0
+    print("#" * 80)
+    arena = Arena(max_x=45, max_y=25)
+
+    if DRAGON_ARMY:
+        dragon_army(arena)
+
+    if UNDEAD_ARMY:
+        undead_army(arena)
+
+    if MONSTER_ARMY:
+        monster_army(arena)
+
+    if GNOLL_ARMY:
+        gnoll_army(arena)
+
+    if HUMAN_ARMY:
+        human_army(arena)
 
     arena.do_initiative()
     print(f"{arena}")
