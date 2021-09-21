@@ -1,18 +1,19 @@
 """ Monsters """
-from .adult_gold_dragon import AdultGoldDragon
-from .barbed_devil import BarbedDevil
-from .ghast import Ghast
-from .ghoul import Ghoul
-from .giant_frog import GiantFrog
-from .goblin import Goblin
-from .hobgoblin import Hobgoblin
-from .kobold import Kobold
-from .orc import Orc
-from .skeleton import Skeleton
-from .troll import Troll
-from .violet_fungus import VioletFungus
-from .wraith import Wraith
-from .zombie import Zombie
+from pycs.monsters.adult_gold_dragon import AdultGoldDragon
+from pycs.monsters.barbed_devil import BarbedDevil
+from pycs.monsters.ghast import Ghast
+from pycs.monsters.ghoul import Ghoul
+from pycs.monsters.giant_frog import GiantFrog
+from pycs.monsters.gnoll import Gnoll
+from pycs.monsters.goblin import Goblin
+from pycs.monsters.hobgoblin import Hobgoblin
+from pycs.monsters.kobold import Kobold
+from pycs.monsters.orc import Orc
+from pycs.monsters.skeleton import Skeleton
+from pycs.monsters.troll import Troll
+from pycs.monsters.violet_fungus import VioletFungus
+from pycs.monsters.wraith import Wraith
+from pycs.monsters.zombie import Zombie
 
 __all__ = [
     "AdultGoldDragon",

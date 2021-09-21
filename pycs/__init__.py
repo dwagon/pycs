@@ -13,6 +13,7 @@ from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast
 from pycs.monsters import Ghoul
 from pycs.monsters import GiantFrog
+from pycs.monsters import Gnoll
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
@@ -187,6 +188,10 @@ def combat_test():
         arena.add_combatant(Goblin(name=f"Goblin{i}", side="Monsters"))
     for i in range(4):
         arena.add_combatant(Hobgoblin(name=f"Hobgoblin{i}", side="Monsters"))
+
+    # Gnoll Army
+    for i in range(15):
+        arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
 
     # Murder Hobos
     arena.add_combatant(
