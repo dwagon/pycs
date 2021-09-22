@@ -249,8 +249,6 @@ class Action:  # pylint: disable=too-many-instance-attributes
             target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
             if self.side_effect:
                 self.side_effect(source=self.owner, target=target, dmg=dmg)
-            if self.gear and self.gear.side_effect:
-                self.gear.side_effect(source=self.owner, target=target, dmg=dmg)
 
             # If the target or source of the damage has a buff
             self.buff_attack_damage(target)

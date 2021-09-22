@@ -92,7 +92,7 @@ def win_report(stats, rounds):
 def flaming_weapon(source, target, dmg):
     """Add some extra spice"""
     dmg = int(dice.roll("1d6"))
-    target.hit(dmg, DamageType.FIRE, source, False, "Flaming Sword")
+    target.hit(dmg, DamageType.FIRE, source, False, "Flaming Weapon")
 
 
 ##############################################################################
