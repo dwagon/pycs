@@ -62,7 +62,7 @@ class Zombie(Monster):
     def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
-            return colors.red("Z", bg="green")
+            return colors.green("Z")
         return colors.green("Z", bg="red")
 
 

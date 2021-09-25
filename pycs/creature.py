@@ -251,7 +251,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, self.target)
             if old_coords == self.coords:
-                print("Hand brake is on")
                 break
             self.moves -= 1
             print(f"{self} moved to {self.coords}: {self.moves} left")
@@ -597,6 +596,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Hook for us starting a turn"""
 
     ##########################################################################
+    def move_away(self, cause):
+        """Move away from the {cause}"""
+        # TODO
+
+    ##########################################################################
     def move(self, act: Action):
         """Do a move"""
         if self.target and self.moves:
@@ -700,12 +704,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print()
         self.report()
         self.start_turn()
-        self.do_stuff(ActionCategory.BONUS)
-        self.do_stuff(ActionCategory.ACTION, moveto=True)
-        self.do_stuff(ActionCategory.BONUS)
-        self.do_stuff(ActionCategory.ACTION, moveto=True)
-        if ActionCategory.ACTION in self.options_this_turn:
-            self.dash()
+        if not self.flee():
+            self.do_stuff(ActionCategory.BONUS)
+            self.do_stuff(ActionCategory.ACTION, moveto=True)
+            self.do_stuff(ActionCategory.BONUS)
+            self.do_stuff(ActionCategory.ACTION, moveto=True)
+            if ActionCategory.ACTION in self.options_this_turn:
+                self.dash()
         self.end_turn()
 
 

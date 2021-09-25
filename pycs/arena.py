@@ -139,6 +139,16 @@ class Arena(AStar):
         return dest
 
     ##############################################################################
+    def remaining_type(self, creat, typ_):
+        """Return the remaining combatants of the specified type"""
+        remain = [
+            _
+            for _ in creat.arena.combatants
+            if _.side != creat.side and _.is_type(typ_) and _.is_alive()
+        ]
+        return remain
+
+    ##############################################################################
     def pick_closest_friends(self, creat):
         """Pick the closest friends to creat sorted by distance"""
         result = namedtuple("result", "distance id creature")

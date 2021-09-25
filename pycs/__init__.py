@@ -60,9 +60,9 @@ from pycs.gear import Studded
 
 
 DRAGON_ARMY = False
-UNDEAD_ARMY = False
+UNDEAD_ARMY = True
 MONSTER_ARMY = False
-GNOLL_ARMY = True
+GNOLL_ARMY = False
 HUMAN_ARMY = True
 
 
@@ -175,13 +175,13 @@ def dragon_army(arena):
 ##############################################################################
 def undead_army(arena):
     """Not a pulse amongst them"""
-    for i in range(9):
+    for i in range(3):
         arena.add_combatant(Ghast(name=f"Ghast{i}", side="Undead"))
     arena.add_combatant(Ghoul(name="Ghoul", side="Undead"))
-    for i in range(9):
+    for i in range(14):
         arena.add_combatant(Skeleton(name=f"Skeleton{i}", side="Undead"))
     arena.add_combatant(Wraith(name="Wraith", side="Undead"))
-    for i in range(9):
+    for i in range(14):
         arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
 
 
