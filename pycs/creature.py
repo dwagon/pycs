@@ -720,7 +720,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def turn(self):
         """Have a go"""
         print()
-        self.report()
+        if not self.has_condition(Condition.DEAD):
+            self.report()
         self.start_turn()
         self.do_stuff(ActionCategory.BONUS)
         self.do_stuff(ActionCategory.ACTION, moveto=True)
