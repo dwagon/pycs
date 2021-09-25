@@ -23,6 +23,7 @@ class Wraith(Monster):
                 "hitdice": "9d8+27",
                 "ac": 13,
                 "speed": 60,
+                "challenge": 5,
                 "type": MonsterType.UNDEAD,
                 "str": 6,
                 "dex": 16,

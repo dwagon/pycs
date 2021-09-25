@@ -17,6 +17,7 @@ class Skeleton(Monster):
             {
                 "hitdice": "2d8+4",
                 "ac": 13,
+                "challenge": 0.25,
                 "speed": 30,
                 "type": MonsterType.UNDEAD,
                 "str": 10,

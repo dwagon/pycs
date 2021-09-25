@@ -23,6 +23,7 @@ class Zombie(Monster):
                 "hitdice": "3d8+9",
                 "ac": 8,
                 "speed": 20,
+                "challenge": 0.25,
                 "type": MonsterType.UNDEAD,
                 "str": 13,
                 "dex": 6,

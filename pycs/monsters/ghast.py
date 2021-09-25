@@ -26,6 +26,7 @@ class Ghast(Monster):
                 "hitdice": "8d8",
                 "ac": 13,
                 "speed": 30,
+                "challenge": 2,
                 "type": MonsterType.UNDEAD,
                 "str": 16,
                 "dex": 17,

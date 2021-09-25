@@ -25,6 +25,7 @@ class Ghoul(Monster):
             {
                 "hitdice": "5d8",
                 "ac": 12,
+                "challenge": 1,
                 "speed": 30,
                 "type": MonsterType.UNDEAD,
                 "str": 13,
