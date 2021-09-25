@@ -685,6 +685,16 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return d20
 
     ##########################################################################
+    def flee(self):
+        """Forced to flee?"""
+        for name, eff in self.effects.items():
+            if eff.flee() is not None:
+                print(f"{name} is causing {self} to flee")
+                self.move_away(eff.flee())
+                return True
+        return False
+
+    ##########################################################################
     def turn(self):
         """Have a go"""
         print()
