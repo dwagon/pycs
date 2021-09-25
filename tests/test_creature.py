@@ -221,7 +221,7 @@ class TestCreature(unittest.TestCase):
             critical=False,
             atkname="attack",
         )
-        self.assertEqual(self.creat.state, "UNCONSCIOUS")
+        self.assertTrue(self.creat.has_condition(Condition.UNCONSCIOUS))
         self.assertEqual(self.creat.hp, 0)
 
 

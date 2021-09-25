@@ -3,6 +3,7 @@ import colors
 from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionCategory
+from pycs.constant import Condition
 from pycs.constant import Stat
 from pycs.effect import Effect
 
@@ -146,7 +147,7 @@ class SneakAttack(Effect):
         if self._used_this_turn:
             return ("", 0, None)
 
-        if target.state != "OK":
+        if not target.has_condition(Condition.OK):
             return ("", 0, None)
 
         allies_adjacent = False

@@ -57,7 +57,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])
         self.cond_immunity = kwargs.get("cond_immunity", [])
-        self.state = "OK"
         self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         self.max_hp = self.hp
         self.has_grappled = None
@@ -68,7 +67,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for act in kwargs.get("actions", []):
             self.add_action(act)
 
-        self.conditions = set()
+        self.conditions = set([Condition.OK])
 
         self.effects = {}
         for effect in kwargs.get("effects", []):
@@ -172,8 +171,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         chp = min(chp, self.max_hp - self.hp)
         self.hp += chp
         print(f"{self} cured of {chp} hp")
-        if self.state == "UNCONSCIOUS":
-            self.state = "OK"
+        if self.has_condition(Condition.UNCONSCIOUS):
+            self.add_condition(Condition.OK)
+            self.remove_condition(Condition.UNCONSCIOUS)
             print(f"{self} regained consciousness")
         return chp
 
@@ -398,11 +398,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if not keep_going:
             return
         self.hp = 0
-        if self.state == "UNCONSCIOUS":
+        if self.has_condition(Condition.UNCONSCIOUS):
             return
         self.remove_concentration()
-        self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)
+        self.remove_condition(Condition.OK)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
 
@@ -418,7 +418,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
-        if draw and self.state == "OK":
+        if draw and self.has_condition(Condition.OK):
             print(self.arena)
 
     ##########################################################################
@@ -459,7 +459,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def report(self):
         """Short report on the character"""
         print(f"| {self.name} @ {self.coords}")
-        print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
+        print(f"|  HP: {self.hp} / {self.max_hp}")
         print(f"|  AC: {self.ac}")
         if self.concentration:
             print(f"|  Concentration: {self.concentration}")
@@ -571,7 +571,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.damage_this_turn = []
         if self.has_condition(Condition.PARALYZED):
             self.options_this_turn = []
-        if self.state != "OK":
+        if not self.has_condition(Condition.OK):
             self.options_this_turn = []
         self.moves = self.speed
         for eff in self.effects.copy().values():
