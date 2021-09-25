@@ -140,7 +140,7 @@ def statistics_report(arena):
             [
                 creat.name,
                 f"{creat.hp}/{creat.max_hp}",
-                creat.state.title(),
+                ", ".join([_.name.title() for _ in creat.conditions]),
             ]
         )
     tbl.sortby = "Name"
