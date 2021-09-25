@@ -70,6 +70,12 @@ class Arena(AStar):
             comb.turn()
 
     ##############################################################################
+    def remove_combatant(self, comb) -> None:
+        """Remove combatant from arena - generally means dead"""
+        self[comb.coords] = None
+        comb.coords = None
+
+    ##############################################################################
     def add_combatant(self, comb, coords=None) -> None:
         """Add a combatant"""
         comb.arena = self

@@ -57,10 +57,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.resistant = kwargs.get("resistant", [])
         self.immunity = kwargs.get("immunity", [])
         self.cond_immunity = kwargs.get("cond_immunity", [])
-        self.state = "OK"
         self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         self.max_hp = self.hp
         self.has_grappled = None
+        self.death_saves = 0
 
         self.bonus_actions = []
         self.reactions = []
@@ -68,7 +68,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for act in kwargs.get("actions", []):
             self.add_action(act)
 
-        self.conditions = set()
+        self.conditions = set([Condition.OK])
 
         self.effects = {}
         for effect in kwargs.get("effects", []):
@@ -172,8 +172,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         chp = min(chp, self.max_hp - self.hp)
         self.hp += chp
         print(f"{self} cured of {chp} hp")
-        if self.state == "UNCONSCIOUS":
-            self.state = "OK"
+        if self.has_condition(Condition.UNCONSCIOUS):
+            self.death_saves = 0
+            self.add_condition(Condition.OK)
+            self.remove_condition(Condition.UNCONSCIOUS)
             print(f"{self} regained consciousness")
         return chp
 
@@ -398,11 +400,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if not keep_going:
             return
         self.hp = 0
-        if self.state == "UNCONSCIOUS":
+        if self.has_condition(Condition.UNCONSCIOUS):
             return
         self.remove_concentration()
-        self.state = "UNCONSCIOUS"
         self.add_condition(Condition.UNCONSCIOUS)
+        self.remove_condition(Condition.OK)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
 
@@ -418,7 +420,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             remove = effect.removal_end_of_its_turn(self)
             if remove:
                 self.remove_effect(name)
-        if draw and self.state == "OK":
+        if draw and self.has_condition(Condition.OK):
             print(self.arena)
 
     ##########################################################################
@@ -459,7 +461,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def report(self):
         """Short report on the character"""
         print(f"| {self.name} @ {self.coords}")
-        print(f"|  HP: {self.hp} / {self.max_hp} - {self.state}")
+        print(f"|  HP: {self.hp} / {self.max_hp}")
         print(f"|  AC: {self.ac}")
         if self.concentration:
             print(f"|  Concentration: {self.concentration}")
@@ -559,6 +561,34 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return action
 
     ##########################################################################
+    def make_death_save(self):
+        """Death Saves - going to ignore stabilising"""
+        roll = int(dice.roll("d20"))
+        print(f"{self} rolled {roll} on death saving throw")
+        if roll == 1:
+            self.death_saves += 2
+            print(f"{self} badly failed a death saving throw - at {self.death_saves}")
+        elif roll <= 10:
+            self.death_saves += 1
+            print(f"{self} failed a death saving throw - at {self.death_saves}")
+        elif roll == 20:
+            print(f"{self} gasps back to life")
+            self.heal("", 1)
+        else:
+            print(f"{self} made a death saving throw - at {self.death_saves}")
+
+        if self.death_saves >= 3:
+            self.died()
+
+    ##########################################################################
+    def died(self):
+        """Creature has died"""
+        print(f"{self} is now dead")
+        self.add_condition(Condition.DEAD)
+        self.remove_condition(Condition.UNCONSCIOUS)
+        self.arena.remove_combatant(self)
+
+    ##########################################################################
     def start_turn(self):
         """Start the turn"""
         # These are all the things we can do this turn
@@ -567,11 +597,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             ActionCategory.BONUS,
             ActionCategory.REACTION,
         ]
+        if self.has_condition(Condition.UNCONSCIOUS):
+            self.make_death_save()
         self.damage_last_turn = self.damage_this_turn
         self.damage_this_turn = []
         if self.has_condition(Condition.PARALYZED):
             self.options_this_turn = []
-        if self.state != "OK":
+        if not self.has_condition(Condition.OK):
             self.options_this_turn = []
         self.moves = self.speed
         for eff in self.effects.copy().values():
@@ -688,7 +720,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def turn(self):
         """Have a go"""
         print()
-        self.report()
+        if not self.has_condition(Condition.DEAD):
+            self.report()
         self.start_turn()
         self.do_stuff(ActionCategory.BONUS)
         self.do_stuff(ActionCategory.ACTION, moveto=True)
