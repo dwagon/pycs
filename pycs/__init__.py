@@ -59,10 +59,10 @@ from pycs.gear import Shortsword
 from pycs.gear import Studded
 
 
-DRAGON_ARMY = False
+DRAGON_ARMY = True
 UNDEAD_ARMY = True
-MONSTER_ARMY = False
-GNOLL_ARMY = False
+MONSTER_ARMY = True
+GNOLL_ARMY = True
 HUMAN_ARMY = True
 
 
@@ -109,7 +109,7 @@ def statistics_report(arena):
         "Damage",
         "Crit %",
     ]
-    for creat in arena.combatants:
+    for creat in arena.pick_everyone():
         tmp = creat.dump_statistics()
         for key, val in tmp.items():
             try:
@@ -135,7 +135,7 @@ def statistics_report(arena):
     # Participant details
     tbl = PrettyTable()
     tbl.field_names = ["Name", "HP", "State"]
-    for creat in arena.combatants:
+    for creat in arena.pick_everyone():
         tbl.add_row(
             [
                 creat.name,
@@ -152,7 +152,7 @@ def statistics_report(arena):
 def participant_report(arena):
     """Report on participants"""
     sides = defaultdict(list)
-    for part in arena.combatants:
+    for part in arena.pick_everyone():
         sides[part.side].append(part)
     for side in sides:
         output = []

@@ -245,9 +245,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 return
 
             # Have to check every move if we are in any effect area
-            for part in self.arena.combatants:
+            for part in self.arena.pick_alive():
                 for eff in part.effects.values():
-                    for comb in self.arena.combatants:
+                    for comb in self.arena.pick_alive():
                         eff.hook_start_in_range(comb)
 
             old_coords = self.coords
@@ -271,7 +271,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
     ) -> None:
         """We've been hit by source- take damage"""
-        dmg = self.react_predmg(dmg, dmg_type, source, critical)
+        dmg = self._react_predmg(dmg, dmg_type, source, critical)
         if dmg_type in self.vulnerable:
             print(f"{self} is vulnerable to {dmg_type.value}")
             dmg *= 2
@@ -299,14 +299,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.hp <= 0:
             self.fallen_unconscious(dmg, dmg_type, critical)
         else:
-            self.react_postdmg(source)
+            self._react_postdmg(source)
 
     ##########################################################################
-    def react_predmg(self, dmg: int, dmg_type: DamageType, source, critical: bool):
+    def _react_predmg(self, dmg: int, dmg_type: DamageType, source, critical: bool):
         """About to take damage - do we have a reaction that can alter the damage"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return dmg
-        react = self.pick_action(
+        react = self._pick_action(
             typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg"
         )
         if react is not None:
@@ -318,11 +318,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return dmg
 
     ##########################################################################
-    def react_postdmg(self, source) -> None:
+    def _react_postdmg(self, source) -> None:
         """React to an incoming attack with a reaction"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return
-        react = self.pick_action(
+        react = self._pick_action(
             typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg"
         )
         if react is not None:
@@ -376,8 +376,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def is_alive(self) -> bool:
-        """return if the creature is alive"""
-        return self.hp > 0
+        """return True if the creature is alive and conscious"""
+        if self.has_condition(Condition.DEAD) or self.has_condition(
+            Condition.UNCONSCIOUS
+        ):
+            return False
+        return True
 
     ##########################################################################
     def shortrepr(self):  # pylint: disable=no-self-use
@@ -497,7 +501,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.distance(self, target)
 
     ##########################################################################
-    def possible_actions(self, typ=ActionCategory.ACTION) -> list:
+    def _possible_actions(self, typ=ActionCategory.ACTION) -> list:
         """What are all the things we can do this turn and how good do they
         feel about happening"""
         possible_acts = []
@@ -521,7 +525,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def pick_action(
+    def _pick_action(
         self, typ=ActionCategory.ACTION, target=None, need_hook=None
     ) -> Action:
         """What are we going to do this turn based on individual action_preference
@@ -530,7 +534,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         # The random is added a) as a tie breaker for sort b) for a bit of fun
         actions = []
         acttuple = namedtuple("acttuple", "qual rnd heur pref act")
-        for heur, act in self.possible_actions(typ):
+        for heur, act in self._possible_actions(typ):
             if need_hook and not hasattr(act, need_hook):
                 continue
             if act.__class__ in self.action_preference:
@@ -560,7 +564,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return action
 
     ##########################################################################
-    def make_death_save(self):
+    def _make_death_save(self):
         """Death Saves - going to ignore stabilising"""
         roll = int(dice.roll("d20"))
         print(f"{self} rolled {roll} on death saving throw")
@@ -585,21 +589,24 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"{self} is now dead")
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
+        self.remove_condition(Condition.OK)
         self.arena.remove_combatant(self)
 
     ##########################################################################
     def start_turn(self):
         """Start the turn"""
         # These are all the things we can do this turn
+        self.damage_last_turn = self.damage_this_turn
+        self.damage_this_turn = []
+        if self.has_condition(Condition.UNCONSCIOUS):
+            self._make_death_save()
+            if self.has_condition(Condition.DEAD):
+                return
         self.options_this_turn = [
             ActionCategory.ACTION,
             ActionCategory.BONUS,
             ActionCategory.REACTION,
         ]
-        if self.has_condition(Condition.UNCONSCIOUS):
-            self.make_death_save()
-        self.damage_last_turn = self.damage_this_turn
-        self.damage_this_turn = []
         if self.has_condition(Condition.PARALYZED):
             self.options_this_turn = []
         if not self.has_condition(Condition.OK):
@@ -608,12 +615,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         for eff in self.effects.copy().values():
             eff.hook_start_turn()
 
-        for part in self.arena.combatants:
+        for part in self.arena.pick_alive():
             for eff in part.effects.values():
-                for comb in self.arena.combatants:
+                for comb in self.arena.pick_alive():
                     eff.hook_start_in_range(comb)
 
-        for creat in self.arena.combatants:
+        for creat in self.arena.pick_alive():
             if creat == self:
                 creat.hook_start_turn()
                 continue
@@ -674,7 +681,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return
 
         # What are we going to do this turn
-        act = self.pick_action(categ)
+        act = self._pick_action(categ)
 
         if act is None:
             victims = self.pick_closest_enemy()
@@ -733,9 +740,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def turn(self):
         """Have a go"""
+        if self.has_condition(Condition.DEAD):
+            return
         print()
-        if not self.has_condition(Condition.DEAD):
-            self.report()
+        self.report()
         self.start_turn()
         if not self.flee():
             self.do_stuff(ActionCategory.BONUS)

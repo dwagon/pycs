@@ -17,7 +17,7 @@ class Arena(AStar):
         self.max_x = kwargs.get("max_x", 20)
         self.max_y = kwargs.get("max_y", 20)
         self.grid = {}
-        self.combatants = []
+        self._combatants = []
         for j in range(self.max_y):
             for i in range(self.max_x):
                 self.grid[(i, j)] = None
@@ -57,16 +57,16 @@ class Arena(AStar):
         """Roll everyone's initiative and sort"""
         # ID is here as an ultimate tie breaker
         tmp = [
-            (_.roll_initiative(), _.stats[Stat.DEX], id(_), _) for _ in self.combatants
+            (_.roll_initiative(), _.stats[Stat.DEX], id(_), _) for _ in self._combatants
         ]
         tmp.sort(reverse=True)
-        self.combatants = [_[-1] for _ in tmp]
-        print(f"Initiative: {self.combatants}")
+        self._combatants = [_[-1] for _ in tmp]
+        print(f"Initiative: {self._combatants}")
 
     ##############################################################################
     def turn(self):
         """Give all the combatants a turn in initiative order"""
-        for comb in self.combatants:
+        for comb in self.pick_everyone():
             comb.turn()
 
     ##############################################################################
@@ -79,7 +79,7 @@ class Arena(AStar):
     def add_combatant(self, comb, coords=None) -> None:
         """Add a combatant"""
         comb.arena = self
-        self.combatants.append(comb)
+        self._combatants.append(comb)
         if coords is None:
             while True:
                 rndx = random.randint(0, self.max_x - 1)
@@ -93,11 +93,8 @@ class Arena(AStar):
     ##############################################################################
     def distance(self, one, two):
         """Return the distance in moves between two protagonists"""
-        if one.coords is None or two.coords is None:
-            print(
-                f"Error: arena.distance(one={one}@{one.coords}, two={two}@{two.coords})"
-            )
-            return 999
+        assert one.coords is not None
+        assert two.coords is not None
         dist = math.hypot(one.coords[0] - two.coords[0], one.coords[1] - two.coords[1])
         # Use floor() so that a diagonal still counts as range 1
         return math.floor(dist)
@@ -148,11 +145,20 @@ class Arena(AStar):
     def remaining_type(self, creat, typ_):
         """Return the remaining combatants of the specified type"""
         remain = [
-            _
-            for _ in creat.arena.combatants
-            if _.side != creat.side and _.is_type(typ_) and _.is_alive()
+            _ for _ in self.pick_alive() if _.side != creat.side and _.is_type(typ_)
         ]
         return remain
+
+    ##############################################################################
+    def pick_everyone(self):
+        """Return all combatants"""
+        return self._combatants
+
+    ##############################################################################
+    def pick_alive(self):
+        """Return the list of living combatants"""
+        combs = [_ for _ in self._combatants if _.is_alive()]
+        return combs
 
     ##############################################################################
     def pick_closest_friends(self, creat):
@@ -160,8 +166,8 @@ class Arena(AStar):
         result = namedtuple("result", "distance id creature")
         combs = [
             result(self.distance(creat, _), id(_), _)
-            for _ in self.combatants
-            if _.side == creat.side and _.is_alive() and _ != creat
+            for _ in self.pick_alive()
+            if _.side == creat.side and _ != creat
         ]
         combs.sort()
         result = [_.creature for _ in combs]
@@ -173,7 +179,7 @@ class Arena(AStar):
         result = namedtuple("result", "distance id creature")
         combs = [
             result(self.distance(creat, _), id(_), _)
-            for _ in self.combatants
+            for _ in self.pick_alive()
             if _.side != creat.side and _.is_alive()
         ]
         combs.sort()
@@ -191,15 +197,14 @@ class Arena(AStar):
     ##############################################################################
     def my_side(self, side):
         """Who is still standing on my side"""
-        return [_ for _ in self.combatants if _.is_alive() and _.side == side]
+        return [_ for _ in self.pick_alive() if _.side == side]
 
     ##############################################################################
     def remaining_participants_count(self):
         """How many are still standing"""
         sides = defaultdict(int)
-        for participant in self.combatants:
-            if participant.is_alive():
-                sides[participant.side] += 1
+        for participant in self.pick_alive():
+            sides[participant.side] += 1
         return sides
 
     ##############################################################################

@@ -3,6 +3,7 @@ import colors
 from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionType
+from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import SpellType
 from pycs.constant import Stat
@@ -167,8 +168,10 @@ class TurnUndead(Action):
                 if not und.saving_throw(Stat.WIS, self.owner.spellcast_save):
                     if und.challenge <= self.owner.destroy_undead:
                         print(f"{und} has been destroyed by {self.owner}")
-                        und.state = "UNCONSCIOUS"  # Make dead
-                        und.hp = 0
+                        und.hit(
+                            und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead"
+                        )
+                        und.died()
                     else:
                         print(f"{und} has been turned by {self.owner}")
                         und.add_effect(TurnedUndeadEffect(cause=self.owner))
