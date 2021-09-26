@@ -7,7 +7,7 @@ from pycs.constant import SpellType
 
 
 ##############################################################################
-class Sacred_Flame(AttackSpell):
+class SacredFlame(AttackSpell):
     """Flame-like radiance descends on a creature that you can see
     within range. The target must succeed on a Dexterity saving throw
     or take 1d8 radiant damage. The target gains no benefit from cover

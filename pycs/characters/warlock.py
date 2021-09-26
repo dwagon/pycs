@@ -6,11 +6,11 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from pycs.spells import Burning_Hands
-from pycs.spells import Eldritch_Blast
+from pycs.spells import BurningHands
+from pycs.spells import EldritchBlast
 from pycs.spells import Fireball
 from pycs.spells import Frostbite
-from pycs.spells import Hellish_Rebuke
+from pycs.spells import HellishRebuke
 from pycs.spells import PoisonSpray
 from pycs.spells import ScorchingRay
 from pycs.spells import Shatter
@@ -45,11 +45,11 @@ class Warlock(Character):
         level = kwargs.get("level", 1)
         if level >= 1:
             kwargs["hp"] = 10
-            kwargs["actions"].append(Eldritch_Blast())
+            kwargs["actions"].append(EldritchBlast())
             kwargs["actions"].append(Frostbite())
             kwargs["actions"].append(PoisonSpray())
-            kwargs["actions"].append(Burning_Hands())
-            kwargs["actions"].append(Hellish_Rebuke())
+            kwargs["actions"].append(BurningHands())
+            kwargs["actions"].append(HellishRebuke())
             self.spell_slots = 1
         if level >= 2:
             self.spell_slots = 2

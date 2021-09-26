@@ -44,7 +44,7 @@ from pycs.gear import Greataxe
 from pycs.gear import Hide
 from pycs.gear import Javelin
 from pycs.gear import Leather
-from pycs.gear import Light_Crossbow
+from pycs.gear import LightCrossbow
 from pycs.gear import Longbow
 from pycs.gear import Longsword
 from pycs.gear import Mace
@@ -238,7 +238,7 @@ def human_army(arena):
                 Chainmail(magic_bonus=1),
                 PotionHealing(ammo=1),
                 Mace(magic_bonus=1, side_effect=flaming_weapon),
-                Light_Crossbow(),
+                LightCrossbow(),
             ],
         )
     )
@@ -307,7 +307,7 @@ def human_army(arena):
             race=HalfElf,
             gear=[
                 Studded(magic_bonus=1),
-                Light_Crossbow(),
+                LightCrossbow(),
                 Quarterstaff(),
                 PotionHealing(ammo=2),
             ],

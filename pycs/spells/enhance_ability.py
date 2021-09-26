@@ -7,7 +7,7 @@ from pycs.spell import SpellAction
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Enhance_Ability(SpellAction):
+class EnhanceAbility(SpellAction):
     """You touch a creature and bestow upon it a magical enhancement.
     Choose one of the following effects; the target gains that effect
     until the spell ends.

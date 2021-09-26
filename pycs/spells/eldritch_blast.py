@@ -6,7 +6,7 @@ from pycs.constant import DamageType
 
 
 ##############################################################################
-class Eldritch_Blast(AttackSpell):
+class EldritchBlast(AttackSpell):
     """Spell"""
 
     def __init__(self, **kwargs):

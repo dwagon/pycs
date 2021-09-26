@@ -9,19 +9,19 @@ from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.spells import Aid
-from pycs.spells import Beacon_Of_Hope
+from pycs.spells import BeaconOfHope
 from pycs.spells import Bless
 from pycs.spells import CureWounds
-from pycs.spells import Enhance_Ability
-from pycs.spells import Guiding_Bolt
+from pycs.spells import EnhanceAbility
+from pycs.spells import GuidingBolt
 from pycs.spells import HealingWord
 from pycs.spells import HoldPerson
 from pycs.spells import LesserRestoration
 from pycs.spells import MassHealingWord
-from pycs.spells import Sacred_Flame
+from pycs.spells import SacredFlame
 from pycs.spells import ShieldOfFaith
 from pycs.spells import SpiritGuardians
-from pycs.spells import Spiritual_Weapon
+from pycs.spells import SpiritualWeapon
 
 
 ##############################################################################
@@ -54,8 +54,8 @@ class Cleric(Character):
                 "actions": [
                     Bless(),  # Life Domain freebie
                     CureWounds(),  # Life Domain freebie
-                    Sacred_Flame(),
-                    Guiding_Bolt(),
+                    SacredFlame(),
+                    GuidingBolt(),
                     HealingWord(),
                     ShieldOfFaith(),
                 ],
@@ -75,8 +75,8 @@ class Cleric(Character):
             kwargs["hp"] = 24
             kwargs["actions"].append(Aid())
             kwargs["actions"].append(LesserRestoration())  # Life Domain freebie
-            kwargs["actions"].append(Enhance_Ability())
-            kwargs["actions"].append(Spiritual_Weapon())  # Life Domain freebie
+            kwargs["actions"].append(EnhanceAbility())
+            kwargs["actions"].append(SpiritualWeapon())  # Life Domain freebie
             kwargs["actions"].append(HoldPerson())
         if level >= 4:
             kwargs["hp"] = 31
@@ -86,7 +86,7 @@ class Cleric(Character):
             self.destroy_undead = 0.5
             kwargs["hp"] = 38
             self.spell_slots = {1: 4, 2: 3, 3: 2}
-            kwargs["actions"].append(Beacon_Of_Hope())  # Life Domain freebie
+            kwargs["actions"].append(BeaconOfHope())  # Life Domain freebie
             kwargs["actions"].append(MassHealingWord())
             kwargs["actions"].append(SpiritGuardians())
         super().__init__(**kwargs)

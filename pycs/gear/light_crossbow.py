@@ -6,7 +6,7 @@ from pycs.equipment import RangedWeapon
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Light_Crossbow(RangedWeapon):
+class LightCrossbow(RangedWeapon):
     """Fire sticks at speed"""
 
     def __init__(self, **kwargs):

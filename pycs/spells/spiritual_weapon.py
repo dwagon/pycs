@@ -6,7 +6,7 @@ from pycs.spell import SpellAction
 
 
 ##############################################################################
-class Spiritual_Weapon(SpellAction):
+class SpiritualWeapon(SpellAction):
     """A shimmering field appears and surrounds a creature of your
     choice within range, granting it a +2 bonus to AC for the duration.
     """

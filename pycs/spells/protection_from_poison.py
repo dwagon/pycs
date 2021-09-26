@@ -5,7 +5,7 @@ from pycs.constant import SpellType
 
 
 ##############################################################################
-class Protection_From_Poison(SpellAction):
+class ProtectionFromPoison(SpellAction):
     """Spell"""
 
     def __init__(self, **kwargs):

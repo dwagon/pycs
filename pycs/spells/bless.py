@@ -8,7 +8,7 @@ from pycs.constant import ActionCategory
 from pycs.constant import Stat
 from pycs.effect import Effect
 from pycs.spell import SpellAction
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
@@ -106,7 +106,7 @@ class BlessEffect(Effect):
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Test_Bless(SpellTest):
+class TestBless(SpellTest):
     """Test Spell"""
 
     ##########################################################################
