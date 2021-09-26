@@ -251,7 +251,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                         eff.hook_start_in_range(comb)
 
             old_coords = self.coords
-            self.coords = self.arena.move_towards(self, self.target)
+            self.coords = self.arena.move_towards(self, self.target.coords)
             if old_coords == self.coords:
                 break
             self.moves -= 1
