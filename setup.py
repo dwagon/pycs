@@ -4,12 +4,8 @@
 
 from setuptools import setup, find_packages
 
-with open("README.rst") as readme_file:
+with open("README.md") as readme_file:
     readme = readme_file.read()
-
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
-
 
 with open("requirements.txt") as requirements_file:
     requirements = requirements_file.readlines()
@@ -38,7 +34,7 @@ setup(
     },
     install_requires=requirements,
     license="MIT license",
-    long_description=readme + "\n\n" + history,
+    long_description=readme + "\n",
     include_package_data=True,
     keywords="pycs",
     name="pycs",
