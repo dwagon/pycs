@@ -32,6 +32,7 @@ class Cleric(Character):
 
     ##########################################################################
     def __init__(self, **kwargs):
+        self.channel_divinity = 0
         kwargs.update(
             {
                 "str": 14,
@@ -44,7 +45,7 @@ class Cleric(Character):
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
-                    TurnUndead: 4,
+                    TurnUndead: 3,
                     SpellType.BUFF: 3,
                     SpellType.RANGED: 2,
                     ActionType.RANGED: 2,
@@ -67,6 +68,7 @@ class Cleric(Character):
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10
         if level >= 2:
+            self.channel_divinity = 1
             self.spell_slots = {1: 3}
             kwargs["hp"] = 17
             kwargs["actions"].append(TurnUndead())
@@ -151,6 +153,10 @@ class TurnUndead(Action):
         super().__init__("Turn Undead", **kwargs)
 
     ##########################################################################
+    def is_available(self):
+        return self.owner.channel_divinity >= 1
+
+    ##########################################################################
     def heuristic(self):
         """Should we do this"""
         heur = 0
@@ -163,6 +169,7 @@ class TurnUndead(Action):
     def perform_action(self):
         """Do the action"""
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
+        self.owner.channel_divinity -= 1
         for und in undead:
             if self.owner.arena.distance(self.owner, und) <= 30 / 5:
                 if not und.saving_throw(Stat.WIS, self.owner.spellcast_save):
@@ -191,7 +198,7 @@ class TurnedUndeadEffect(Effect):
     ########################################################################
     def __init__(self, cause, **kwargs):
         """Initialise"""
-        self.cause = cause  # Cleric who is doing the turning
+        kwargs["cause"] = cause  # Cleric who is doing the turning
         super().__init__("Turned", **kwargs)
 
     ########################################################################
