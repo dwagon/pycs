@@ -95,9 +95,31 @@ class Arena(AStar):
         """Return the distance in moves between two protagonists"""
         assert one.coords is not None
         assert two.coords is not None
-        dist = math.hypot(one.coords[0] - two.coords[0], one.coords[1] - two.coords[1])
+        return self.distance_coords(one.coords, two.coords)
+
+    ##############################################################################
+    def distance_coords(self, one, two):
+        """Distance between two points"""
+        assert isinstance(one, tuple)
+        assert isinstance(two, tuple)
+        dist = math.hypot(one[0] - two[0], one[1] - two[1])
         # Use floor() so that a diagonal still counts as range 1
         return math.floor(dist)
+
+    ##############################################################################
+    def move_away(self, creat, cause):
+        """Move away from {cause}"""
+        dists = []
+        result = namedtuple("result", "distance id coord")
+        for nbour in self.neighbors(creat.coords):
+            dists.append(
+                result(self.distance_coords(nbour, cause.coords), id(nbour), nbour)
+            )
+        dists.sort(reverse=True)
+        dest = dists[0].coord
+        self[creat.coords] = None
+        self[dest] = creat
+        return dest
 
     ##############################################################################
     def move_towards(self, creat, target):
@@ -106,14 +128,10 @@ class Arena(AStar):
         # so try all the adjacent squares for the shortest route
         assert isinstance(target, tuple)
         routes = {}
-        for delta_x in (-1, 0, 1):
-            for delta_y in (-1, 0, 1):
-                dest = (target[0] + delta_x, target[1] + delta_y)
-                if dest not in self.grid:  # Not on map, don't bother trying
-                    continue
-                route_iter = self.astar(creat.coords, dest)
-                if route_iter:
-                    routes[dest] = list(route_iter)
+        for dest in self.neighbors(target):
+            route_iter = self.astar(creat.coords, dest)
+            if route_iter:
+                routes[dest] = list(route_iter)
 
         if not routes:
             print(f"{creat} couldn't find path to {target}")

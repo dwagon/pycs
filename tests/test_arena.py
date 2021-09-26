@@ -69,5 +69,13 @@ class TestArena(unittest.TestCase):
         enemy = self.arena.pick_closest_enemy(self.critter1)
         self.assertEqual(enemy, [self.critter2, self.critter3])
 
+    ########################################################################
+    def test_move_away(self):
+        """test move_away()"""
+        self.arena.add_combatant(self.critter1, (3, 3))
+        self.arena.add_combatant(self.critter2, (1, 1))
+        newloc = self.arena.move_away(self.critter1, cause=self.critter2)
+        self.assertEqual(newloc, (4, 4))
+
 
 # EOF

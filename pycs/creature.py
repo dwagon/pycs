@@ -637,7 +637,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def move_away(self, cause):
         """Move away from the {cause}"""
-        # TODO
+        print(f"{self} is moving away from {cause}")
+        self.coords = self.arena.move_away(self, cause)
 
     ##########################################################################
     def move(self, act: Action):
