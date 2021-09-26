@@ -7,7 +7,7 @@ from pycs.spell import SpellAction
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Beacon_Of_Hope(SpellAction):
+class BeaconOfHope(SpellAction):
     """This spell bestows hope and vitality. Choose any number of
     creatures within range. For the duration, each target has advantage
     on Wisdom saving throws and death saving throws, and regains the

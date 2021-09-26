@@ -9,7 +9,7 @@ from pycs.effect import Effect
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Guiding_Bolt(AttackSpell):
+class GuidingBolt(AttackSpell):
     """A flash of light streaks toward a creature of your choice within
     range. Make a ranged spell attack against the target. On a hit, the
     target takes 4d6 radiant damage, and the next attack roll made

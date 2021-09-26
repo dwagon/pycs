@@ -9,7 +9,7 @@ from pycs.gear.halfplate import HalfPlate
 from pycs.gear.hide import Hide
 from pycs.gear.javelin import Javelin
 from pycs.gear.leather import Leather
-from pycs.gear.light_crossbow import Light_Crossbow
+from pycs.gear.light_crossbow import LightCrossbow
 from pycs.gear.longbow import Longbow
 from pycs.gear.longsword import Longsword
 from pycs.gear.mace import Mace
@@ -43,7 +43,7 @@ __all__ = [
     "Hide",
     "Javelin",
     "Leather",
-    "Light_Crossbow",
+    "LightCrossbow",
     "Longbow",
     "Longsword",
     "Mace",

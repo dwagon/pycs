@@ -8,7 +8,7 @@ from pycs.constant import Stat
 
 
 ##############################################################################
-class Hellish_Rebuke(AttackSpell):
+class HellishRebuke(AttackSpell):
     """You point your finger, and the creature that damaged you is
     momentarily surrounded by hellish flames. The creature must make a
     Dexterity saving throw. It takes 2d10 fire damage on a failed save,

@@ -101,14 +101,14 @@ class Arena(AStar):
 
     ##############################################################################
     def move_towards(self, creat, target):
-        """Move the creature creat towards target one step"""
-        # print(f"{creat} @ {creat.coords} moving to {target} @ {target.coords}")
+        """Move the creature creat towards target coords one step"""
         # We can't move to the target square because it is occupied so no route
         # so try all the adjacent squares for the shortest route
+        assert isinstance(target, tuple)
         routes = {}
         for delta_x in (-1, 0, 1):
             for delta_y in (-1, 0, 1):
-                dest = (target.coords[0] + delta_x, target.coords[1] + delta_y)
+                dest = (target[0] + delta_x, target[1] + delta_y)
                 if dest not in self.grid:  # Not on map, don't bother trying
                     continue
                 route_iter = self.astar(creat.coords, dest)

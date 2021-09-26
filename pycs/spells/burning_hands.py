@@ -7,7 +7,7 @@ from pycs.constant import Stat
 
 
 ##############################################################################
-class Burning_Hands(AttackSpell):
+class BurningHands(AttackSpell):
     """As you hold your hands with thumbs touching and fingers spread,
     a thin sheet of flames shoots forth from your outstretched fingertips.
     Each creature in a 15-foot cone must make a Dexterity saving throw.
