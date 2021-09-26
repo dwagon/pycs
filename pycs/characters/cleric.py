@@ -1,8 +1,9 @@
-""" Cleric """
+""" https://www.dndbeyond.com/classes/cleric """
 import colors
 from pycs.action import Action
 from pycs.character import Character
 from pycs.constant import ActionType
+from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import SpellType
 from pycs.constant import Stat
@@ -62,6 +63,7 @@ class Cleric(Character):
         )
         level = kwargs.get("level", 1)
         if level >= 1:
+            self.destroy_undead = 0
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10
         if level >= 2:
@@ -81,6 +83,7 @@ class Cleric(Character):
             self.spell_slots = {1: 4, 2: 3}
             kwargs["wis"] = 18
         if level >= 5:
+            self.destroy_undead = 0.5
             kwargs["hp"] = 38
             self.spell_slots = {1: 4, 2: 3, 3: 2}
             kwargs["actions"].append(Beacon_Of_Hope())  # Life Domain freebie
@@ -145,44 +148,55 @@ class TurnUndead(Action):
 
     ##########################################################################
     def __init__(self, **kwargs):
-        name = "Turn Undead"
-        super().__init__(name, **kwargs)
+        super().__init__("Turn Undead", **kwargs)
 
     ##########################################################################
     def heuristic(self):
         """Should we do this"""
-        return 0  # Not finished yet
+        heur = 0
+        undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
+        for und in undead:
+            heur += und.hp
+        return heur
 
     ##########################################################################
     def perform_action(self):
         """Do the action"""
-        undead = [
-            _
-            for _ in self.owner.arena.combatants
-            if _.side != self.owner.side and _.is_type(MonsterType.UNDEAD)
-        ]
+        undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
         for und in undead:
-            if self.owner.arena.distance(self.owner, und) < 30 / 5:
-                if und.saving_throw(Stat.WIS, 10 + self.owner.spellcast_modifier):
-                    print(f"{und} has been turned by {self.owner}")
-                    und.add_effect(TurnedUndeadEffect())
-
-    ##########################################################################
-    def recover(self, undead):  # pylint: disable=unused-argument
-        """Did we recover from being turned"""
-        return False
+            if self.owner.arena.distance(self.owner, und) <= 30 / 5:
+                if not und.saving_throw(Stat.WIS, self.owner.spellcast_save):
+                    if und.challenge <= self.owner.destroy_undead:
+                        print(f"{und} has been destroyed by {self.owner}")
+                        und.hit(
+                            und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead"
+                        )
+                        und.died()
+                    else:
+                        print(f"{und} has been turned by {self.owner}")
+                        und.add_effect(TurnedUndeadEffect(cause=self.owner))
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
 class TurnedUndeadEffect(Effect):
-    """Still to do"""
+    """A turned creature must spend its turns trying to move as far away
+    from you as it can, and it can’t willingly move to a space within
+    30 feet of you. It also can’t take reactions. For its action, it
+    can use only the Dash action or try to escape from an effect that
+    prevents it from moving. If there’s nowhere to move, the creature
+    can use the Dodge action"""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, cause, **kwargs):
         """Initialise"""
+        self.cause = cause  # Cleric who is doing the turning
         super().__init__("Turned", **kwargs)
+
+    ########################################################################
+    def flee(self):
+        return self.cause
 
 
 # EOF

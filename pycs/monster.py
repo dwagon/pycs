@@ -10,6 +10,7 @@ class Monster(Creature):
 
     def __init__(self, **kwargs):
         check_args(self._valid_args(), self.__class__.__name__, kwargs)
+        self.challenge = kwargs.get("challenge")
         hitdice = kwargs.get("hitdice")
         if hitdice is not None:
             kwargs["hp"] = max(1, int(dice.roll(hitdice)))
@@ -19,7 +20,7 @@ class Monster(Creature):
     ##########################################################################
     def _valid_args(self):
         """What is valid in this class for kwargs"""
-        return super()._valid_args() | {"hitdice"}
+        return super()._valid_args() | {"hitdice", "challenge"}
 
     ##########################################################################
     def shortrepr(self):

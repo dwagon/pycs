@@ -28,7 +28,7 @@ class AdultGoldDragon(Monster):
                 "ac": 19,
                 "stat_prof": [Stat.DEX, Stat.CON, Stat.WIS, Stat.CHA],
                 "speed": 40,
-                "type": MonsterType.UNDEAD,
+                "type": MonsterType.DRAGON,
                 "str": 27,
                 "dex": 14,
                 "con": 25,

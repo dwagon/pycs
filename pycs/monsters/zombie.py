@@ -23,6 +23,7 @@ class Zombie(Monster):
                 "hitdice": "3d8+9",
                 "ac": 8,
                 "speed": 20,
+                "challenge": 0.25,
                 "type": MonsterType.UNDEAD,
                 "str": 13,
                 "dex": 6,
@@ -61,7 +62,7 @@ class Zombie(Monster):
     def shortrepr(self):  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
-            return colors.red("Z", bg="green")
+            return colors.green("Z")
         return colors.green("Z", bg="red")
 
 

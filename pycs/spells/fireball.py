@@ -9,7 +9,7 @@ from pycs.constant import ActionCategory
 from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
@@ -49,7 +49,7 @@ class Fireball(AttackSpell):
     ##########################################################################
     def cast(self):
         """Do the spell"""
-        for per in self.owner.arena.combatants:
+        for per in self.owner.arena.pick_alive():
             if per.distance(self.target) < 20 / 5:
                 print(f"Attacking {per} with fireball")
                 dmg = self.roll_dmg(self.owner, per)
@@ -64,7 +64,7 @@ class Fireball(AttackSpell):
                 continue
             sides = defaultdict(int)
 
-            for per in self.owner.arena.combatants:
+            for per in self.owner.arena.pick_alive():
                 if per.distance(enemy) < 20 / 5:
                     sides[per.side] += 1
             targets.append(

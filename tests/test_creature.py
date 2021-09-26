@@ -141,7 +141,13 @@ class TestCreature(unittest.TestCase):
         """is_alive testing"""
         self.creat.hp = 10
         self.assertTrue(self.creat.is_alive())
-        self.creat.hp = 0
+        self.creat.hit(
+            15,
+            dmg_type=DamageType.ACID,
+            source=Mock(),
+            critical=False,
+            atkname="attack",
+        )
         self.assertFalse(self.creat.is_alive())
 
     ########################################################################

@@ -132,5 +132,10 @@ class Effect:
         """
         return True
 
+    ##########################################################################
+    def flee(self):
+        """Run awaaay - from what?"""
+        return None
+
 
 # EOF
