@@ -1,13 +1,18 @@
 """ https://www.dndbeyond.com/classes/cleric """
+import unittest
+from unittest.mock import patch
 import colors
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.monsters import Skeleton
 from pycs.spells import Aid
 from pycs.spells import BeaconOfHope
 from pycs.spells import Bless
@@ -32,6 +37,7 @@ class Cleric(Character):
 
     ##########################################################################
     def __init__(self, **kwargs):
+        self.channel_divinity = 0
         kwargs.update(
             {
                 "str": 14,
@@ -44,7 +50,7 @@ class Cleric(Character):
                 "spellcast_bonus_stat": Stat.WIS,
                 "action_preference": {
                     SpellType.HEALING: 5,
-                    TurnUndead: 4,
+                    TurnUndead: 3,
                     SpellType.BUFF: 3,
                     SpellType.RANGED: 2,
                     ActionType.RANGED: 2,
@@ -67,6 +73,7 @@ class Cleric(Character):
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10
         if level >= 2:
+            self.channel_divinity = 1
             self.spell_slots = {1: 3}
             kwargs["hp"] = 17
             kwargs["actions"].append(TurnUndead())
@@ -151,18 +158,24 @@ class TurnUndead(Action):
         super().__init__("Turn Undead", **kwargs)
 
     ##########################################################################
+    def is_available(self):
+        return self.owner.channel_divinity >= 1
+
+    ##########################################################################
     def heuristic(self):
         """Should we do this"""
         heur = 0
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
         for und in undead:
-            heur += und.hp
+            if self.owner.arena.distance(self.owner, und) <= 30 / 5:
+                heur += und.hp
         return heur
 
     ##########################################################################
     def perform_action(self):
         """Do the action"""
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
+        self.owner.channel_divinity -= 1
         for und in undead:
             if self.owner.arena.distance(self.owner, und) <= 30 / 5:
                 if not und.saving_throw(Stat.WIS, self.owner.spellcast_save):
@@ -191,12 +204,62 @@ class TurnedUndeadEffect(Effect):
     ########################################################################
     def __init__(self, cause, **kwargs):
         """Initialise"""
-        self.cause = cause  # Cleric who is doing the turning
+        kwargs["cause"] = cause  # Cleric who is doing the turning
         super().__init__("Turned", **kwargs)
 
     ########################################################################
     def flee(self):
         return self.cause
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestTurnUndead(unittest.TestCase):
+    """Test Turning"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.cleric = Cleric(name="Cyril", side="a", level=2)
+        self.arena.add_combatant(self.cleric, coords=(1, 1))
+        self.skel = Skeleton(side="b")
+        self.arena.add_combatant(self.skel, coords=(2, 2))
+
+    ########################################################################
+    def test_turn_fail(self):
+        """Test inflicting the turn and failing the save"""
+        self.assertTrue(self.skel.is_alive())
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            act.perform_action()
+            self.skel.report()
+        self.assertTrue(self.skel.is_alive())
+        self.assertTrue(self.skel.has_effect("Turned"))
+
+    ########################################################################
+    def test_turn_save(self):
+        """Test inflicting the turn and making the save"""
+        self.assertTrue(self.skel.is_alive())
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            act.perform_action()
+        self.assertTrue(self.skel.is_alive())
+        self.assertFalse(self.skel.has_effect("Turned"))
+
+    ########################################################################
+    def test_destroy(self):
+        """Test inflicting the turn with senior cleric"""
+        self.assertTrue(self.skel.is_alive())
+        self.cleric = Cleric(name="St Cyril", side="a", level=5)
+        self.arena.add_combatant(self.cleric, coords=(1, 1))
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            act.perform_action()
+        self.assertFalse(self.skel.is_alive())
 
 
 # EOF

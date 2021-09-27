@@ -10,59 +10,38 @@ import dice
 
 from pycs.monsters import AdultGoldDragon
 from pycs.monsters import BarbedDevil
-from pycs.monsters import Ghast
-from pycs.monsters import Ghoul
+from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
-from pycs.monsters import Gnoll
-from pycs.monsters import GnollPackLord
-from pycs.monsters import GnollFangOfYeenoghu
+from pycs.monsters import Gnoll, GnollPackLord, GnollFangOfYeenoghu
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
-from pycs.monsters import Skeleton
 from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
-from pycs.monsters import Wraith
-from pycs.monsters import Zombie
 from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
-from pycs.characters import Barbarian
-from pycs.characters import Cleric
-from pycs.characters import Fighter
-from pycs.characters import Paladin
-from pycs.characters import Ranger
-from pycs.characters import Rogue
-from pycs.characters import Warlock
+from pycs.characters import Barbarian, Cleric, Fighter, Paladin, Ranger, Rogue, Warlock
 
 from pycs.constant import DamageType
 
 from pycs.arena import Arena
 
-from pycs.gear import Chainmail
-from pycs.gear import Greataxe
-from pycs.gear import Hide
-from pycs.gear import Javelin
-from pycs.gear import Leather
-from pycs.gear import LightCrossbow
-from pycs.gear import Longbow
-from pycs.gear import Longsword
-from pycs.gear import Mace
-from pycs.gear import Plate
-from pycs.gear import PotionHealing
-from pycs.gear import PotionGreaterHealing
-from pycs.gear import PotionSuperiorHealing
-from pycs.gear import PotionSupremeHealing
-from pycs.gear import Quarterstaff
-from pycs.gear import Shield
-from pycs.gear import Shortsword
-from pycs.gear import Studded
+from pycs.gear import Chainmail, Hide, Leather, Plate, Shield, Studded
+from pycs.gear import Greataxe, Longsword, Mace, Quarterstaff, Shortsword
+from pycs.gear import Javelin, LightCrossbow, Longbow
+from pycs.gear import (
+    PotionHealing,
+    PotionGreaterHealing,
+    PotionSuperiorHealing,
+    PotionSupremeHealing,
+)
 
 
-DRAGON_ARMY = True
+DRAGON_ARMY = False
 UNDEAD_ARMY = True
-MONSTER_ARMY = True
-GNOLL_ARMY = True
+MONSTER_ARMY = False
+GNOLL_ARMY = False
 HUMAN_ARMY = True
 
 
