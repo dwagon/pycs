@@ -1,13 +1,18 @@
 """ https://www.dndbeyond.com/classes/cleric """
+import unittest
+from unittest.mock import patch
 import colors
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.monsters import Skeleton
 from pycs.spells import Aid
 from pycs.spells import BeaconOfHope
 from pycs.spells import Bless
@@ -162,7 +167,8 @@ class TurnUndead(Action):
         heur = 0
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
         for und in undead:
-            heur += und.hp
+            if self.owner.arena.distance(self.owner, und) <= 30 / 5:
+                heur += und.hp
         return heur
 
     ##########################################################################
@@ -204,6 +210,56 @@ class TurnedUndeadEffect(Effect):
     ########################################################################
     def flee(self):
         return self.cause
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestTurnUndead(unittest.TestCase):
+    """Test Turning"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.cleric = Cleric(name="Cyril", side="a", level=2)
+        self.arena.add_combatant(self.cleric, coords=(1, 1))
+        self.skel = Skeleton(side="b")
+        self.arena.add_combatant(self.skel, coords=(2, 2))
+
+    ########################################################################
+    def test_turn_fail(self):
+        """Test inflicting the turn and failing the save"""
+        self.assertTrue(self.skel.is_alive())
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            act.perform_action()
+            self.skel.report()
+        self.assertTrue(self.skel.is_alive())
+        self.assertTrue(self.skel.has_effect("Turned"))
+
+    ########################################################################
+    def test_turn_save(self):
+        """Test inflicting the turn and making the save"""
+        self.assertTrue(self.skel.is_alive())
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 20
+            act.perform_action()
+        self.assertTrue(self.skel.is_alive())
+        self.assertFalse(self.skel.has_effect("Turned"))
+
+    ########################################################################
+    def test_destroy(self):
+        """Test inflicting the turn with senior cleric"""
+        self.assertTrue(self.skel.is_alive())
+        self.cleric = Cleric(name="St Cyril", side="a", level=5)
+        self.arena.add_combatant(self.cleric, coords=(1, 1))
+        act = self.cleric.pick_attack_by_name("Turn Undead")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 1
+            act.perform_action()
+        self.assertFalse(self.skel.is_alive())
 
 
 # EOF
