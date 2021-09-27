@@ -168,10 +168,6 @@ class AttackSpell(SpellAction):
         if self.dmg[1]:
             dmg += self.dmg[1]
             print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
-        dmg_bon = self.stat_dmg_bonus(self.owner)
-        if dmg_bon:
-            dmg += dmg_bon
-            print(f"Adding stat bonus of {dmg_bon} -> {dmg}")
         spell_dc = self.save_dc
         if not spell_dc:
             spell_dc = self.owner.spellcast_save
