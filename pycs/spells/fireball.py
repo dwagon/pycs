@@ -1,6 +1,6 @@
 """https://www.dndbeyond.com/spells/fireball"""
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from unittest.mock import patch
 import dice
 from pycs.spell import AttackSpell
@@ -50,33 +50,44 @@ class Fireball(AttackSpell):
     def cast(self):
         """Do the spell"""
         for per in self.owner.arena.pick_alive():
-            if per.distance(self.target) < 20 / 5:
-                print(f"Attacking {per} with fireball")
-                dmg = self.roll_dmg(self.owner, per)
+            if per.distance(self.owner.target) <= 20 / 5:
+                dmg = self.roll_dmg(victim=per)
                 per.hit(dmg, self.dmg_type, self.owner, False, self.name)
 
     ##########################################################################
     def pick_target(self):
         """Who should we do the spell to"""
         targets = []
+        result = namedtuple("result", "enemies friends id target")
+        # Who we are aiming for
         for enemy in self.owner.pick_closest_enemy():
             if self.owner.distance(enemy) > self.range()[0]:
                 continue
             sides = defaultdict(int)
+            selfhit = False
 
+            # Who we will hit
             for per in self.owner.arena.pick_alive():
-                if per.distance(enemy) < 20 / 5:
+                if per == self:
+                    selfhit = True
+                if per.distance(enemy) <= 20 / 5:  # Radius of blast
                     sides[per.side] += 1
-            targets.append(
-                (sides[enemy.side], 999 - sides[self.owner.side], id(enemy), enemy)
-            )
+            if not selfhit:
+                targets.append(
+                    result(
+                        sides[enemy.side],
+                        999 - sides[self.owner.side],
+                        id(enemy),
+                        enemy,
+                    )
+                )
         # We want the most enemy and the least friends in the blast
         if targets:
-            self._num_enemy = targets[0][0]
-            self._num_friend = -targets[0][1] + 999
-            self.target = targets[0][-1]
-            targets.sort()
-            return targets[0][-1]
+            self._num_enemy = targets[0].enemies
+            self._num_friend = -targets[0].friends + 999
+            self.target = targets[0].target
+            targets.sort(reverse=True)
+            return targets[0].target
         return None
 
     ##########################################################################
