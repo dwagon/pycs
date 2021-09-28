@@ -700,9 +700,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if act:
             msg = f"{self} is going to do {act} to"
             if self.target == self:
-                print(f"{msg} self as a {categ.value}")
+                print(f"{msg} self as {categ.value}")
             else:
-                print(f"{msg} {self.target} as a {categ.value}")
+                print(f"{msg} {self.target} as {categ.value}")
             did_act = self.do_action(act)
             if did_act and act.action_cost:
                 self.options_this_turn.remove(categ)
