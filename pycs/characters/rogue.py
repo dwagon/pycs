@@ -1,11 +1,18 @@
 """ https://www.dndbeyond.com/classes/rogue """
+import unittest
+from unittest.mock import patch
 import colors
+import dice
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import Condition
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.gear import Shortsword
+from pycs.monsters import Orc
 
 
 ##############################################################################
@@ -168,6 +175,57 @@ class SneakAttack(Effect):
             print("We have advantage on attack")
         self._used_this_turn = True
         return (self.owner.sneak_attack_dmg, 0, None)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestSneakAttack(unittest.TestCase):
+    """Test SneakAttack"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.rogue = Rogue(name="Rufus", side="a", level=2, gear=[Shortsword()])
+        self.arena.add_combatant(self.rogue, coords=(1, 1))
+        self.orc = Orc(side="b")
+        self.arena.add_combatant(self.orc, coords=(2, 2))
+
+    ########################################################################
+    def test_no_sneak(self):
+        """Make sure not everything is a sneak attack"""
+        self.assertTrue(self.rogue.has_effect("Sneak Attack"))
+        act = self.rogue.pick_attack_by_name("Shortsword")
+        self.rogue.target = self.orc
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19  # Hit target
+            with patch.object(dice, "roll") as mock_dice:
+                mock_dice.return_value = 3
+                act.perform_action()
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 6)  # 3 for dmg, 3 for stat
+
+    ########################################################################
+    def test_sneak(self):
+        """Do a sneak attack"""
+        self.assertTrue(self.rogue.has_effect("Sneak Attack"))
+        act = self.rogue.pick_attack_by_name("Shortsword")
+        friend = Orc(side="a")
+        self.arena.add_combatant(friend, coords=(2, 3))
+        self.rogue.target = self.orc
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19  # Hit target
+            with patch.object(dice, "roll") as mock_dice:
+                mock_dice.return_value = 3
+                act.perform_action()
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 6 - 3)  # Additional 3 dmg
+
+        # Attack again - should not be another sneak
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19  # Hit target
+            with patch.object(dice, "roll") as mock_dice:
+                mock_dice.return_value = 3
+                act.perform_action()
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 6 - 3 - 6)
 
 
 # EOF
