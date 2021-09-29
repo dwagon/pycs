@@ -188,7 +188,7 @@ class TestSneakAttack(unittest.TestCase):
         self.arena = Arena()
         self.rogue = Rogue(name="Rufus", side="a", level=2, gear=[Shortsword()])
         self.arena.add_combatant(self.rogue, coords=(1, 1))
-        self.orc = Orc(side="b")
+        self.orc = Orc(side="b", hp=20)
         self.arena.add_combatant(self.orc, coords=(2, 2))
 
     ########################################################################
