@@ -122,8 +122,8 @@ class TestFireball(SpellTest):
             with patch.object(Creature, "rolld20") as mock:
                 mock.return_value = 19
                 self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
-        # Damage should be half of (20 + 4(prof_bonus))
-        self.assertEqual(self.enemy.hp, self.enemy.max_hp - 12)
+        # Damage should be half of 20
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp - 10)
 
     ##########################################################################
     def test_cast_hit(self):
@@ -134,7 +134,7 @@ class TestFireball(SpellTest):
             with patch.object(Creature, "rolld20") as mock:
                 mock.return_value = 1
                 self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
-        self.assertEqual(self.enemy.hp, self.enemy.max_hp - 24)
+        self.assertEqual(self.enemy.hp, self.enemy.max_hp - 20)
 
 
 # EOF
