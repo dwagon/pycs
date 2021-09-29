@@ -108,7 +108,7 @@ class TestWraith(unittest.TestCase):
     ##########################################################################
     def test_drain(self):
         """Test life drain"""
-        lfdr = self.beast.pick_attack_by_name("Life Drain")
+        lfdr = self.beast.pick_action_by_name("Life Drain")
         self.beast.target = self.victim
 
         # Ensure we hit

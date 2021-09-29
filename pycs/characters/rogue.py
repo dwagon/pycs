@@ -195,7 +195,7 @@ class TestSneakAttack(unittest.TestCase):
     def test_no_sneak(self):
         """Make sure not everything is a sneak attack"""
         self.assertTrue(self.rogue.has_effect("Sneak Attack"))
-        act = self.rogue.pick_attack_by_name("Shortsword")
+        act = self.rogue.pick_action_by_name("Shortsword")
         self.rogue.target = self.orc
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19  # Hit target
@@ -208,7 +208,7 @@ class TestSneakAttack(unittest.TestCase):
     def test_sneak(self):
         """Do a sneak attack"""
         self.assertTrue(self.rogue.has_effect("Sneak Attack"))
-        act = self.rogue.pick_attack_by_name("Shortsword")
+        act = self.rogue.pick_action_by_name("Shortsword")
         friend = Orc(side="a")
         self.arena.add_combatant(friend, coords=(2, 3))
         self.rogue.target = self.orc

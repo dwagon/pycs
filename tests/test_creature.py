@@ -77,17 +77,17 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(self.creat.spellcast_save, 14)
 
     ########################################################################
-    def test_pick_attack_by_name(self):
-        """Test pick_attack_by_name()"""
+    def test_pick_action_by_name(self):
+        """Test pick_action_by_name()"""
         alpha = MeleeAttack("alpha")
         beta = RangedAttack("beta")
         self.creat.add_action(alpha)
         self.creat.add_action(beta)
-        atk = self.creat.pick_attack_by_name("alpha")
+        atk = self.creat.pick_action_by_name("alpha")
         self.assertEqual(atk, alpha)
-        atk2 = self.creat.pick_attack_by_name("beta")
+        atk2 = self.creat.pick_action_by_name("beta")
         self.assertEqual(atk2, beta)
-        atk3 = self.creat.pick_attack_by_name("gamma")
+        atk3 = self.creat.pick_action_by_name("gamma")
         self.assertIsNone(atk3)
 
     ########################################################################
@@ -131,9 +131,9 @@ class TestCreature(unittest.TestCase):
         """test add_action"""
         self.creat.add_action(MeleeAttack("alpha"))
         self.creat.add_action(MeleeAttack("beta"))
-        act = self.creat.pick_attack_by_name("alpha")
+        act = self.creat.pick_action_by_name("alpha")
         self.assertEqual(act.name, "alpha")
-        act = self.creat.pick_attack_by_name("foo")
+        act = self.creat.pick_action_by_name("foo")
         self.assertIsNone(act)
 
     ########################################################################

@@ -258,12 +258,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
-    def pick_attack_by_name(self, name: str) -> Optional[Attack]:
+    def pick_action_by_name(self, name: str) -> Optional[Attack]:
         """Pick the attack by name"""
         for atk in self.actions:
             if atk.name == name:
                 return atk
-        print(f"{self}: pick_attack_by_name({name=}) - none found")
+        for atk in self.bonus_actions:
+            if atk.name == name:
+                return atk
+        for atk in self.reactions:
+            if atk.name == name:
+                return atk
+        print(f"{self}: pick_action_by_name({name=}) - none found")
         return None
 
     ##########################################################################

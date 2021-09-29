@@ -88,8 +88,8 @@ class Ghast(Monster):
     def pick_best_attack(self):
         """Pick the claw attack more often than damage would indicate"""
         if self.target.has_condition(Condition.PARALYZED):
-            return self.pick_attack_by_name("Bite")
-        return self.pick_attack_by_name("Claw")
+            return self.pick_action_by_name("Bite")
+        return self.pick_action_by_name("Claw")
 
     ##########################################################################
     def shortrepr(self):  # pragma: no cover
@@ -214,7 +214,7 @@ class TestGhast(unittest.TestCase):
     ##########################################################################
     def test_claws(self):
         """Test claws"""
-        claws = self.beast.pick_attack_by_name("Claw")
+        claws = self.beast.pick_action_by_name("Claw")
         self.beast.target = self.victim
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [20, 1]

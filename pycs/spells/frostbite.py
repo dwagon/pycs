@@ -116,7 +116,7 @@ class TestFrostbite(SpellTest):
     ##########################################################################
     def test_effect(self):
         """Test the effect of casting the spell"""
-        act = self.enemy.pick_attack_by_name("Longsword")
+        act = self.enemy.pick_action_by_name("Longsword")
         self.assertFalse(act.has_disadvantage(self.friend, 1))
         self.enemy.add_effect(FrostbiteEffect())
         self.assertTrue(act.has_disadvantage(self.friend, 1))
