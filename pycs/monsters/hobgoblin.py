@@ -104,7 +104,7 @@ class TestHobgoblin(unittest.TestCase):
         """Test Martial Advantage"""
         friend = Hobgoblin(side="a")
         self.arena.add_combatant(friend, coords=(1, 3))
-        sword = self.beast.pick_attack_by_name("Longsword")
+        sword = self.beast.pick_action_by_name("Longsword")
         self.beast.target = self.victim
         self.assertFalse(self.beast.effects["Martial Advantage"].used_this_turn)
         with patch.object(Creature, "rolld20") as mock:
@@ -120,7 +120,7 @@ class TestHobgoblin(unittest.TestCase):
     ##########################################################################
     def test_martial_miss(self):
         """Test Martial Advantage not applying"""
-        sword = self.beast.pick_attack_by_name("Longsword")
+        sword = self.beast.pick_action_by_name("Longsword")
         self.beast.target = self.victim
         self.assertFalse(self.beast.effects["Martial Advantage"].used_this_turn)
         with patch.object(Creature, "rolld20") as mock:

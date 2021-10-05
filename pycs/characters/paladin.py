@@ -1,6 +1,8 @@
 """ Paladin """
+import unittest
 import colors
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import Condition
@@ -177,6 +179,44 @@ class LayOnHands(Action):
         if friends:
             return friends[0]
         return None
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestLayOnHands(unittest.TestCase):
+    """Test LayOnHands"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.paladin = Paladin(name="Pia", side="a", level=2)
+        self.arena.add_combatant(self.paladin, coords=(1, 1))
+        self.friend = Paladin(name="Fred", side="a", level=5)
+        self.arena.add_combatant(self.friend, coords=(2, 2))
+
+    ########################################################################
+    def test_loh_cure_poison(self):
+        """test lay on hands - curing poison"""
+        act = self.paladin.pick_action_by_name("Lay on Hands")
+        self.paladin.target = self.friend
+        self.friend.add_condition(Condition.POISONED)
+        self.assertTrue(self.friend.has_condition(Condition.POISONED))
+        self.assertEqual(self.paladin.lay_on_hands, 5)
+        act.perform_action()
+        self.assertFalse(self.friend.has_condition(Condition.POISONED))
+        self.assertEqual(self.paladin.lay_on_hands, 0)
+
+    ########################################################################
+    def test_loh_heal(self):
+        """test lay on hands - healing"""
+        act = self.paladin.pick_action_by_name("Lay on Hands")
+        self.paladin.target = self.friend
+        self.friend.hp = self.friend.max_hp - 10
+        self.assertEqual(self.paladin.lay_on_hands, 5)
+        act.perform_action()
+        self.assertEqual(self.paladin.lay_on_hands, 0)
+        self.assertEqual(self.friend.hp, self.friend.max_hp - 5)
 
 
 # EOF

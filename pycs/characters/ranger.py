@@ -1,13 +1,19 @@
 """ https://www.dndbeyond.com/classes/ranger """
+import unittest
+from unittest.mock import patch
 import colors
+import dice
+from pycs.arena import Arena
 from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
-
-# from pycs.spells import Absorb_Elements
+from pycs.gear import Shortbow
+from pycs.gear import Shortsword
+from pycs.monsters import Skeleton
 from pycs.spells import CureWounds
 from pycs.spells import HuntersMark
 from pycs.spells import LesserRestoration
@@ -184,6 +190,75 @@ class ArcheryFightingStyle(Effect):
         if issubclass(kwargs["action"].__class__, RangedAttack):
             eff += 2
         return eff
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestArcheryStyle(unittest.TestCase):
+    """Test ArcheryStyle"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.ranger = Ranger(
+            name="Ryan", side="a", level=2, gear=[Shortbow(), Shortsword()]
+        )
+        self.arena.add_combatant(self.ranger, coords=(1, 1))
+        self.skel = Skeleton(side="b")
+        self.arena.add_combatant(self.skel, coords=(3, 3))
+
+    ########################################################################
+    def test_archery_ranged(self):
+        """Test Effect with ranged"""
+        self.assertTrue(self.ranger.has_effect("Archery Fighting Style"))
+        act = self.ranger.pick_action_by_name("Shortbow")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 10
+            to_hit, _, _ = act.roll_to_hit(self.skel)
+        # 10 to hit, 2 prof, 3 stat, 2 archery style
+        self.assertEqual(to_hit, 10 + 2 + 3 + 2)
+
+    ########################################################################
+    def test_archery_melee(self):
+        """Test Effect with melee - should not apply"""
+        self.assertTrue(self.ranger.has_effect("Archery Fighting Style"))
+        act = self.ranger.pick_action_by_name("Shortsword")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 10
+            to_hit, _, _ = act.roll_to_hit(self.skel)
+        # 10 to hit, 2 prof, 3 stat
+        self.assertEqual(to_hit, 10 + 2 + 3)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestColussusSlayer(unittest.TestCase):
+    """Test ColussusSlayer"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.ranger = Ranger(name="Ryan", side="a", level=4, gear=[Shortbow()])
+        self.arena.add_combatant(self.ranger, coords=(1, 1))
+        self.skel = Skeleton(side="b", hp=10)
+        self.arena.add_combatant(self.skel, coords=(3, 3))
+
+    ########################################################################
+    def test_colossus(self):
+        """Test Effect with ranged"""
+        self.assertTrue(self.ranger.has_effect("Colossus Slayer"))
+        act = self.ranger.pick_action_by_name("Shortbow")
+        with patch.object(dice, "roll") as mock:
+            mock.return_value = 2
+            act.buff_attack_damage(self.skel)
+        self.assertEqual(self.skel.hp, self.skel.max_hp - 2)
+        # Shouldn't happen twice in a turn
+        with patch.object(dice, "roll") as mock:
+            mock.return_value = 2
+            act.buff_attack_damage(self.skel)
+        self.assertEqual(self.skel.hp, self.skel.max_hp - 2)
 
 
 # EOF

@@ -137,7 +137,7 @@ class TestGhoul(unittest.TestCase):
     ##########################################################################
     def test_claws(self):
         """Test claws"""
-        claws = self.beast.pick_attack_by_name("Claw")
+        claws = self.beast.pick_action_by_name("Claw")
         self.beast.target = self.victim
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [20, 1]

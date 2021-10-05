@@ -230,7 +230,7 @@ class TestTurnUndead(unittest.TestCase):
     def test_turn_fail(self):
         """Test inflicting the turn and failing the save"""
         self.assertTrue(self.skel.is_alive())
-        act = self.cleric.pick_attack_by_name("Turn Undead")
+        act = self.cleric.pick_action_by_name("Turn Undead")
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             act.perform_action()
@@ -242,7 +242,7 @@ class TestTurnUndead(unittest.TestCase):
     def test_turn_save(self):
         """Test inflicting the turn and making the save"""
         self.assertTrue(self.skel.is_alive())
-        act = self.cleric.pick_attack_by_name("Turn Undead")
+        act = self.cleric.pick_action_by_name("Turn Undead")
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 20
             act.perform_action()
@@ -255,7 +255,7 @@ class TestTurnUndead(unittest.TestCase):
         self.assertTrue(self.skel.is_alive())
         self.cleric = Cleric(name="St Cyril", side="a", level=5)
         self.arena.add_combatant(self.cleric, coords=(1, 1))
-        act = self.cleric.pick_attack_by_name("Turn Undead")
+        act = self.cleric.pick_action_by_name("Turn Undead")
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             act.perform_action()

@@ -1,13 +1,20 @@
 """ Barbarian """
+import unittest
+from unittest.mock import patch
 import colors
+import dice
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import DamageType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.gear import Greataxe
+from pycs.monsters import Orc
 
 
 ##############################################################################
@@ -57,7 +64,7 @@ class Barbarian(Character):
     def report(self):
         """Character Report"""
         super().report()
-        javs = self.pick_attack_by_name("Javelin")
+        javs = self.pick_action_by_name("Javelin")
         print(f"|  Javelins: {javs.ammo}")
 
     ##########################################################################
@@ -180,6 +187,46 @@ class BarbarianRecklessAttack(Effect):
     def __init__(self, **kwargs):
         """Initialise"""
         super().__init__("Reckless Attack", **kwargs)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestBarbarianRage(unittest.TestCase):
+    """Test Rage"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.barb = Barbarian(name="Babs", side="a", level=2, gear=[Greataxe()])
+        self.arena.add_combatant(self.barb, coords=(1, 1))
+        self.orc = Orc(side="b", hp=20)
+        self.arena.add_combatant(self.orc, coords=(2, 2))
+
+    ########################################################################
+    def test_rage(self):
+        """Lets get angry"""
+        self.assertFalse(self.barb.has_effect("Rage"))
+        rage = self.barb.pick_action_by_name("Barbarian Rage")
+        rage.perform_action()
+        self.assertTrue(self.barb.has_effect("Rage"))
+        self.barb.hit(10, DamageType.PIERCING, self.orc, False, "Test")
+        # Take half damage from piercing etc.
+        self.assertEqual(self.barb.hp, self.barb.max_hp - 5)
+
+        self.barb.hit(10, DamageType.NECROTIC, self.orc, False, "Test")
+        # Take full damage from non-piercing etc.
+        self.assertEqual(self.barb.hp, self.barb.max_hp - 5 - 10)
+
+        axe = self.barb.pick_action_by_name("Greataxe")
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19  # Hit target
+            with patch.object(dice, "roll") as mock_dice:
+                mock_dice.return_value = 3
+                self.barb.target = self.orc
+                axe.perform_action()
+        # Dmg = 3 from axe, 3 from prof, 2 from rage
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 3 - 3 - 2)
 
 
 # EOF

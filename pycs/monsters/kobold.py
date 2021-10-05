@@ -84,7 +84,7 @@ class TestKobold(unittest.TestCase):
     ##########################################################################
     def test_pack(self):
         """Test pack tactics"""
-        sling = self.beast.pick_attack_by_name("Sling")
+        sling = self.beast.pick_action_by_name("Sling")
         self.assertFalse(sling.has_advantage(self.victim, 3))
         friend = Kobold(side="a")
         self.arena.add_combatant(friend, coords=(1, 3))

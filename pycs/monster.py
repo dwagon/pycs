@@ -12,7 +12,8 @@ class Monster(Creature):
         check_args(self._valid_args(), self.__class__.__name__, kwargs)
         self.challenge = kwargs.get("challenge")
         hitdice = kwargs.get("hitdice")
-        if hitdice is not None:
+        hp = kwargs.get("hp")
+        if hp is None and hitdice is not None:
             kwargs["hp"] = max(1, int(dice.roll(hitdice)))
 
         super().__init__(**kwargs)

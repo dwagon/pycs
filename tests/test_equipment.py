@@ -58,7 +58,7 @@ class TestEquipment(unittest.TestCase):
     def test_finesse_weapon(self):
         """Test weapons with finesse"""
         self.creat.add_gear(Dagger())
-        att = self.creat.pick_attack_by_name("Dagger")
+        att = self.creat.pick_action_by_name("Dagger")
         self.creat.stats[Stat.STR] = 9
         self.creat.stats[Stat.DEX] = 19
         self.assertEqual(att.use_stat, Stat.DEX)

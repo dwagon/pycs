@@ -1,12 +1,20 @@
 """ Fighter """
+import unittest
+from unittest.mock import patch
 import colors
+import dice
 from pycs.action import Action
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
+from pycs.gear import LightCrossbow
+from pycs.gear import Mace
+from pycs.monsters import Orc
 
 
 ##############################################################################
@@ -148,6 +156,81 @@ class DuelingFightingStyle(Effect):
         if issubclass(attack.__class__, MeleeAttack):
             return ("", 2, None)
         return ("", 0, None)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestDuelingFightingStyle(unittest.TestCase):
+    """Test DuelingFightingStyle"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.fighter = Fighter(
+            name="Freya", side="a", level=2, gear=[Mace(), LightCrossbow()]
+        )
+        self.arena.add_combatant(self.fighter, coords=(1, 1))
+        self.orc = Orc(side="b", hp=20)
+        self.arena.add_combatant(self.orc, coords=(2, 2))
+
+    ########################################################################
+    def test_dfs_melee(self):
+        """Test damage bonus"""
+        self.assertTrue(self.fighter.has_effect("Dueling Fighting Style"))
+        act = self.fighter.pick_action_by_name("Mace")
+        self.fighter.target = self.orc
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19
+            with patch.object(dice, "roll") as mock_dice:  # damage roll
+                mock_dice.return_value = 1
+                act.perform_action()
+        # 1 for mace, 3 for str, 2 for fighting style
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 1 - 3 - 2)
+
+    ########################################################################
+    def test_dfs_ranged(self):
+        """Test damage bonus doesn't apply to ranged"""
+        self.assertTrue(self.fighter.has_effect("Dueling Fighting Style"))
+        act = self.fighter.pick_action_by_name("Light Crossbow")
+        self.fighter.target = self.orc
+        with patch.object(Creature, "rolld20") as mock:
+            mock.return_value = 19
+            with patch.object(dice, "roll") as mock_dice:  # damage roll
+                mock_dice.return_value = 1
+                act.perform_action()
+        # 1 for weap, 2 for dex
+        self.assertEqual(self.orc.hp, self.orc.max_hp - 1 - 2)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestSecondWind(unittest.TestCase):
+    """Test SecondWind"""
+
+    ########################################################################
+    def setUp(self):
+        self.arena = Arena()
+        self.fighter = Fighter(name="Freya", side="a", level=5)
+        self.arena.add_combatant(self.fighter, coords=(1, 1))
+
+    ########################################################################
+    def test_second_wind(self):
+        """Test Second Wind"""
+        act = self.fighter.pick_action_by_name("Second Wind")
+        self.assertTrue(act is not None)
+        self.assertEqual(act.pick_target(), self.fighter)
+        before = act.heuristic()
+        self.assertEqual(before, 0)
+        self.fighter.hp = 10
+        after = act.heuristic()
+        self.assertGreater(after, 0)
+        with patch.object(dice, "roll") as mock_dice:  # healing roll
+            mock_dice.return_value = 4
+            act.perform_action()
+        # Original 10 + 4 for healing + 5 for level
+        self.assertEqual(self.fighter.hp, 10 + 4 + 5)
 
 
 # EOF
