@@ -643,7 +643,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def move_away(self, cause):
         """Move away from the {cause}"""
-        print(f"{self} is moving away from {cause}")
+        if cause.coords is None:  # Cause is dead?
+            return
         for _ in range(self.moves):
             self.coords = self.arena.move_away(self, cause)
             self.moves -= 1
@@ -741,9 +742,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def flee(self):
         """Forced to flee?"""
         for name, eff in self.effects.items():
-            if eff.flee() is not None:
-                print(f"{name} is causing {self} to flee")
-                self.move_away(eff.flee())
+            if (flee_from := eff.flee()) is not None:
+                print(f"{name} is causing {self} to flee ({flee_from})")
+                self.move_away(flee_from)
                 return True
         return False
 
