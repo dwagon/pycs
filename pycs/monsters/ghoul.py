@@ -69,14 +69,14 @@ class Ghoul(Monster):
     ##########################################################################
     def heuristic_ghoul_bite(self):
         """When is Ghoul bite good"""
-        if self.target.has_condition(Condition.PARALYZED):
+        if self.target and self.target.has_condition(Condition.PARALYZED):
             return 2
         return 1
 
     ##########################################################################
     def heuristic_ghoul_claw(self):
         """When is Ghoul claw good"""
-        if not self.target.has_condition(Condition.PARALYZED):
+        if self.target and not self.target.has_condition(Condition.PARALYZED):
             return 2
         return 1
 
