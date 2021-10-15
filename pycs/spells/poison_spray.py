@@ -8,8 +8,7 @@ from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.creature import Creature
 from pycs.spell import AttackSpell
-
-from .spelltest import SpellTest
+from pycs.spells.spelltest import SpellTest
 
 
 ##############################################################################
