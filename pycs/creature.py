@@ -416,6 +416,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.remove_condition(Condition.OK)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
+        for comb in self.arena.pick_alive():
+            comb.hook_see_someone_die(self)
+
+    ##########################################################################
+    def hook_see_someone_die(self, creat):
+        """Someone has died - react"""
 
     ##########################################################################
     def is_type(self, typ) -> bool:

@@ -179,6 +179,9 @@ class TurnUndead(Action):
         for und in undead:
             if self.owner.arena.distance(self.owner, und) <= 30 / 5:
                 if not und.saving_throw(Stat.WIS, self.owner.spellcast_save):
+                    if und.challenge is None:
+                        print(f"ERROR: Need to specify challenge rating of {und}")
+                        continue
                     if und.challenge <= self.owner.destroy_undead:
                         print(f"{und} has been destroyed by {self.owner}")
                         und.hit(

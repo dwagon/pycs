@@ -12,7 +12,7 @@ from pycs.monsters import AdultGoldDragon
 from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
-from pycs.monsters import Gnoll, GnollPackLord, GnollFangOfYeenoghu
+from pycs.monsters import Gnoll, GnollPackLord, GnollFangOfYeenoghu, GnollWitherling
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
@@ -39,9 +39,9 @@ from pycs.gear import (
 
 
 DRAGON_ARMY = False
-UNDEAD_ARMY = True
+UNDEAD_ARMY = False
 MONSTER_ARMY = False
-GNOLL_ARMY = False
+GNOLL_ARMY = True
 HUMAN_ARMY = True
 
 
@@ -106,7 +106,7 @@ def statistics_report(arena):
                     crit_p,
                 ]
             )
-    tbl.sortby = "Name"
+    tbl.sortby = "Damage"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
     print(tbl)
@@ -182,12 +182,14 @@ def monster_army(arena):
 ##############################################################################
 def gnoll_army(arena):
     """The hunger"""
-    for i in range(20):
+    for i in range(10):
         arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
     for i in range(4):
         arena.add_combatant(GnollPackLord(name=f"GnollPackLord{i}", side="Gnoll"))
     for i in range(1):
         arena.add_combatant(GnollFangOfYeenoghu(name=f"GnollFang{i}", side="Gnoll"))
+    for i in range(15):
+        arena.add_combatant(GnollWitherling(name=f"GnollWitherling{i}", side="Gnoll"))
 
 
 ##############################################################################
