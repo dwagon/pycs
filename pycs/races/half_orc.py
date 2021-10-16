@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/races/half-orc"""
 import unittest
 
+from pycs.arena import Arena
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -67,6 +68,8 @@ class TestRelentlessEndurance(unittest.TestCase):
         }
         self.orc = Creature(**kwargs)
         self.orc.add_effect(RelentlessEndurance())
+        self.arena = Arena()
+        self.arena.add_combatant(self.orc)
 
     ########################################################################
     def test_go_uncon(self):
