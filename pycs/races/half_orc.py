@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/races/half-orc"""
 import unittest
+from unittest.mock import Mock
 
 from pycs.arena import Arena
 from pycs.constant import DamageType
@@ -70,6 +71,7 @@ class TestRelentlessEndurance(unittest.TestCase):
         self.orc.add_effect(RelentlessEndurance())
         self.arena = Arena()
         self.arena.add_combatant(self.orc)
+        self.orc.creature_fallen_unconscious = Mock()
 
     ########################################################################
     def test_go_uncon(self):

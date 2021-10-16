@@ -396,10 +396,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def fallen_unconscious(
-        self,
-        dmg: int,  # pylint: disable=unused-argument
-        dmg_type: DamageType,  # pylint: disable=unused-argument
-        critical: bool,  # pylint: disable=unused-argument
+        self, dmg: int, dmg_type: DamageType, critical: bool
     ) -> None:
         """Creature has fallen unconscious"""
         keep_going = True
@@ -409,15 +406,22 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if not keep_going:
             return
         self.hp = 0
-        if self.has_condition(Condition.UNCONSCIOUS):
-            return
-        self.remove_concentration()
-        self.add_condition(Condition.UNCONSCIOUS)
-        self.remove_condition(Condition.OK)
         if self.has_grappled:
             self.has_grappled.remove_condition(Condition.GRAPPLED)
         for comb in self.arena.pick_alive():
+            if comb == self:
+                continue
             comb.hook_see_someone_die(self)
+        self.creature_fallen_unconscious(dmg, dmg_type, critical)
+
+    ##########################################################################
+    def creature_fallen_unconscious(
+        self, dmg: int, dmg_type: DamageType, critical: bool
+    ) -> None:
+        """How you actually fall unconscious depends on what you are"""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} needs a creature_fallen_unconscious()"
+        )
 
     ##########################################################################
     def hook_see_someone_die(self, creat):
@@ -598,7 +602,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def died(self):
         """Creature has died"""
-        print(f"{self} is now dead")
+        self.hp = 0
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
         self.remove_condition(Condition.OK)

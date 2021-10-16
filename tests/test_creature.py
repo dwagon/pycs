@@ -5,7 +5,6 @@
 
 import unittest
 from unittest.mock import Mock, patch
-import dice
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
@@ -137,20 +136,6 @@ class TestCreature(unittest.TestCase):
         self.assertIsNone(act)
 
     ########################################################################
-    def test_is_alive(self):
-        """is_alive testing"""
-        self.creat.hp = 10
-        self.assertTrue(self.creat.is_alive())
-        self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
-            source=Mock(),
-            critical=False,
-            atkname="attack",
-        )
-        self.assertFalse(self.creat.is_alive())
-
-    ########################################################################
     def test_saving_throw(self):
         """Test saving_throw"""
         # If unconscious - auto fail STR saves
@@ -184,48 +169,6 @@ class TestCreature(unittest.TestCase):
             mock.return_value = 10
             init = self.creat.roll_initiative()
             self.assertEqual(init, 9)  # Dex -1
-
-    ########################################################################
-    def test_death_saving(self):
-        """Test death saving throws"""
-        self.creat.hp = 10
-        self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
-            source=Mock(),
-            critical=False,
-            atkname="attack",
-        )
-        self.assertTrue(self.creat.has_condition(Condition.UNCONSCIOUS))
-        self.assertFalse(self.creat.has_condition(Condition.OK))
-        self.assertEqual(self.creat.death_saves, 0)
-        # Does the creature come back after a 20?
-        with patch.object(dice, "roll") as mock:
-            mock.return_value = 20
-            self.creat.start_turn()
-            self.assertEqual(self.creat.hp, 1)
-        self.assertFalse(self.creat.has_condition(Condition.UNCONSCIOUS))
-        self.assertTrue(self.creat.has_condition(Condition.OK))
-
-        self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
-            source=Mock(),
-            critical=False,
-            atkname="attack",
-        )
-        self.assertEqual(self.creat.hp, 0)
-
-        with patch.object(dice, "roll") as mock:
-            mock.return_value = 2
-            self.creat.start_turn()
-            self.assertEqual(self.creat.death_saves, 1)
-        # Test death
-        with patch.object(dice, "roll") as mock:
-            mock.return_value = 1
-            self.creat.start_turn()
-            self.assertEqual(self.creat.death_saves, 3)
-            self.assertTrue(self.creat.has_condition(Condition.DEAD))
 
     ########################################################################
     def test_hit(self):
@@ -265,15 +208,6 @@ class TestCreature(unittest.TestCase):
             atkname="attack",
         )
         self.assertEqual(self.creat.hp, 10)
-        self.creat.hit(
-            25,
-            dmg_type=DamageType.ACID,
-            source=Mock(),
-            critical=False,
-            atkname="attack",
-        )
-        self.assertTrue(self.creat.has_condition(Condition.UNCONSCIOUS))
-        self.assertEqual(self.creat.hp, 0)
 
 
 ############################################################################
