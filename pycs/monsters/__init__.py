@@ -5,8 +5,9 @@ from pycs.monsters.ghast import Ghast
 from pycs.monsters.ghoul import Ghoul
 from pycs.monsters.giant_frog import GiantFrog
 from pycs.monsters.gnoll import Gnoll
-from pycs.monsters.gnoll_pack_lord import GnollPackLord
 from pycs.monsters.gnoll_fang import GnollFangOfYeenoghu
+from pycs.monsters.gnoll_hunter import GnollHunter
+from pycs.monsters.gnoll_pack_lord import GnollPackLord
 from pycs.monsters.gnoll_witherling import GnollWitherling
 from pycs.monsters.goblin import Goblin
 from pycs.monsters.hobgoblin import Hobgoblin
@@ -25,8 +26,9 @@ __all__ = [
     "Ghoul",
     "GiantFrog",
     "Gnoll",
-    "GnollPackLord",
     "GnollFangOfYeenoghu",
+    "GnollHunter",
+    "GnollPackLord",
     "GnollWitherling",
     "Goblin",
     "Hobgoblin",

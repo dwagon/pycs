@@ -632,7 +632,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             eff.hook_start_turn()
 
         for part in self.arena.pick_alive():
-            for eff in part.effects.values():
+            for eff in part.effects.copy().values():
                 for comb in self.arena.pick_alive():
                     eff.hook_start_in_range(comb)
 
