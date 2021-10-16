@@ -12,7 +12,13 @@ from pycs.monsters import AdultGoldDragon
 from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
-from pycs.monsters import Gnoll, GnollPackLord, GnollFangOfYeenoghu, GnollWitherling
+from pycs.monsters import (
+    Gnoll,
+    GnollPackLord,
+    GnollFangOfYeenoghu,
+    GnollWitherling,
+    GnollHunter,
+)
 from pycs.monsters import Goblin
 from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
@@ -182,8 +188,10 @@ def monster_army(arena):
 ##############################################################################
 def gnoll_army(arena):
     """The hunger"""
-    for i in range(10):
+    for i in range(8):
         arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
+    for i in range(2):
+        arena.add_combatant(GnollHunter(name=f"GnollHunter{i}", side="Gnoll"))
     for i in range(4):
         arena.add_combatant(GnollPackLord(name=f"GnollPackLord{i}", side="Gnoll"))
     for i in range(1):

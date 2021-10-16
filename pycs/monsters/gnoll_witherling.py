@@ -57,8 +57,13 @@ class GnollWitherling(Monster):
             return
         print(f"{self} saw {creat} die so doing Vengeful Strike")
         act = self.pick_action_by_name("Vengeful Strike")
-        act.perform_action()
-        self.options_this_turn.remove(ActionCategory.REACTION)
+        if not self.target:
+            self.target = act.pick_target()
+        if self.target:
+            act.perform_action()
+            self.options_this_turn.remove(ActionCategory.REACTION)
+        else:
+            print(f"{self} doesn't have a target")
 
 
 ##############################################################################
