@@ -5,11 +5,7 @@ import colors
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.character import Character
-from pycs.constant import ActionType
-from pycs.constant import DamageType
-from pycs.constant import MonsterType
-from pycs.constant import SpellType
-from pycs.constant import Stat
+from pycs.constant import ActionType, DamageType, MonsterType, SpellType, Stat
 from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.monsters import Skeleton
@@ -187,7 +183,6 @@ class TurnUndead(Action):
                         und.hit(
                             und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead"
                         )
-                        und.died()
                     else:
                         print(f"{und} has been turned by {self.owner}")
                         und.add_effect(TurnedUndeadEffect(cause=self.owner))

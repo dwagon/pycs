@@ -95,8 +95,7 @@ class TestZombie(unittest.TestCase):
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 20
             self.beast.hit(6, DamageType.RADIANT, Mock(), False, "DummyAttack")
-            self.assertEqual(self.beast.hp, 0)
-            self.assertTrue(self.beast.has_condition(Condition.UNCONSCIOUS))
+            self.assertTrue(self.beast.has_condition(Condition.DEAD))
 
 
 # EOF
