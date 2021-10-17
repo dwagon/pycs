@@ -59,14 +59,15 @@ def start(rounds):
     for _ in range(rounds):
         winner, stats = combat_test()
         winning_stats[winner] += 1
-        update_stats(all_stats, stats)
-    print_table(all_stats)
+        all_stats = update_stats(all_stats, stats)
+    print_overall_stats(all_stats)
     win_report(winning_stats, rounds)
 
 
 ##############################################################################
-def print_table(stats):
+def print_overall_stats(stats: dict) -> None:
     """Do a dump of the global stats"""
+    print("Overall Stats")
     tbl = PrettyTable()
     tbl.field_names = [
         "Name",
@@ -85,19 +86,20 @@ def print_table(stats):
 
 
 ##############################################################################
-def update_stats(all_stats, stats):
+def update_stats(all_stats: dict, stats: dict) -> dict:
     """Consolidate stats"""
     for key, val in stats.items():
         name = key.__class__.__name__
         if name not in all_stats:
             all_stats[name] = {}
-            for weap, hits in val.items():
-                if weap not in all_stats[name]:
-                    all_stats[name][weap] = defaultdict(int)
-                all_stats[name][weap]["hits"] += hits["hits"]
-                all_stats[name][weap]["misses"] += hits["misses"]
-                all_stats[name][weap]["dmg"] += hits["dmg"]
-                all_stats[name][weap]["crits"] += hits["crits"]
+        for weap, hits in val.items():
+            if weap not in all_stats[name]:
+                all_stats[name][weap] = defaultdict(int)
+            all_stats[name][weap]["hits"] += hits["hits"]
+            all_stats[name][weap]["misses"] += hits["misses"]
+            all_stats[name][weap]["dmg"] += hits["dmg"]
+            all_stats[name][weap]["crits"] += hits["crits"]
+    return all_stats
 
 
 ##############################################################################
