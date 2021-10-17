@@ -55,10 +55,49 @@ HUMAN_ARMY = True
 def start(rounds):
     """Main"""
     stats = defaultdict(int)
+    all_stats = {}
     for _ in range(rounds):
-        winner = combat_test()
+        winner, stats = combat_test()
         stats[winner] += 1
+        update_stats(all_stats, stats)
+    print_table(all_stats)
     win_report(stats, rounds)
+
+
+##############################################################################
+def print_table(stats):
+    """Do a dump of the global stats"""
+    tbl = PrettyTable()
+    tbl.field_names = [
+        "Name",
+        "Attack",
+        "Hits",
+        "Misses",
+        "Damage",
+    ]
+    for key, val in stats.items():
+        for weap, details in val.items():
+            tbl.add_row([key, weap, details["hits"], details["misses"], details["dmg"]])
+    tbl.sortby = "Damage"
+    tbl.align["Name"] = "l"
+    tbl.align["Attack"] = "l"
+    print(tbl)
+
+
+##############################################################################
+def update_stats(all_stats, stats):
+    """Consolidate stats"""
+    for key, val in stats.items():
+        name = key.__class__.__name__
+        if name not in all_stats:
+            all_stats[name] = {}
+            for weap, hits in val.items():
+                if weap not in all_stats[name]:
+                    all_stats[name][weap] = defaultdict(int)
+                all_stats[name][weap]["hits"] += hits["hits"]
+                all_stats[name][weap]["misses"] += hits["misses"]
+                all_stats[name][weap]["dmg"] += hits["dmg"]
+                all_stats[name][weap]["crits"] += hits["crits"]
 
 
 ##############################################################################
@@ -94,8 +133,10 @@ def statistics_report(arena):
         "Damage",
         "Crit %",
     ]
+    all_stats = {}
     for creat in arena.pick_everyone():
         tmp = creat.dump_statistics()
+        all_stats[creat] = tmp
         for key, val in tmp.items():
             try:
                 crit_p = int(100.0 * val["crits"] / val["hits"])
@@ -131,6 +172,7 @@ def statistics_report(arena):
     tbl.sortby = "Name"
     tbl.align["Name"] = "l"
     print(tbl)
+    return all_stats
 
 
 ##############################################################################
@@ -335,9 +377,8 @@ def combat_test():
         turn += 1
         assert turn < 100
     print(f"{turn=}")
-    statistics_report(arena)
-
-    return arena.winning_side()
+    tmp = statistics_report(arena)
+    return arena.winning_side(), tmp
 
 
 # EOF
