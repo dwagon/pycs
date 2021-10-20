@@ -9,7 +9,7 @@ import colors
 import dice
 
 from pycs.monsters import AdultGoldDragon
-from pycs.monsters import Allosaurus, Ankylosaurus
+from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
@@ -47,7 +47,7 @@ from pycs.gear import (
 
 DRAGON_ARMY = False
 UNDEAD_ARMY = False
-MONSTER_ARMY = False
+MONSTER_ARMY = True
 GNOLL_ARMY = True
 HUMAN_ARMY = True
 
@@ -230,6 +230,7 @@ def monster_army(arena):
         arena.add_combatant(Hobgoblin(name=f"Hobgoblin{i}", side="Monsters"))
     arena.add_combatant(Allosaurus(name="Allosaurus", side="Monsters"))
     arena.add_combatant(Ankylosaurus(name="Ankylosaurus", side="Monsters"))
+    arena.add_combatant(Triceratops(name="Triceratops", side="Monsters"))
 
 
 ##############################################################################
