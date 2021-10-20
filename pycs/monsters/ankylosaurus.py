@@ -1,69 +1,75 @@
-""" Allosaurus MM p79"""
+""" Ankylosaurus  MM p79 """
 import unittest
 import colors
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
-from pycs.constant import MonsterType
-from pycs.constant import DamageType
+from pycs.constant import MonsterType, DamageType, Condition, Stat
 from pycs.monster import Monster
 
 
 ##############################################################################
-class Allosaurus(Monster):
-    """Allosaurus"""
+class Ankylosaurus(Monster):
+    """Ankylosaurus"""
 
     ##########################################################################
     def __init__(self, **kwargs):
         kwargs.update(
             {
-                "hitdice": "6d10+18",
-                "speed": 60,
+                "hitdice": "8d12+16",
+                "speed": 30,
                 "type": MonsterType.BEAST,
-                "ac": 13,
+                "ac": 15,
                 "str": 19,
-                "dex": 13,
-                "con": 17,
+                "dex": 11,
+                "con": 15,
                 "int": 2,
                 "wis": 12,
                 "cha": 5,
                 "actions": [
                     MeleeAttack(
-                        "Bite", reach=5, dmg=("2d10", 0), dmg_type=DamageType.PIERCING
-                    ),
-                    MeleeAttack(
-                        "Claw", reach=5, dmg=("1d8", 0), dmg_type=DamageType.SLASHING
+                        "Tail",
+                        reach=10,
+                        dmg=("4d6", 0),
+                        dmg_type=DamageType.BLUDGEONING,
+                        side_effect=self.anktail,
                     ),
                 ],
             }
         )
-        # TO DO : Pounce
         super().__init__(**kwargs)
+
+    ##########################################################################
+    def anktail(self, source, target, dmg):  # pylint: disable=unused-argument
+        """Ank Tail - must succeed at a DC14 strength save or be knocked prone"""
+        svth = target.saving_throw(Stat.STR, 14)
+        if not svth:
+            target.add_condition(Condition.PRONE)
 
     ##########################################################################
     def shortrepr(self):
         """What a allosaurus looks like on the arena"""
         if self.is_alive():
-            return colors.blue("A")
-        return colors.blue("A", bg="red")
+            return colors.blue("K")
+        return colors.blue("K", bg="red")
 
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
 class TestAllosaurus(unittest.TestCase):
-    """Test Allosaurus"""
+    """Test Ankylosaurus"""
 
     ##########################################################################
     def setUp(self):
         """Set up the lair"""
         self.arena = Arena()
-        self.beast = Allosaurus(side="a")
+        self.beast = Ankylosaurus(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
 
     ##########################################################################
     def test_ac(self):
         """Test that the AC exists"""
-        self.assertEqual(self.beast.ac, 13)
+        self.assertEqual(self.beast.ac, 15)
 
 
 # EOF

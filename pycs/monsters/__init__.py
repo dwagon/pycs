@@ -1,6 +1,7 @@
 """ Monsters """
 from pycs.monsters.adult_gold_dragon import AdultGoldDragon
 from pycs.monsters.allosaurus import Allosaurus
+from pycs.monsters.ankylosaurus import Ankylosaurus
 from pycs.monsters.barbed_devil import BarbedDevil
 from pycs.monsters.ghast import Ghast
 from pycs.monsters.ghoul import Ghoul
@@ -23,6 +24,7 @@ from pycs.monsters.zombie import Zombie
 __all__ = [
     "AdultGoldDragon",
     "Allosaurus",
+    "Ankylosaurus",
     "BarbedDevil",
     "Ghast",
     "Ghoul",
