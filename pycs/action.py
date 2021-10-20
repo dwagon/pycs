@@ -318,12 +318,12 @@ class Action:  # pylint: disable=too-many-instance-attributes
     ########################################################################
     def has_disadvantage(self, target, rnge: int) -> bool:
         """Does this attack have disadvantage"""
-        if self.owner.has_condition(Condition.POISONED):
-            return True
         # Needs to change to be related to the source of the fright
-        if self.owner.has_condition(Condition.FRIGHTENED):
-            return True
-        if self.owner.has_condition(Condition.PRONE):
+        if (
+            self.owner.has_condition(Condition.POISONED)
+            or self.owner.has_condition(Condition.FRIGHTENED)
+            or self.owner.has_condition(Condition.PRONE)
+        ):
             return True
         if target.has_condition(Condition.PRONE) and rnge > 1:
             return True
