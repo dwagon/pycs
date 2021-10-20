@@ -316,12 +316,16 @@ class Action:  # pylint: disable=too-many-instance-attributes
         return dmg
 
     ########################################################################
-    def has_disadvantage(self, target, _: int) -> bool:
+    def has_disadvantage(self, target, rnge: int) -> bool:
         """Does this attack have disadvantage"""
         if self.owner.has_condition(Condition.POISONED):
             return True
         # Needs to change to be related to the source of the fright
         if self.owner.has_condition(Condition.FRIGHTENED):
+            return True
+        if self.owner.has_condition(Condition.PRONE):
+            return True
+        if target.has_condition(Condition.PRONE) and rnge > 1:
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_disadvantage_against():
@@ -335,6 +339,8 @@ class Action:  # pylint: disable=too-many-instance-attributes
     def has_advantage(self, target, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
+            return True
+        if target.has_condition(Condition.PRONE) and rnge <= 1:
             return True
         for _, eff in target.effects.items():
             if eff.hook_gives_advantage_against():

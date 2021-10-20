@@ -627,7 +627,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.options_this_turn = []
         if not self.has_condition(Condition.OK):
             self.options_this_turn = []
-        self.moves = self.speed
+        if self.has_condition(Condition.PRONE):
+            print(f"{self} gets up from being prone")
+            self.moves = int(self.speed / 2)
+            self.remove_condition(Condition.PRONE)
+        else:
+            self.moves = self.speed
         for eff in self.effects.copy().values():
             eff.hook_start_turn()
 
