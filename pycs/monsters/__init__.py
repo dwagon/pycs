@@ -16,6 +16,7 @@ from pycs.monsters.hobgoblin import Hobgoblin
 from pycs.monsters.kobold import Kobold
 from pycs.monsters.orc import Orc
 from pycs.monsters.skeleton import Skeleton
+from pycs.monsters.triceratops import Triceratops
 from pycs.monsters.troll import Troll
 from pycs.monsters.violet_fungus import VioletFungus
 from pycs.monsters.wraith import Wraith
@@ -39,6 +40,7 @@ __all__ = [
     "Kobold",
     "Orc",
     "Skeleton",
+    "Triceratops",
     "Troll",
     "VioletFungus",
     "Wraith",
