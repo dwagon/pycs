@@ -9,6 +9,7 @@ import colors
 import dice
 
 from pycs.monsters import AdultGoldDragon
+from pycs.monsters import Allosaurus
 from pycs.monsters import BarbedDevil
 from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
@@ -227,6 +228,7 @@ def monster_army(arena):
         arena.add_combatant(Goblin(name=f"Goblin{i}", side="Monsters"))
     for i in range(4):
         arena.add_combatant(Hobgoblin(name=f"Hobgoblin{i}", side="Monsters"))
+    arena.add_combatant(Allosaurus(name="Allosaurus", side="Monsters"))
 
 
 ##############################################################################
