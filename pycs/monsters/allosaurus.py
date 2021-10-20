@@ -1,4 +1,4 @@
-""" Allosaurus """
+""" Allosaurus MM p79"""
 import unittest
 import colors
 from pycs.arena import Arena
@@ -16,7 +16,7 @@ class Allosaurus(Monster):
     def __init__(self, **kwargs):
         kwargs.update(
             {
-                "hitdice": "6d19+18",
+                "hitdice": "6d10+18",
                 "speed": 60,
                 "type": MonsterType.BEAST,
                 "ac": 13,
