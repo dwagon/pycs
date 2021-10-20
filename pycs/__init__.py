@@ -228,7 +228,7 @@ def monster_army(arena):
         arena.add_combatant(Goblin(name=f"Goblin{i}", side="Monsters"))
     for i in range(4):
         arena.add_combatant(Hobgoblin(name=f"Hobgoblin{i}", side="Monsters"))
-    arena.add_combatant(Allosaurus(name=f"Allosaurus", side="Monsters"))
+    arena.add_combatant(Allosaurus(name="Allosaurus", side="Monsters"))
 
 
 ##############################################################################
