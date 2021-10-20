@@ -19,6 +19,7 @@ class Allosaurus(Monster):
                 "hitdice": "6d19+18",
                 "speed": 60,
                 "type": MonsterType.BEAST,
+                "ac": 13,
                 "str": 19,
                 "dex": 13,
                 "con": 17,
