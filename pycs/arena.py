@@ -197,7 +197,7 @@ class Arena(AStar):
         combs = [
             result(self.distance(creat, _), id(_), _)
             for _ in self.pick_alive()
-            if _.side != creat.side and _.is_alive()
+            if _.side != creat.side
         ]
         combs.sort()
         result = [_.creature for _ in combs]

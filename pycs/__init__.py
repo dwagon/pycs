@@ -316,8 +316,8 @@ def human_army(arena):
             gear=[
                 Shortsword(),
                 PotionHealing(ammo=1),
-                Longbow(magic_bonus=3),
-                Leather(),
+                Longbow(magic_bonus=2),
+                Leather(magic_bonus=1),
             ],
         )
     )
