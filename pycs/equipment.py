@@ -76,6 +76,7 @@ class MeleeWeapon(Weapon):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.finesse = kwargs.get("finesse", False)
+        self.reach = kwargs.get("reach")
         self.actions.append(
             MeleeAttack(
                 name,
@@ -85,6 +86,11 @@ class MeleeWeapon(Weapon):
                 side_effect=kwargs.get("side_effect"),
             )
         )
+
+    ##########################################################################
+    def range(self):
+        """Range of weapon"""
+        return self.reach, self.reach
 
     ##########################################################################
     @property
@@ -130,6 +136,8 @@ class RangedWeapon(Weapon):
                 s_range=kwargs.get("s_range"),
             )
         )
+        self.l_range = kwargs.get("l_range")
+        self.s_range = kwargs.get("s_range")
 
     ##########################################################################
     def _valid_args(self):
@@ -143,6 +151,11 @@ class RangedWeapon(Weapon):
             "s_range",
             "side_effect",
         }
+
+    ##########################################################################
+    def range(self):
+        """Range of weapon"""
+        return self.s_range, self.l_range
 
     ##########################################################################
     @property

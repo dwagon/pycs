@@ -1,5 +1,6 @@
 """ https://www.dndbeyond.com/classes/ranger """
 import unittest
+from collections import namedtuple
 from unittest.mock import patch
 import colors
 import dice
@@ -73,6 +74,23 @@ class Ranger(Character):
             kwargs["actions"].append(LesserRestoration())
 
         super().__init__(**kwargs)
+
+    ##########################################################################
+    def pick_target(self, action):
+        """Override default targetting - pick the fewest hp"""
+        s_range = action.range()[0]
+        result = namedtuple("result", "hp id creature")
+        combs = [
+            result(_.hp, id(_), _)
+            for _ in self.arena.pick_alive()
+            if _.side != self.side and self.distance(_) < s_range
+        ]
+        if not combs:
+            return None
+        combs.sort()
+        target = combs[0].creature
+        print(f"Picking on {target} as has fewest hp")
+        return target
 
     ##########################################################################
     def spell_available(self, spell):
