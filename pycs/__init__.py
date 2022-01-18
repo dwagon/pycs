@@ -25,6 +25,7 @@ from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
 from pycs.monsters import Troll
+from pycs.monsters import VampireSpawn
 from pycs.monsters import VioletFungus
 from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
@@ -46,8 +47,8 @@ from pycs.gear import (
 
 
 DRAGON_ARMY = False
-UNDEAD_ARMY = False
-MONSTER_ARMY = True
+UNDEAD_ARMY = True
+MONSTER_ARMY = False
 GNOLL_ARMY = True
 HUMAN_ARMY = True
 
@@ -213,6 +214,7 @@ def undead_army(arena):
     arena.add_combatant(Wraith(name="Wraith", side="Undead"))
     for i in range(14):
         arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
+    arena.add_combatant(VampireSpawn(name=f"VampireSpawn", side="Undead"))
 
 
 ##############################################################################
