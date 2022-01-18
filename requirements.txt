@@ -1,4 +1,5 @@
 Click
+pex
 dice
 ansicolors
 prettytable

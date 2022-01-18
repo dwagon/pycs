@@ -3,7 +3,6 @@ Sphinx
 bump2version
 coverage
 flake8
-pex
 pip
 pylint
 pytest
