@@ -163,6 +163,33 @@ class TestCreature(unittest.TestCase):
             self.assertTrue(res)
 
     ########################################################################
+    def test_grapple(self):
+        """Test grappling"""
+        kwargs = {
+            "str": 6,
+            "int": 7,
+            "dex": 8,
+            "wis": 18,
+            "con": 11,
+            "cha": 15,
+            "side": "a",
+            "hp": 30,
+            "ac": 11,
+            "stat_prof": [Stat.CHA],
+            "type": MonsterType.UNDEAD,
+            "spellcast_bonus_stat": Stat.WIS,
+        }
+        victim = Creature(**kwargs)
+        self.arena.add_combatant(victim)
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [19, 1]
+            self.creat.grapple(victim, 9)
+        self.assertTrue(victim.has_condition(Condition.GRAPPLED))
+        self.assertEqual(self.creat.has_grappled, victim)
+        self.assertEqual(victim.grappled_by, self.creat)
+        self.assertEqual(victim.escape_grapple_dc, 9)
+
+    ########################################################################
     def test_roll_initiative(self):
         """Test rolling initiative"""
         with patch.object(Creature, "rolld20") as mock:
