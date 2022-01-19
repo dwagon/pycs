@@ -11,7 +11,7 @@ import dice
 from pycs.monsters import AdultGoldDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
-from pycs.monsters import Ghast, Ghoul, Skeleton, Wraith, Zombie
+from pycs.monsters import Ghast, Ghoul, OgreZombie, Skeleton, Wraith, Zombie
 from pycs.monsters import GiantFrog
 from pycs.monsters import (
     Gnoll,
@@ -48,7 +48,7 @@ from pycs.gear import (
 
 DRAGON_ARMY = False
 UNDEAD_ARMY = True
-MONSTER_ARMY = False
+MONSTER_ARMY = True
 GNOLL_ARMY = True
 HUMAN_ARMY = True
 
@@ -214,6 +214,8 @@ def undead_army(arena):
     arena.add_combatant(Wraith(name="Wraith", side="Undead"))
     for i in range(14):
         arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
+    for i in range(5):
+        arena.add_combatant(OgreZombie(name=f"OgreZombie{i}", side="Undead"))
     arena.add_combatant(VampireSpawn(name="VampireSpawn", side="Undead"))
 
 
