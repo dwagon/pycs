@@ -87,7 +87,6 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     def pick_target(self):
         """Who are we going to do the action to - generally overwritten"""
         if hasattr(self.owner, "pick_target"):
-            print(f"DEBUG action.pick_target: {self.owner=}")
             return self.owner.pick_target(self)
         enemy = self.owner.pick_closest_enemy()
         if enemy:

@@ -62,7 +62,6 @@ class VampireSpawn(Monster):
         if self._regen <= 0:
             print("Not regening as getting ridiculous")
             return
-        print(f"{self._regen} regens left")
         if self.hp < self.max_hp:
             self.heal("", 10)
 
@@ -176,10 +175,8 @@ class ClawAttack(MeleeAttack):
     def do_attack(self):
         """Do the attack"""
         if self.owner.has_grappled:
-            print("Classic Claw")  # DEBUG
             super().do_attack()
         else:
-            print("New Claw")  # DEBUG
             targ = self.pick_target()
             if self.did_we_hit(targ):
                 self.owner.grapple(targ, escape_dc=13)

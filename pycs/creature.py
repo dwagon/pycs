@@ -184,7 +184,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def grapple(self, enemy, escape_dc=0) -> bool:
         """Grapple an enemy"""
         grap = self.rolld20("grapple")
-        print(f"DEBUG {grap=}")
         grap += self.stat_bonus(Stat.STR)
         # Should do this skill based (Athletics vs Acrobatics)
         targ = enemy.rolld20("grapple")
@@ -193,11 +192,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         else:
             targ += enemy.stat_bonus(Stat.DEX)
         if grap > targ:
-            enemy.add_condition(Condition.GRAPPLED)
             self.has_grappled = enemy
             enemy.grappled_by = self
             enemy.escape_grapple_dc = escape_dc
             print(f"{self} has grappled {enemy} ({grap} > {targ})")
+            enemy.add_condition(Condition.GRAPPLED)
             return True
         print(f"{self} failed to grapple {enemy} ({grap} < {targ})")
         return False
@@ -570,7 +569,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 quality = act.get_heuristic()
                 possible_acts.append((quality, act))
         if self.has_condition(Condition.GRAPPLED):
-            possible_acts.append((10, BreakGrapple))
+            possible_acts.append((10, BreakGrapple(owner=self)))
         return possible_acts
 
     ##########################################################################
@@ -614,7 +613,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         action = actions[0].act
         if target is None:
-            print(f"DEBUG creature._pick_action() {action=}")
             self.target = action.pick_target()
         else:
             self.target = target
@@ -841,6 +839,7 @@ class BreakGrapple(Action):
     ##########################################################################
     def perform_action(self):
         """Do this"""
+        enemy = self.owner.grappled_by
         if self.owner.stats[Stat.STR] > self.owner.stats[Stat.DEX]:
             targ = self.owner.rolld20("str")
             targ += self.owner.stat_bonus(Stat.STR)
@@ -851,11 +850,16 @@ class BreakGrapple(Action):
         if self.owner.escape_grapple_dc:
             escape = self.owner.escape_grapple_dc
         else:
-            escape = self.owner.grappled_by.rolld20("str")
-            escape = self.owner.grappled_by.stat_bonus(Stat.STR)
+            escape = enemy.rolld20("str")
+            escape += enemy.stat_bonus(Stat.STR)
 
         if targ > escape:
+            print(f"{self.owner} has broken grapple of {enemy} ({targ} > {escape})")
             self.owner.grappled_by.ungrapple()
+        else:
+            print(
+                f"{self.owner} failed to break grapple of {enemy} ({targ} < {escape})"
+            )
 
 
 # EOF
