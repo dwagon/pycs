@@ -60,8 +60,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         self.max_hp = self.hp
         self.has_grappled = None
+        self.grappled_by = None
+        self.escape_grapple_dc = 0
         self.death_saves = 0
-
         self.bonus_actions = []
         self.reactions = []
         self.actions = []
@@ -180,6 +181,37 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return chp
 
     ##########################################################################
+    def grapple(self, enemy, escape_dc=0) -> bool:
+        """Grapple an enemy"""
+        grap = self.rolld20("grapple")
+        grap += self.stat_bonus(Stat.STR)
+        # Should do this skill based (Athletics vs Acrobatics)
+        targ = enemy.rolld20("grapple")
+        if enemy.stats[Stat.STR] > enemy.stats[Stat.DEX]:
+            targ += enemy.stat_bonus(Stat.STR)
+        else:
+            targ += enemy.stat_bonus(Stat.DEX)
+        if grap > targ:
+            self.has_grappled = enemy
+            enemy.grappled_by = self
+            enemy.escape_grapple_dc = escape_dc
+            print(f"{self} has grappled {enemy} ({grap} > {targ})")
+            enemy.add_condition(Condition.GRAPPLED)
+            return True
+        print(f"{self} failed to grapple {enemy} ({grap} < {targ})")
+        return False
+
+    ##########################################################################
+    def ungrapple(self):
+        """Remove a grapple"""
+        victim = self.has_grappled
+        victim.escape_grapple_dc = 0
+        victim.grappled_by = None
+        victim.remove_condition(Condition.GRAPPLED)
+        self.has_grappled = None
+        print(f"{self} is no longer grappling {victim}")
+
+    ##########################################################################
     def pick_closest_enemy(self) -> list:
         """Which enemy is the closest"""
         return self.arena.pick_closest_enemy(self)
@@ -235,6 +267,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """Move closer to the target - until we are in range of our action"""
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
+            return
+        if self.has_grappled:
+            print(f"{self} has grappled {self.has_grappled}- not moving")
             return
         if self.moves:
             print(f"{self} move to {target}")
@@ -488,6 +523,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
             print(f"|  Effects: {', '.join(self.effects)}")
+        if self.has_grappled:
+            print(f"|  Grappling {self.has_grappled}")
         if self.damage_this_turn:
             print(f"|  Damage This Turn: {self.damage_summary(self.damage_this_turn)}")
         if self.damage_last_turn:
@@ -531,6 +568,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if act.is_available():
                 quality = act.get_heuristic()
                 possible_acts.append((quality, act))
+        if self.has_condition(Condition.GRAPPLED):
+            possible_acts.append((10, BreakGrapple(owner=self)))
         return possible_acts
 
     ##########################################################################
@@ -603,6 +642,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def died(self):
         """Creature has died"""
         self.hp = 0
+        if self.has_condition(Condition.GRAPPLED):
+            self.grappled_by.ungrapple()
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
         self.remove_condition(Condition.OK)
@@ -666,7 +707,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
-    def move(self, act: Action):
+    def move(self, act: Action) -> None:
         """Do a move"""
         if self.target and self.moves:
             if act:
@@ -779,6 +820,46 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if ActionCategory.ACTION in self.options_this_turn:
                 self.dash()
         self.end_turn()
+
+
+##############################################################################
+class BreakGrapple(Action):
+    """Try and break the grapple"""
+
+    ##########################################################################
+    def __init__(self, **kwargs):
+        super().__init__("Break Grapple", **kwargs)
+        self.category = ActionCategory.ACTION
+
+    ##########################################################################
+    def heuristic(self):
+        """Should we do this"""
+        return 0
+
+    ##########################################################################
+    def perform_action(self):
+        """Do this"""
+        enemy = self.owner.grappled_by
+        if self.owner.stats[Stat.STR] > self.owner.stats[Stat.DEX]:
+            targ = self.owner.rolld20("str")
+            targ += self.owner.stat_bonus(Stat.STR)
+        else:
+            targ = self.owner.rolld20("dex")
+            targ += self.owner.stat_bonus(Stat.DEX)
+
+        if self.owner.escape_grapple_dc:
+            escape = self.owner.escape_grapple_dc
+        else:
+            escape = enemy.rolld20("str")
+            escape += enemy.stat_bonus(Stat.STR)
+
+        if targ > escape:
+            print(f"{self.owner} has broken grapple of {enemy} ({targ} > {escape})")
+            self.owner.grappled_by.ungrapple()
+        else:
+            print(
+                f"{self.owner} failed to break grapple of {enemy} ({targ} < {escape})"
+            )
 
 
 # EOF

@@ -13,7 +13,7 @@ from pycs.util import check_args
 ##############################################################################
 ##############################################################################
 ##############################################################################
-class Action:  # pylint: disable=too-many-instance-attributes
+class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-methods
     """generic action"""
 
     ########################################################################
@@ -233,6 +233,14 @@ class Action:  # pylint: disable=too-many-instance-attributes
                 target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
 
     ########################################################################
+    def did_we_hit(self, target):
+        """Did we actually hit the target"""
+        to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
+
+        hit = to_hit >= target.ac and not crit_miss
+        return hit, crit_hit
+
+    ########################################################################
     def do_attack(self) -> bool:
         """Do the attack"""
         assert self.owner is not None
@@ -242,9 +250,9 @@ class Action:  # pylint: disable=too-many-instance-attributes
             print(f"{target} is out of range")
             return False
         print(f"{self.owner} attacking {target} with {self}")
-        to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
 
-        if to_hit >= target.ac and not crit_miss:
+        did_hit, crit_hit = self.did_we_hit(target)
+        if did_hit:
             dmg = self.roll_dmg(target, crit_hit)
             if dmg == 0:
                 return True

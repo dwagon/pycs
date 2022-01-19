@@ -18,6 +18,7 @@ from pycs.monsters.orc import Orc
 from pycs.monsters.skeleton import Skeleton
 from pycs.monsters.triceratops import Triceratops
 from pycs.monsters.troll import Troll
+from pycs.monsters.vampire_spawn import VampireSpawn
 from pycs.monsters.violet_fungus import VioletFungus
 from pycs.monsters.wraith import Wraith
 from pycs.monsters.zombie import Zombie
@@ -42,6 +43,7 @@ __all__ = [
     "Skeleton",
     "Triceratops",
     "Troll",
+    "VampireSpawn",
     "VioletFungus",
     "Wraith",
     "Zombie",
