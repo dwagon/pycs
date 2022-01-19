@@ -214,7 +214,7 @@ def undead_army(arena):
     arena.add_combatant(Wraith(name="Wraith", side="Undead"))
     for i in range(14):
         arena.add_combatant(Zombie(name=f"Zombie{i}", side="Undead"))
-    arena.add_combatant(VampireSpawn(name=f"VampireSpawn", side="Undead"))
+    arena.add_combatant(VampireSpawn(name="VampireSpawn", side="Undead"))
 
 
 ##############################################################################
