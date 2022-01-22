@@ -348,6 +348,10 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     ########################################################################
     def has_advantage(self, target, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
+        if target.has_condition(Condition.BLINDED) or target.has_condition(
+            Condition.RESTRAINED
+        ):
+            return True
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True
         if target.has_condition(Condition.PRONE) and rnge <= 1:

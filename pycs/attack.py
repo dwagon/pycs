@@ -2,6 +2,7 @@
 import dice
 from pycs.action import Action
 from pycs.constant import ActionType
+from pycs.constant import Condition
 from pycs.constant import Stat
 from pycs.util import check_args
 

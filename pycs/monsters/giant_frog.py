@@ -1,11 +1,14 @@
 """ Giant Frog Monster Class """
+import unittest
+from unittest.mock import patch
 import colors
 import dice
+from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
-from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.monster import Monster
 
@@ -35,7 +38,7 @@ class GiantFrog(Monster):
                         dmg=("1d6", 0),
                         dmg_type=DamageType.PIERCING,
                         heuristic=self.frog_bite,
-                        side_effect=self.swallow,
+                        side_effect=self.bite_swallow,
                     )
                 ],
             }
@@ -44,25 +47,24 @@ class GiantFrog(Monster):
         self._swallowed = None
 
     ##########################################################################
-    def swallow(self, source, target, dmg):  # pylint: disable=unused-argument
-        """bite and swallow the target"""
-        # Bite. The target is grappled (escape DC 11). Until this grapple ends, the
-        # target is restrained, and the frog can't bite another target.
-
+    def bite_swallow(self, source, target, dmg):  # pylint: disable=unused-argument
+        """Swallow. The frog makes one bite attack against a Small or smaller target
+        it is grappling. If the attack hits, the target is swallowed, and the grapple
+        ends. The swallowed target is blinded and restrained, it has total cover
+        against attacks and other effects outside the frog, and it takes 5 (2d4) acid
+        damage at the start of each of the frog's turns.  The frog can have only
+        one target swallowed at a time. If the frog dies, a swallowed creature is
+        no longer restrained by it and can escape from the corpse using 5 feet
+        of movement, exiting prone."""
         target = self.target
         if self.has_grappled == target and self._swallowed is None:
             print(f"{self} swallowed {target}")
             target.add_effect(GiantFrogSwallowEffect(source=self))
-            self.has_grappled = None
+            self.ungrapple()
             self._swallowed = target
-            target.remove_condition(Condition.GRAPPLED)
             return
 
-        svth = target.saving_throw(Stat.STR, 11, effect=Condition.GRAPPLED)
-        if not svth:
-            print(f"{target} to grappled by {self}")
-            target.add_condition(Condition.GRAPPLED)
-            self.has_grappled = target
+        self.grapple(target, escape_dc=11)
 
     ##########################################################################
     def report(self):
@@ -74,8 +76,6 @@ class GiantFrog(Monster):
     ##########################################################################
     def frog_bite(self):
         """When is it good to bite"""
-        if self.has_grappled:
-            return 0
         return 1
 
     ##########################################################################
@@ -119,7 +119,6 @@ class GiantFrogSwallowEffect(Effect):
     ##########################################################################
     def initial(self, target):
         """Initial effect"""
-        self.target = target
         target.add_condition(Condition.RESTRAINED)
         target.add_condition(Condition.BLINDED)
 
@@ -134,6 +133,58 @@ class GiantFrogSwallowEffect(Effect):
             atkname="Frog Acid",
         )
         print(f"{self.target} hurt by {dmg} acid from being swallowed by Giant Frog")
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+class TestGiantFrog(unittest.TestCase):
+    """Test Giant Frog"""
+
+    ##########################################################################
+    def setUp(self):
+        """Set up the swamp"""
+        self.arena = Arena()
+        self.beast = GiantFrog(side="a")
+        self.arena.add_combatant(self.beast, coords=(1, 1))
+        self.victim = Monster(
+            name="Victim",
+            str=11,
+            int=11,
+            dex=11,
+            wis=11,
+            con=11,
+            cha=11,
+            hp=20,
+            side="b",
+        )
+        self.arena.add_combatant(self.victim, coords=(1, 2))
+
+    ##########################################################################
+    def test_bite(self):
+        """Test a frog nibble"""
+        att = self.beast.pick_action_by_name("Bite")
+        self.beast.target = self.victim
+        # Bite the victim to grapple
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [19, 18, 2]  # To hit, To grapple, To avoid grapple
+            att.perform_action()
+        self.assertEqual(self.beast.has_grappled, self.victim)
+
+        print("X")
+
+        # Bite again to swallow
+        with patch.object(Creature, "rolld20") as mock:
+            mock.side_effect = [17, 16]  # To hit
+            att.perform_action()
+        self.assertEqual(
+            self.beast._swallowed, self.victim  # pylint: disable=protected-access
+        )
+        self.assertTrue(self.victim.has_effect("Giant Frog Swallow"))
+        self.assertIsNone(self.beast.has_grappled)
+        self.assertFalse(self.victim.has_effect(Condition.GRAPPLED))
+        # self.assertTrue(self.victim.has_effect(Condition.RESTRAINED))
+        # self.assertTrue(self.victim.has_effect(Condition.BLINDED))
 
 
 # EOF
