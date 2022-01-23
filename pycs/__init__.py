@@ -49,8 +49,8 @@ from pycs.gear import (
 DRAGON_ARMY = False
 UNDEAD_ARMY = True
 MONSTER_ARMY = True
-GNOLL_ARMY = True
-HUMAN_ARMY = True
+GNOLL_ARMY = False
+HUMAN_ARMY = False
 
 
 ##############################################################################
@@ -223,7 +223,8 @@ def undead_army(arena):
 def monster_army(arena):
     """Just a bunch of guys"""
     arena.add_combatant(BarbedDevil(name="Barbed Devil", side="Monsters"))
-    arena.add_combatant(GiantFrog(name="Giant Frog", side="Monsters"))
+    for i in range(4):
+        arena.add_combatant(GiantFrog(name=f"Giant Frog{i}", side="Monsters"))
     arena.add_combatant(VioletFungus(name="Violet Fungus", side="Monsters"))
     arena.add_combatant(Troll(name="Troll", side="Monsters"))
     for i in range(4):

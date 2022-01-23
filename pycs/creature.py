@@ -442,7 +442,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             return
         self.hp = 0
         if self.has_grappled:
-            self.has_grappled.remove_condition(Condition.GRAPPLED)
+            self.ungrapple()
         for comb in self.arena.pick_alive():
             if comb == self:
                 continue
@@ -525,6 +525,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"|  Effects: {', '.join(self.effects)}")
         if self.has_grappled:
             print(f"|  Grappling {self.has_grappled}")
+        if self.grappled_by:
+            print(f"|  Grappled by {self.grappled_by}")
         if self.damage_this_turn:
             print(f"|  Damage This Turn: {self.damage_summary(self.damage_this_turn)}")
         if self.damage_last_turn:
@@ -568,7 +570,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if act.is_available():
                 quality = act.get_heuristic()
                 possible_acts.append((quality, act))
-        if self.has_condition(Condition.GRAPPLED):
+        if self.has_condition(Condition.GRAPPLED) and typ == ActionCategory.ACTION:
             possible_acts.append((10, BreakGrapple(owner=self)))
         return possible_acts
 

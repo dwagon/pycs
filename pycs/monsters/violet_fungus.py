@@ -32,7 +32,7 @@ class VioletFungus(Monster):
                 ],
                 "actions": [
                     MeleeAttack(
-                        "rotting touch",
+                        "Rotting Touch",
                         attacks_per_action=("1d4", 0),
                         reach=10,
                         dmg=("1d8", 0),
