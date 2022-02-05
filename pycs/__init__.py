@@ -11,7 +11,16 @@ import dice
 from pycs.monsters import AdultGoldDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
-from pycs.monsters import Ghast, Ghoul, OgreZombie, Skeleton, Wraith, Zombie
+from pycs.monsters import (
+    Ghast,
+    Ghoul,
+    MinotaurSkeleton,
+    OgreZombie,
+    Skeleton,
+    VampireSpawn,
+    Wraith,
+    Zombie,
+)
 from pycs.monsters import GiantFrog
 from pycs.monsters import (
     Gnoll,
@@ -25,7 +34,6 @@ from pycs.monsters import Hobgoblin
 from pycs.monsters import Kobold
 from pycs.monsters import Orc
 from pycs.monsters import Troll
-from pycs.monsters import VampireSpawn
 from pycs.monsters import VioletFungus
 from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
@@ -217,6 +225,10 @@ def undead_army(arena):
     for i in range(5):
         arena.add_combatant(OgreZombie(name=f"OgreZombie{i}", side="Undead"))
     arena.add_combatant(VampireSpawn(name="VampireSpawn", side="Undead"))
+    for i in range(5):
+        arena.add_combatant(
+            MinotaurSkeleton(name=f"MinotaurSkeleton{i}", side="Undead")
+        )
 
 
 ##############################################################################
