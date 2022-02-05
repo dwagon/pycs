@@ -14,6 +14,7 @@ from pycs.monsters.gnoll_witherling import GnollWitherling
 from pycs.monsters.goblin import Goblin
 from pycs.monsters.hobgoblin import Hobgoblin
 from pycs.monsters.kobold import Kobold
+from pycs.monsters.minotaur_skeleton import MinotaurSkeleton
 from pycs.monsters.ogre_zombie import OgreZombie
 from pycs.monsters.orc import Orc
 from pycs.monsters.skeleton import Skeleton
@@ -40,6 +41,7 @@ __all__ = [
     "Goblin",
     "Hobgoblin",
     "Kobold",
+    "MinotaurSkeleton",
     "OgreZombie",
     "Orc",
     "Skeleton",
