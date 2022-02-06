@@ -99,6 +99,8 @@ class YetiMultiAttack(Action):
         to the Chilling Gaze of all yetis (but not abominable yetis)
         for 1 hour."""
         target = self.pick_chill_target()
+        if not target:
+            return
         dmg = int(dice.roll("3d6"))
         svth = target.saving_throw(Stat.CON, 13)
         if not svth:
@@ -115,12 +117,12 @@ class YetiMultiAttack(Action):
         targets = [
             result(_.hp, id(_), _)
             for _ in self.owner.pick_closest_enemy()
-            if self.owner.distance(_) < 30 / 5 and DamageType.COLD not in _.immunity
+            if self.owner.distance(_) <= 30 / 5 and DamageType.COLD not in _.immunity
         ]
         if not targets:
             return None
         targets.sort()
-        print(f"Yeti {targets=}")
+        print(f"Yeti chill glazes {targets=}")
         return targets[-1].target
 
 
