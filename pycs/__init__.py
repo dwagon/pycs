@@ -35,6 +35,7 @@ from pycs.monsters import Kobold
 from pycs.monsters import Orc
 from pycs.monsters import Troll
 from pycs.monsters import VioletFungus
+from pycs.monsters import Yeti
 from pycs.races import Human, Elf, HalfElf, Halfling, HalfOrc
 
 from pycs.characters import Barbarian, Cleric, Fighter, Paladin, Ranger, Rogue, Warlock
@@ -55,10 +56,10 @@ from pycs.gear import (
 
 
 DRAGON_ARMY = False
-UNDEAD_ARMY = True
+UNDEAD_ARMY = False
 MONSTER_ARMY = True
 GNOLL_ARMY = False
-HUMAN_ARMY = False
+HUMAN_ARMY = True
 
 
 ##############################################################################
@@ -248,6 +249,7 @@ def monster_army(arena):
     arena.add_combatant(Allosaurus(name="Allosaurus", side="Monsters"))
     arena.add_combatant(Ankylosaurus(name="Ankylosaurus", side="Monsters"))
     arena.add_combatant(Triceratops(name="Triceratops", side="Monsters"))
+    arena.add_combatant(Yeti(name="Yeti", side="Monsters"))
 
 
 ##############################################################################

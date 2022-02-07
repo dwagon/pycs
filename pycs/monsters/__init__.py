@@ -23,6 +23,7 @@ from pycs.monsters.troll import Troll
 from pycs.monsters.vampire_spawn import VampireSpawn
 from pycs.monsters.violet_fungus import VioletFungus
 from pycs.monsters.wraith import Wraith
+from pycs.monsters.yeti import Yeti
 from pycs.monsters.zombie import Zombie
 
 __all__ = [
@@ -50,5 +51,6 @@ __all__ = [
     "VampireSpawn",
     "VioletFungus",
     "Wraith",
+    "Yeti",
     "Zombie",
 ]

@@ -120,6 +120,7 @@ class MonsterType(Enum):
     FIEND = "fiend"
     GIANT = "giant"
     HUMANOID = "humanoid"
+    MONSTROSITY = "monstrosity"
     PLANT = "plant"
     UNDEAD = "undead"
 

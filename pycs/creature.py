@@ -23,6 +23,7 @@ from pycs.util import check_args
 
 ##############################################################################
 ##############################################################################
+##############################################################################
 class Creature:  # pylint: disable=too-many-instance-attributes
     """Parent class for all creatures - monsters and characters"""
 
