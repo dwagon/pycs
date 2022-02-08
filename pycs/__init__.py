@@ -8,7 +8,7 @@ from prettytable import PrettyTable
 import colors
 import dice
 
-from pycs.monsters import AdultGoldDragon
+from pycs.monsters import AdultGoldDragon, YoungWhiteDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
 from pycs.monsters import (
@@ -55,7 +55,7 @@ from pycs.gear import (
 )
 
 
-DRAGON_ARMY = False
+DRAGON_ARMY = True
 UNDEAD_ARMY = False
 MONSTER_ARMY = True
 GNOLL_ARMY = False
@@ -210,6 +210,7 @@ def dragon_army(arena):
     arena.add_combatant(AdultGoldDragon(name="Adult Gold Dragon", side="Dragon"))
     for i in range(9):
         arena.add_combatant(Kobold(name=f"Kobold{i}", side="Dragon"))
+    arena.add_combatant(YoungWhiteDragon(name="Young White Dragon", side="Monsters"))
 
 
 ##############################################################################
