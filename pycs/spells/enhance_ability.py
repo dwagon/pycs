@@ -1,6 +1,8 @@
 """https://www.dndbeyond.com/spells/enhance-ability"""
 
+from typing import Any, Optional
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 
 
@@ -34,7 +36,7 @@ class EnhanceAbility(SpellAction):
     each slot level above 2nd."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Enhance Ability"
         kwargs.update(
             {
@@ -47,24 +49,24 @@ class EnhanceAbility(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if not self.owner.spell_available(self):
             return 0
         return 0
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         return self.owner
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
 
 

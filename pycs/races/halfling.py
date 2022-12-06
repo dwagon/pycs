@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/races/halfling"""
 import io
+from typing import Any
 import unittest
 from unittest.mock import patch
 import dice
@@ -16,7 +17,7 @@ from pycs.race import Race
 class Halfling(Race):
     """Breakfast?"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs["effects"] = [Brave(), Lucky()]
         super().__init__("Halfling", **kwargs)
 
@@ -29,12 +30,12 @@ class Lucky(Effect):
     or saving throw, you can reroll the die and must use the new roll."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Lucky", **kwargs)
 
     ########################################################################
-    def hook_d20(self, val, reason):
+    def hook_d20(self, val: int, reason: str) -> int:
         """Reroll ones"""
         if reason in ("attack", "ability", "save"):
             if val == 1:
@@ -50,12 +51,12 @@ class Brave(Effect):
     """You have advantage on saving throws against being frightened."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Brave", **kwargs)
 
     ########################################################################
-    def hook_saving_throw(self, stat, **kwargs):
+    def hook_saving_throw(self, stat: Stat, **kwargs: None) -> dict:
         """Advantage Frightened"""
         eff = super().hook_saving_throw(stat, **kwargs)
         if kwargs.get("effect") == Condition.FRIGHTENED:
@@ -69,7 +70,7 @@ class Brave(Effect):
 class TestLucky(unittest.TestCase):
     """Test Lucky"""
 
-    def setUp(self):
+    def setUp(self) -> None:
         kwargs = {
             "str": 6,
             "int": 7,
@@ -86,7 +87,7 @@ class TestLucky(unittest.TestCase):
         self.hobbit.add_effect(Lucky())
 
     ########################################################################
-    def test_not_lucky(self):
+    def test_not_lucky(self) -> None:
         """Test what happens when we roll a 1 - but doesn't apply"""
         with patch.object(dice, "roll") as mock:
             mock.return_value = 1
@@ -94,7 +95,7 @@ class TestLucky(unittest.TestCase):
             self.assertEqual(init, 1)
 
     ########################################################################
-    def test_lucky(self):
+    def test_lucky(self) -> None:
         """Test what happens when we roll a 1 - but does apply"""
         with patch.object(dice, "roll") as mock:
             mock.side_effect = [1, 10]
@@ -108,7 +109,7 @@ class TestLucky(unittest.TestCase):
 class TestBrave(unittest.TestCase):
     """Test Brave"""
 
-    def setUp(self):
+    def setUp(self) -> None:
         kwargs = {
             "str": 6,
             "int": 7,
@@ -126,7 +127,7 @@ class TestBrave(unittest.TestCase):
 
     ########################################################################
     @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
-    def test_brave(self, mock_stdout):
+    def test_brave(self, mock_stdout: Any) -> None:
         """Do some saving throws"""
         self.hobbit.saving_throw(Stat.STR, 10, effect=Condition.FRIGHTENED)
         self.assertTrue("with advantage" in mock_stdout.getvalue())

@@ -1,13 +1,15 @@
 """ https://www.dndbeyond.com/classes/ranger """
+from typing import Any, Optional
 import unittest
 from collections import namedtuple
 from unittest.mock import patch
 import colors
 import dice
+from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import RangedAttack
 from pycs.character import Character
-from pycs.constant import ActionType
+from pycs.constant import ActionType, DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -15,6 +17,7 @@ from pycs.effect import Effect
 from pycs.gear import Shortbow
 from pycs.gear import Shortsword
 from pycs.monsters import Skeleton
+from pycs.spell import SpellAction
 from pycs.spells import CureWounds
 from pycs.spells import HuntersMark
 from pycs.spells import LesserRestoration
@@ -26,7 +29,7 @@ from pycs.spells import LesserRestoration
 class Ranger(Character):
     """Ranger class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.spell_slots = {}
         kwargs.update(
             {
@@ -76,7 +79,7 @@ class Ranger(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def pick_target(self, action):
+    def pick_target(self, action: Action) -> Optional[Creature]:
         """Override default targetting - pick the fewest hp"""
         s_range = action.range()[0]
         result = namedtuple("result", "hp id creature")
@@ -93,7 +96,7 @@ class Ranger(Character):
         return target
 
     ##########################################################################
-    def spell_available(self, spell):
+    def spell_available(self, spell: SpellAction) -> bool:
         """Do we have enough slots to cast a spell"""
         if spell.level == 0:
             return True
@@ -102,7 +105,7 @@ class Ranger(Character):
         return False
 
     ##########################################################################
-    def cast(self, spell):
+    def cast(self, spell: SpellAction) -> bool:
         """Cast a spell"""
         if spell.level == 0:
             return True
@@ -112,13 +115,13 @@ class Ranger(Character):
         return True
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Character report"""
         super().report()
         print(f"|  Spells: {self.spell_slots}")
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("R", bg="green")
@@ -132,7 +135,7 @@ class RangersRangedAttack(RangedAttack):
     """Prioritise the creature with a hunters mark"""
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we perform this attack - no if adjacent, yes if in range,
         middling if at long range"""
         enemies = self.owner.pick_closest_enemy()
@@ -147,14 +150,14 @@ class RangersRangedAttack(RangedAttack):
         return self.max_dmg() + len(hmark)
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who are we doing this to - the target with hunters mark or the
         closest"""
         enemies = self.owner.pick_closest_enemy()
         if not enemies:
-            return 0
+            return None
         if not self.available:
-            return 0
+            return None
         hmark = [_ for _ in enemies if _.has_effect("Hunters Mark")]
         if hmark:
             return hmark[0]
@@ -171,18 +174,20 @@ class ColossusSlayer(Effect):
     damage only once per turn."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         self.used = False
         super().__init__("Colossus Slayer", **kwargs)
 
     ########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Reset"""
         self.used = False
 
     ########################################################################
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """+1d8 damage"""
         if not self.used:
             self.used = True
@@ -197,12 +202,12 @@ class ArcheryFightingStyle(Effect):
     """You gain a +2 bonus to attack rolls you make with ranged weapons."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Archery Fighting Style", **kwargs)
 
     ########################################################################
-    def hook_attack_to_hit(self, **kwargs):
+    def hook_attack_to_hit(self, **kwargs: Any) -> int:
         """+2 to hit"""
         eff = super().hook_attack_to_hit(**kwargs)
         if issubclass(kwargs["action"].__class__, RangedAttack):
@@ -217,20 +222,19 @@ class TestArcheryStyle(unittest.TestCase):
     """Test ArcheryStyle"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
-        self.ranger = Ranger(
-            name="Ryan", side="a", level=2, gear=[Shortbow(), Shortsword()]
-        )
+        self.ranger = Ranger(name="Ryan", side="a", level=2, gear=[Shortbow(), Shortsword()])
         self.arena.add_combatant(self.ranger, coords=(1, 1))
         self.skel = Skeleton(side="b")
         self.arena.add_combatant(self.skel, coords=(3, 3))
 
     ########################################################################
-    def test_archery_ranged(self):
+    def test_archery_ranged(self) -> None:
         """Test Effect with ranged"""
         self.assertTrue(self.ranger.has_effect("Archery Fighting Style"))
         act = self.ranger.pick_action_by_name("Shortbow")
+        assert act is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 10
             to_hit, _, _ = act.roll_to_hit(self.skel)
@@ -238,10 +242,11 @@ class TestArcheryStyle(unittest.TestCase):
         self.assertEqual(to_hit, 10 + 2 + 3 + 2)
 
     ########################################################################
-    def test_archery_melee(self):
+    def test_archery_melee(self) -> None:
         """Test Effect with melee - should not apply"""
         self.assertTrue(self.ranger.has_effect("Archery Fighting Style"))
         act = self.ranger.pick_action_by_name("Shortsword")
+        assert act is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 10
             to_hit, _, _ = act.roll_to_hit(self.skel)
@@ -256,7 +261,7 @@ class TestColussusSlayer(unittest.TestCase):
     """Test ColussusSlayer"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.ranger = Ranger(name="Ryan", side="a", level=4, gear=[Shortbow()])
         self.arena.add_combatant(self.ranger, coords=(1, 1))
@@ -264,10 +269,11 @@ class TestColussusSlayer(unittest.TestCase):
         self.arena.add_combatant(self.skel, coords=(3, 3))
 
     ########################################################################
-    def test_colossus(self):
+    def test_colossus(self) -> None:
         """Test Effect with ranged"""
         self.assertTrue(self.ranger.has_effect("Colossus Slayer"))
         act = self.ranger.pick_action_by_name("Shortbow")
+        assert act is not None
         with patch.object(dice, "roll") as mock:
             mock.return_value = 2
             act.buff_attack_damage(self.skel)

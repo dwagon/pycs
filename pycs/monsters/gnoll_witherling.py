@@ -1,4 +1,5 @@
 """ VGTM p155 : Gnoll Witherling"""
+from typing import Any
 import unittest
 import colors
 from pycs.action import Action
@@ -8,6 +9,7 @@ from pycs.constant import ActionCategory
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
+from pycs.creature import Creature
 from pycs.monster import Monster
 
 
@@ -18,7 +20,7 @@ class GnollWitherling(Monster):
     """Gnoll Witherling"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "2d8+2",
@@ -40,14 +42,14 @@ class GnollWitherling(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a gnoll looks like on the arena"""
         if self.is_alive():
             return colors.blue("w")
         return colors.green("w", bg="red")
 
     ##########################################################################
-    def hook_see_someone_die(self, creat):
+    def hook_see_someone_die(self, creat: Creature) -> None:
         """We get to react if a fellow gnoll dies nearby"""
         if self.distance(creat) > 30 / 5:
             return
@@ -57,6 +59,7 @@ class GnollWitherling(Monster):
             return
         print(f"{self} saw {creat} die so doing Vengeful Strike")
         act = self.pick_action_by_name("Vengeful Strike")
+        assert act is not None
         if not self.target:
             self.target = act.pick_target()
         if self.target:
@@ -73,17 +76,17 @@ class VengefulStrike(Action):
     """React to another gnoll being killed within 30' by doing a melee attack"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Vengeful Strike", **kwargs)
         self.category = ActionCategory.REACTION
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         return 0  # Triggered by hook in creature
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
         bite = MeleeAttack(
             "Bite",
@@ -93,6 +96,7 @@ class VengefulStrike(Action):
             owner=self.owner,
         )
         bite.do_attack()
+        return True
 
 
 ##############################################################################
@@ -102,11 +106,11 @@ class WitherlingMultiAttack(Action):
     """Handle a multi-attack: bite, club"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
         bite = MeleeAttack(
             "Bite",
@@ -124,9 +128,10 @@ class WitherlingMultiAttack(Action):
         )
         bite.do_attack()
         club.do_attack()
+        return True
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         enemy = self.owner.pick_closest_enemy()
         if enemy and self.owner.distance(enemy[0]) <= 1:
@@ -141,18 +146,16 @@ class TestGnoll(unittest.TestCase):
     """Test GnollWitherling"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = GnollWitherling(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC exists"""
         self.assertEqual(self.beast.ac, 12)
 

@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/poison-spray"""
 
+from typing import Any
 from unittest.mock import patch
 
 from pycs.constant import ActionCategory
@@ -22,7 +23,7 @@ class PoisonSpray(AttackSpell):
     (2d12), 11th level (3d12), and 17th level (4d12)."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Poison Spray"
         kwargs.update(
             {
@@ -45,12 +46,12 @@ class TestPoisonSpray(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(PoisonSpray())
 
     ##########################################################################
-    def test_cast_saves(self):
+    def test_cast_saves(self) -> None:
         """test casting where victim makes save"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(Creature, "rolld20") as mock:
@@ -60,7 +61,7 @@ class TestPoisonSpray(SpellTest):
         self.assertEqual(self.enemy.damage_this_turn, [])
 
     ##########################################################################
-    def test_cast_fails(self):
+    def test_cast_fails(self) -> None:
         """test casting where victim fails saving throw"""
         self.caster.moves = 90
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)

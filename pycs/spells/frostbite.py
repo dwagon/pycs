@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/frostbite"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
@@ -25,9 +26,9 @@ class Frostbite(AttackSpell):
     11th level (3d6), and 17th level (4d6)."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Frostbite"
-        self._target = None
+        self._target: Creature
         kwargs.update(
             {
                 "reach": 60,
@@ -42,18 +43,12 @@ class Frostbite(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Slightly better than the damage itself would indicate"""
         return super().heuristic() + 2
 
     ##########################################################################
-    def pick_target(self):
-        """Who should we target"""
-        self._target = super().pick_target()
-        return self._target
-
-    ##########################################################################
-    def failed_save(self, source, target, dmg):
+    def failed_save(self, source: Creature, target: Creature, dmg: int) -> None:
         """What to when we target fails save"""
         self._target.add_effect(FrostbiteEffect(cause=source))
 
@@ -65,19 +60,19 @@ class FrostbiteEffect(Effect):
     """Effect of the Frostbite"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Frostbite", **kwargs)
 
     ##########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """Initial effects of Frostbite"""
 
     ##########################################################################
-    def hook_gives_disadvantage(self, target):
+    def hook_gives_disadvantage(self, target: Creature) -> bool:
         return True
 
     ##########################################################################
-    def removal_end_of_its_turn(self, victim):
+    def removal_end_of_its_turn(self, victim: Creature) -> bool:
         return True
 
 
@@ -88,13 +83,13 @@ class TestFrostbite(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Test Setup"""
         super().setUp()
         self.caster.add_action(Frostbite())
 
     ##########################################################################
-    def test_cast_miss(self):
+    def test_cast_miss(self) -> None:
         """test casting where victim makes saving throw"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(Creature, "rolld20") as mock:
@@ -104,7 +99,7 @@ class TestFrostbite(SpellTest):
         self.assertFalse(self.enemy.has_effect("Frostbite"))
 
     ##########################################################################
-    def test_cast_hit(self):
+    def test_cast_hit(self) -> None:
         """test casting where victim fails saving throw"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(Creature, "rolld20") as mock:
@@ -114,15 +109,16 @@ class TestFrostbite(SpellTest):
         self.assertTrue(self.enemy.has_effect("Frostbite"))
 
     ##########################################################################
-    def test_effect(self):
+    def test_effect(self) -> None:
         """Test the effect of casting the spell"""
         act = self.enemy.pick_action_by_name("Longsword")
+        assert act is not None
         self.assertFalse(act.has_disadvantage(self.friend, 1))
         self.enemy.add_effect(FrostbiteEffect())
         self.assertTrue(act.has_disadvantage(self.friend, 1))
 
     ##########################################################################
-    def test_removal(self):
+    def test_removal(self) -> None:
         """Test the effect gets removed"""
         self.enemy.add_effect(FrostbiteEffect())
         self.assertTrue(self.enemy.has_effect("Frostbite"))

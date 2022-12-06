@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/monsters/orc"""
+from typing import Any
 import unittest
 import colors
 from pycs.arena import Arena
@@ -16,7 +17,7 @@ class Orc(Monster):
     """Orc"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "2d8+6",
@@ -34,7 +35,7 @@ class Orc(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What an Orc looks like on the arena"""
         if self.is_alive():
             return colors.green("O")
@@ -48,14 +49,14 @@ class TestOrc(unittest.TestCase):
     """Test Orc"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = Orc(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC matches equipment"""
         self.assertEqual(self.beast.ac, 13)
 

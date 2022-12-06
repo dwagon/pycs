@@ -14,7 +14,7 @@ class TestArena(unittest.TestCase):
     """Tests for `arena` package."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         self.arena = Arena(max_x=21, max_y=21)
         self.critter1 = Mock()
@@ -23,11 +23,11 @@ class TestArena(unittest.TestCase):
         self.critter4 = Mock()
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_distance(self):
+    def test_distance(self) -> None:
         """Test distance and grid placement."""
         self.assertEqual(self.arena.max_x, 21)
         self.assertIsNone(self.arena[(0, 0)])
@@ -42,7 +42,7 @@ class TestArena(unittest.TestCase):
         self.assertEqual(dist, 9)
 
     ########################################################################
-    def test_closest_friend(self):
+    def test_closest_friend(self) -> None:
         """Test pick_closest_friends()"""
         self.arena.add_combatant(self.critter1, (0, 0))
         self.arena.add_combatant(self.critter2, (1, 1))
@@ -56,7 +56,7 @@ class TestArena(unittest.TestCase):
         self.assertEqual(friends, [self.critter3, self.critter4])
 
     ########################################################################
-    def test_closest_enemy(self):
+    def test_closest_enemy(self) -> None:
         """Test pick_closest_enemy()"""
         self.arena.add_combatant(self.critter1, (0, 0))
         self.arena.add_combatant(self.critter2, (1, 1))
@@ -70,7 +70,7 @@ class TestArena(unittest.TestCase):
         self.assertEqual(enemy, [self.critter2, self.critter3])
 
     ########################################################################
-    def test_move_away(self):
+    def test_move_away(self) -> None:
         """test move_away()"""
         self.arena.add_combatant(self.critter1, (3, 3))
         self.arena.add_combatant(self.critter2, (1, 1))

@@ -1,7 +1,10 @@
 """ Paladin """
 import unittest
 import colors
+from typing import Any, Optional
 from pycs.action import Action
+from pycs.creature import Creature
+from pycs.spell import SpellAction
 from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionType
@@ -25,7 +28,7 @@ class Paladin(Character):
     """Paladin class"""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.channel_divinity = 0
         self.lay_on_hands = 0
         kwargs.update(
@@ -99,14 +102,14 @@ class Paladin(Character):
         # Protection_From_Poison
 
     ########################################################################
-    def spell_available(self, spell):
+    def spell_available(self, spell: SpellAction) -> bool:
         """Do we have enough slots to cast a spell"""
         if self.spell_slots[spell.level] > 0:
             return True
         return False
 
     ########################################################################
-    def cast(self, spell):
+    def cast(self, spell: SpellAction) -> bool:
         """Cast a spell"""
         if not self.spell_available(spell):
             return False
@@ -114,14 +117,14 @@ class Paladin(Character):
         return True
 
     ########################################################################
-    def report(self):
+    def report(self) -> None:
         """Character report"""
         super().report()
         print(f"|  Lay On Hands: {self.lay_on_hands}")
         print(f"|  Spells: {self.spell_slots}")
 
     ########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What we look like in the arena"""
         if self.is_alive():
             return colors.blue("P", bg="green")
@@ -138,29 +141,24 @@ class LayOnHands(Action):
     neutralize a poison affecting the creature."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Lay on Hands", **kwargs)
 
     ########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
-        if self.owner.lay_on_hands >= 5 and self.owner.target.has_condition(
-            Condition.POISONED
-        ):
-            print(
-                f"{self.owner} lays on hands to {self.owner.target} and cures them of poison"
-            )
+        if self.owner.lay_on_hands >= 5 and self.owner.target.has_condition(Condition.POISONED):
+            print(f"{self.owner} lays on hands to {self.owner.target} and cures them of poison")
             self.owner.lay_on_hands -= 5
             self.owner.target.remove_condition(Condition.POISONED)
         print(f"{self.owner} lays on hands to {self.owner.target} to heal them")
-        chp = min(
-            self.owner.lay_on_hands, self.owner.target.max_hp - self.owner.target.hp
-        )
+        chp = min(self.owner.lay_on_hands, self.owner.target.max_hp - self.owner.target.hp)
         self.owner.lay_on_hands -= self.owner.target.heal("", chp)
+        return True
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this action"""
         if self.owner.lay_on_hands == 0:
             return 0
@@ -173,7 +171,7 @@ class LayOnHands(Action):
         return friend.max_hp - friend.hp
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who are we doing the action to"""
         friends = self.owner.pick_closest_friends()
         if friends:
@@ -188,7 +186,7 @@ class TestLayOnHands(unittest.TestCase):
     """Test LayOnHands"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.paladin = Paladin(name="Pia", side="a", level=2)
         self.arena.add_combatant(self.paladin, coords=(1, 1))
@@ -196,9 +194,10 @@ class TestLayOnHands(unittest.TestCase):
         self.arena.add_combatant(self.friend, coords=(2, 2))
 
     ########################################################################
-    def test_loh_cure_poison(self):
+    def test_loh_cure_poison(self) -> None:
         """test lay on hands - curing poison"""
         act = self.paladin.pick_action_by_name("Lay on Hands")
+        assert act is not None
         self.paladin.target = self.friend
         self.friend.add_condition(Condition.POISONED)
         self.assertTrue(self.friend.has_condition(Condition.POISONED))
@@ -208,9 +207,10 @@ class TestLayOnHands(unittest.TestCase):
         self.assertEqual(self.paladin.lay_on_hands, 0)
 
     ########################################################################
-    def test_loh_heal(self):
+    def test_loh_heal(self) -> None:
         """test lay on hands - healing"""
         act = self.paladin.pick_action_by_name("Lay on Hands")
+        assert act is not None
         self.paladin.target = self.friend
         self.friend.hp = self.friend.max_hp - 10
         self.assertEqual(self.paladin.lay_on_hands, 5)

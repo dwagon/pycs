@@ -1,8 +1,10 @@
 """https://www.dndbeyond.com/spells/hunters-mark"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 import dice
-from pycs.constant import ActionCategory
+from pycs.action import Action
+from pycs.constant import ActionCategory, DamageType
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.effect import Effect
@@ -30,7 +32,7 @@ class HuntersMark(SpellAction):
     hours."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Hunters Mark"
         kwargs.update(
             {
@@ -42,10 +44,10 @@ class HuntersMark(SpellAction):
             }
         )
         super().__init__(name, **kwargs)
-        self._victim = None
+        self._victim: Optional[Creature]
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if self.pick_target():
             return 6
@@ -53,7 +55,7 @@ class HuntersMark(SpellAction):
         return 0
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         for enemy in self.owner.pick_closest_enemy():
             if self.owner.distance(enemy) > self.range()[0]:
@@ -65,14 +67,15 @@ class HuntersMark(SpellAction):
         return None
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self._victim = self.target
         self._victim.add_effect(HuntersMarkEffect(caster=self.owner))
         print(f"Cast Hunters Mark on {self._victim}")
+        return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
         if self._victim:
             print(f"Removing Hunters Mark from {self._victim}")
@@ -87,12 +90,14 @@ class HuntersMarkEffect(Effect):
     """Hunters Mark Effect"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Hunters Mark", **kwargs)
 
     ##########################################################################
-    def hook_target_additional_damage(self, _, source, target):
+    def hook_target_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """More damage"""
         if source == self.caster:
             return ("1d6", 0, None)
@@ -106,13 +111,13 @@ class TestHuntersMark(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """test setup"""
         super().setUp()
         self.caster.add_action(HuntersMark())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """test casting"""
         self.caster.options_this_turn = [ActionCategory.BONUS]
         self.assertFalse(self.enemy.has_effect("Hunters Mark"))
@@ -120,7 +125,7 @@ class TestHuntersMark(SpellTest):
         self.assertTrue(self.enemy.has_effect("Hunters Mark"))
 
     ##########################################################################
-    def test_effect(self):
+    def test_effect(self) -> None:
         """Test the effect of casting the spell"""
         print(self.caster.arena)
         self.caster.moves = 99
@@ -138,7 +143,7 @@ class TestHuntersMark(SpellTest):
         self.assertEqual(len(self.enemy.damage_this_turn), 2)
 
     ##########################################################################
-    def test_removal(self):
+    def test_removal(self) -> None:
         """Test the effect gets removed"""
         self.caster.options_this_turn = [ActionCategory.BONUS]
         self.caster.do_stuff(categ=ActionCategory.BONUS, moveto=False)

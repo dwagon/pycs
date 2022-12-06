@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/hold-person"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.creature import Creature
@@ -22,7 +23,7 @@ class HoldPerson(SpellAction):
     saving throw. On a success, the spell ends on the target."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Hold Person"
         kwargs.update(
             {
@@ -36,7 +37,7 @@ class HoldPerson(SpellAction):
         self._victim = None
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         target = self.pick_target()
         if target:
@@ -44,7 +45,7 @@ class HoldPerson(SpellAction):
         return 0
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         for enemy in self.owner.pick_closest_enemy():
             if not enemy.is_type(MonsterType.HUMANOID):
@@ -55,7 +56,7 @@ class HoldPerson(SpellAction):
         return None
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         svth = self.owner.target.saving_throw(
             Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED
@@ -67,7 +68,7 @@ class HoldPerson(SpellAction):
         return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
         # They could have saved in the meantime
         if self._victim and self._victim.has_effect("Hold Person"):
@@ -83,26 +84,25 @@ class HoldPersonEffect(Effect):
     """Hold Person Effect"""
 
     ###########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Hold Person", **kwargs)
 
     ###########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """Initial effects of Hold Person"""
         target.add_condition(Condition.PARALYZED)
 
     ###########################################################################
-    def finish(self, victim):
+    def finish(self, victim: Creature) -> None:
         """When the effect is over"""
         victim.remove_condition(Condition.PARALYZED)
 
     ###########################################################################
-    def removal_end_of_its_turn(self, victim):
+    def removal_end_of_its_turn(self, victim: Creature) -> bool:
         """Do we save"""
-        svth = victim.saving_throw(
-            Stat.WIS, self.caster.spellcast_save, effect=Condition.PARALYZED
-        )
+        assert self.caster is not None
+        svth = victim.saving_throw(Stat.WIS, self.caster.spellcast_save, effect=Condition.PARALYZED)
         if svth:
             victim.remove_condition(Condition.PARALYZED)
             return True
@@ -116,13 +116,13 @@ class TestHoldPerson(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Setup tests"""
         super().setUp()
         self.caster.add_action(HoldPerson())
 
     ##########################################################################
-    def test_cast_save(self):
+    def test_cast_save(self) -> None:
         """test casting with creature making save"""
         self.assertFalse(self.enemy.has_condition(Condition.PARALYZED))
         with patch.object(Creature, "rolld20") as mock:
@@ -131,7 +131,7 @@ class TestHoldPerson(SpellTest):
         self.assertFalse(self.enemy.has_effect("Hold Person"))
 
     ##########################################################################
-    def test_cast_fails(self):
+    def test_cast_fails(self) -> None:
         """test casting with creature failing save"""
         self.assertFalse(self.enemy.has_condition(Condition.PARALYZED))
         with patch.object(Creature, "rolld20") as mock:
@@ -140,7 +140,7 @@ class TestHoldPerson(SpellTest):
         self.assertTrue(self.enemy.has_effect("Hold Person"))
 
     ##########################################################################
-    def test_end_turn(self):
+    def test_end_turn(self) -> None:
         """Test the effect gets removed at the end of a turn"""
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
@@ -154,7 +154,7 @@ class TestHoldPerson(SpellTest):
         self.assertFalse(self.enemy.has_condition(Condition.PARALYZED))
 
     ##########################################################################
-    def test_removal(self):
+    def test_removal(self) -> None:
         """Test the effect gets removed on concentration failure"""
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1

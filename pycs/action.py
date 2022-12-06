@@ -1,12 +1,14 @@
 """ Handle non-attack Actions """
-from typing import Tuple
+from typing import Tuple, Any, Optional
 import dice
+# from pycs.creature import Creature
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.constant import Statistics
+from pycs.equipment import Equipment
 from pycs.util import check_args
 
 
@@ -17,7 +19,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     """generic action"""
 
     ########################################################################
-    def __init__(self, name: str, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         self.name = name
         self.available = True
@@ -31,16 +33,15 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
-        self.heuristic = kwargs.get("heuristic", self.heuristic)
+        self.heuristic = kwargs.get("heuristic", self.heuristic)    # type: ignore
         self.ammo = kwargs.get("ammo", None)
-        self.gear = None  # Gear that induced the action (set when added)
+        self.gear: Optional[Equipment]  # Gear that induced the action (set when added)
         # Creature owning the action (set when added) or sometimes explicitly
         self.owner = kwargs.get("owner", None)
-        if not hasattr(self, "preferred_stat"):
-            self.preferred_stat = None
+        self.preferred_stat: Stat
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return {
             "action_cost",
@@ -58,10 +59,10 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
 
     ########################################################################
     @property
-    def use_stat(self):
+    def use_stat(self) -> Stat:
         """What stat to use"""
         # Set from the equipment
-        if self.gear:
+        if self.gear and hasattr(self.gear, "use_stat"):
             return self.gear.use_stat
         # Default for attack type
         if self.finesse:
@@ -70,21 +71,21 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return self.preferred_stat
 
     ########################################################################
-    def atk_modifier(self, attacker):  # pylint: disable=unused-argument
+    def atk_modifier(self, attacker: Creature) -> int:  # pylint: disable=unused-argument
         """Modifier to the attack dice roll"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented atk_modifier()")
+        print(f"{self.__class__.__name__} hasn't implemented atk_modifier()")
         return 0
 
     ########################################################################
-    def dmg_modifier(self, attacker):  # pylint: disable=unused-argument
+    def dmg_modifier(self, attacker: Creature) -> int:  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
-        print(f"{__class__.__name__} hasn't implemented dmg_modifier()")
+        print(f"{self.__class__.__name__} hasn't implemented dmg_modifier()")
         return 0
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who are we going to do the action to - generally overwritten"""
         if hasattr(self.owner, "pick_target"):
             return self.owner.pick_target(self)
@@ -94,7 +95,16 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return None
 
     ########################################################################
-    def get_heuristic(self):
+    def hook_postdmg(self) -> None:
+        """Should be overwritten"""
+
+    ########################################################################
+    def hook_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
+        """Should be overwritten"""
+        return 0
+
+    ########################################################################
+    def get_heuristic(self) -> int:
         """How much we should do this action"""
         heur = 0
         for _, eff in self.owner.effects.items():
@@ -103,31 +113,31 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return heur
 
     ########################################################################
-    def heuristic(self):  # pylint: disable=method-hidden
+    def heuristic(self) -> int:  # pylint: disable=method-hidden
         """Should we do this thing"""
         raise NotImplementedError(
-            f"{self.name} {__class__.__name__}.heuristic() not implemented"
+            f"{self.name} {self.__class__.__name__}.heuristic() not implemented"
         )
 
     ########################################################################
-    def range(self):
+    def range(self) -> tuple[int, int]:
         """Return the range (good, max) of the action"""
         return 0, 0
 
     ##########################################################################
-    def is_available(self):
+    def is_available(self) -> bool:
         """Is this action currently available to the creature"""
         if self.ammo is not None and not self.ammo:
             return False
         return True
 
     ########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Perform the action"""
         raise NotImplementedError
 
     ########################################################################
-    def ammo_usage(self):
+    def ammo_usage(self) -> None:
         """Use up ammo if that is a thing"""
         if self.ammo is not None:
             self.ammo -= 1
@@ -135,7 +145,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
                 self.available = False
 
     ########################################################################
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.name
 
     ##########################################################################
@@ -150,7 +160,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return crit_hit, crit_miss
 
     ##########################################################################
-    def roll_to_hit(self, target) -> Tuple[int, bool, bool]:
+    def roll_to_hit(self, target: Creature) -> Tuple[int, bool, bool]:
         """Roll to hit with the attack"""
         msg = ""
         rnge = self.owner.distance(target)
@@ -185,7 +195,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return int(to_hit), crit_hit, crit_miss
 
     ########################################################################
-    def calculate_to_hit(self, to_hit_roll, target):
+    def calculate_to_hit(self, to_hit_roll: int, target: Creature) -> tuple[int, str]:
         """Calculate the to_hit"""
         msg = []
         rnge = self.owner.distance(target)
@@ -200,19 +210,18 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
                 to_hit += mod
                 msg.append(f"+{mod} from {name}")
         if self.gear:
-            mod = self.gear.hook_attack_to_hit(target=target)
-            if mod:
-                to_hit += mod
-                msg.append(f"+{mod} from {self.gear}")
+            if hasattr(self.gear, "hook_attack_to_hit"):
+                mod = self.gear.hook_attack_to_hit(target=target)
+                if mod:
+                    to_hit += mod
+                    msg.append(f"+{mod} from {self.gear}")
         return to_hit, ", ".join(msg)
 
     ########################################################################
-    def buff_attack_damage(self, target) -> None:
+    def buff_attack_damage(self, target: Creature) -> None:
         """Calculate the attack damage from buffs"""
         for atkname, eff in self.owner.effects.copy().items():
-            dice_dmg, dmg, dmg_type = eff.hook_source_additional_damage(
-                self, self.owner, target
-            )
+            dice_dmg, dmg, dmg_type = eff.hook_source_additional_damage(self, self.owner, target)
             if dmg_type is None:
                 dmg_type = self.dmg_type
             if dice_dmg:
@@ -222,9 +231,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
 
         # If the target of the damage has a buff
         for atkname, eff in target.effects.copy().items():
-            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(
-                self, self.owner, target
-            )
+            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(self, self.owner, target)
             if dmg_type is None:
                 dmg_type = self.dmg_type
             if dice_dmg:
@@ -233,7 +240,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
                 target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
 
     ########################################################################
-    def did_we_hit(self, target):
+    def did_we_hit(self, target: Creature) -> tuple[bool, bool]:
         """Did we actually hit the target"""
         to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
 
@@ -298,13 +305,14 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             if dmg_bon:
                 bonus.append((dmg_bon, f"{self.use_stat.value[:3]}"))
         if self.gear:
-            dmg_bon = self.gear.hook_source_additional_damage()
-            if dmg_bon:
-                bonus.append((dmg_bon, self.gear.name))
+            if hasattr(self.gear, "hook_source_additional_damage"):
+                dmg_bon = self.gear.hook_source_additional_damage()
+                if dmg_bon:
+                    bonus.append((dmg_bon, self.gear.name))
         return bonus
 
     ########################################################################
-    def roll_dmg(self, _, critical=False) -> int:
+    def roll_dmg(self, _: Any, critical: bool = False) -> int:
         """Roll the damage of the attack"""
         msg = ""
         if critical:
@@ -320,13 +328,11 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             dmg += bonus
             msg += f"+{bonus} ({cause}) "
         dmg = max(dmg, 0)
-        print(
-            f"{self.owner} got {dmg} damage (Rolled {rolled} on {self.dmg[0]}; {msg.strip()})"
-        )
+        print(f"{self.owner} got {dmg} damage (Rolled {rolled} on {self.dmg[0]}; {msg.strip()})")
         return dmg
 
     ########################################################################
-    def has_disadvantage(self, target, rnge: int) -> bool:
+    def has_disadvantage(self, target: Creature, rnge: int) -> bool:
         """Does this attack have disadvantage"""
         # Needs to change to be related to the source of the fright
         if (
@@ -346,11 +352,9 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return False
 
     ########################################################################
-    def has_advantage(self, target, rnge: int) -> bool:
+    def has_advantage(self, target: Creature, rnge: int) -> bool:
         """Does this attack have advantage at this range"""
-        if target.has_condition(Condition.BLINDED) or target.has_condition(
-            Condition.RESTRAINED
-        ):
+        if target.has_condition(Condition.BLINDED) or target.has_condition(Condition.RESTRAINED):
             return True
         if target.has_condition(Condition.UNCONSCIOUS) and rnge <= 1:
             return True

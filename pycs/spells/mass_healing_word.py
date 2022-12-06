@@ -1,7 +1,9 @@
 """https://www.dndbeyond.com/spells/mass-healing-word"""
 
+from typing import Any, Optional
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.spells.spelltest import SpellTest
 
@@ -16,13 +18,13 @@ class MassHealingWord(SpellAction):
     effect on undead or constructs."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Mass Healing Word"
         kwargs.update({"reach": 60, "level": 3, "type": SpellType.HEALING})
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell
         the more people it can effect the more we should do it"""
         suitable = 0
@@ -32,12 +34,12 @@ class MassHealingWord(SpellAction):
         return suitable
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         return self.owner
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         cured = 0
         for creat in self.owner.pick_closest_friends():
@@ -58,12 +60,12 @@ class TestMassHealingWord(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(MassHealingWord())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.friend.hp = 5
         self.caster.hp = 5

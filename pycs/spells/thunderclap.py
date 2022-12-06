@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/thunderclap"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import Stat
@@ -15,7 +16,7 @@ class Thunderclap(AttackSpell):
     11th level (3d6), and 17th level (4d6)."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Thunderclap"
         kwargs.update(
             {

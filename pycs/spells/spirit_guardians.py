@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/spirit-guardians"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.constant import DamageType
@@ -31,7 +32,7 @@ class SpiritGuardians(SpellAction):
     damage."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Spirit Guardians"
         kwargs.update(
             {
@@ -44,7 +45,7 @@ class SpiritGuardians(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell
         the more people it can effect the more we should do it"""
         if self.owner.has_effect("Spirit Guardian"):
@@ -56,18 +57,18 @@ class SpiritGuardians(SpellAction):
         return heur
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         return self.owner
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self.owner.add_effect(SpiritGuardianEffect(caster=self.owner))
         return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
         self.owner.remove_effect("Spirit Guardian")
 
@@ -79,19 +80,20 @@ class SpiritGuardianEffect(Effect):
     """Spirit Guardian Effect"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Spirit Guardian", **kwargs)
-        self._victims = set()
+        self._victims: set[Creature] = set()
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Reset who has been affected this turn"""
         self._victims = set()
 
     ##########################################################################
-    def hook_start_in_range(self, creat):
+    def hook_start_in_range(self, creat: Creature) -> None:
         """Are we in range of the effect"""
+        assert self.caster is not None
         if creat.side == self.caster.side:
             return
         if self.caster.distance(creat) > 15 / 5:
@@ -101,7 +103,7 @@ class SpiritGuardianEffect(Effect):
         self._victims.add(creat)
         dmg = int(dice.roll("3d8"))
         if creat.saving_throw(Stat.WIS, self.caster.spellcast_save):
-            dmg /= 2
+            dmg //= 2
         creat.hit(dmg, DamageType.RADIANT, self.caster, False, "Spirit Guardian")
 
 
@@ -112,12 +114,12 @@ class TestSpiritGuardians(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(SpiritGuardians())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """Test casting"""
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
         self.assertTrue(self.caster.has_effect("Spirit Guardian"))
@@ -125,7 +127,7 @@ class TestSpiritGuardians(SpellTest):
         self.assertFalse(self.caster.has_effect("Spirit Guardian"))
 
     ##########################################################################
-    def test_saved(self):
+    def test_saved(self) -> None:
         """Test casting where the victim makes their save"""
         self.arena[self.enemy.coords] = None
         self.arena[self.caster.coords] = None

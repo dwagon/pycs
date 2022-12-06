@@ -1,4 +1,5 @@
 """Scale"""
+from typing import Any
 from pycs.equipment import Armour
 
 
@@ -8,7 +9,7 @@ from pycs.equipment import Armour
 class Scale(Armour):
     """Toucgh Lizard"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
 
         kwargs["ac"] = 14
         kwargs["dex_bonus"] = True

@@ -1,4 +1,5 @@
 """ Warlock """
+from typing import Any
 import colors
 
 # from pycs.spells import Command
@@ -6,6 +7,7 @@ from pycs.character import Character
 from pycs.constant import ActionType
 from pycs.constant import SpellType
 from pycs.constant import Stat
+from pycs.spell import SpellAction
 from pycs.spells import BurningHands
 from pycs.spells import EldritchBlast
 from pycs.spells import Fireball
@@ -21,7 +23,7 @@ from pycs.spells import Thunderclap
 class Warlock(Character):
     """Warlock class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "str": 8,
@@ -81,12 +83,12 @@ class Warlock(Character):
         # Summon magical weapon
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         super().report()
         print(f"|  Spells: {self.spell_slots}")
 
     ########################################################################
-    def spell_available(self, spell):
+    def spell_available(self, spell: SpellAction) -> bool:
         """Do we have enough slots to cast a spell"""
         if spell.level == 0:
             return True
@@ -95,14 +97,15 @@ class Warlock(Character):
         return False
 
     ########################################################################
-    def cast(self, spell):
+    def cast(self, spell: SpellAction) -> bool:
         """Cast a spell"""
         if spell.level == 0:  # Cantrip
-            return
+            return False
         self.spell_slots -= 1
+        return True
 
     ########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a warlock looks like in the arena"""
         if self.is_alive():
             return colors.blue("W", bg="green")

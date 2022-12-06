@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/monsters/gnoll"""
+from typing import Any
 import unittest
 import colors
 import dice
@@ -8,6 +9,7 @@ from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.gear import Hide
 from pycs.monster import Monster
 
@@ -19,7 +21,7 @@ class GnollFangOfYeenoghu(Monster):
     """Gnoll Fang Of Yeenoghu"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "10d8+20",
@@ -38,7 +40,7 @@ class GnollFangOfYeenoghu(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a gnoll looks like on the arena"""
         if self.is_alive():
             return colors.blue("F")
@@ -52,11 +54,11 @@ class FangMultiAttack(Action):
     """Handle a multi-attack: bite, claw, claw"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
         bite = MeleeAttack(
             "Bite",
@@ -76,9 +78,10 @@ class FangMultiAttack(Action):
         bite.do_attack()
         claw.do_attack()
         claw.do_attack()
+        return True
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         enemy = self.owner.pick_closest_enemy()
         if enemy and self.owner.distance(enemy[0]) <= 1:
@@ -86,9 +89,7 @@ class FangMultiAttack(Action):
         return 0
 
     ##########################################################################
-    def gnoll_bite(
-        self, source, target, dmg
-    ):  # pylint: disable=unused-argument, no-self-use
+    def gnoll_bite(self, source: Creature, target: Creature, dmg: int) -> None:
         """Gnoll bites can be pretty nasty"""
         svth = target.saving_throw(Stat.CON, 12)
         if not svth:
@@ -103,18 +104,16 @@ class TestGnoll(unittest.TestCase):
     """Test GnollFangOfYeenoghu"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = GnollFangOfYeenoghu(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC matches equipment"""
         self.assertEqual(self.beast.ac, 14)
 

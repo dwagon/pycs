@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/monsters/gnoll"""
+from typing import Any
 import unittest
 import colors
 from pycs.arena import Arena
@@ -19,7 +20,7 @@ class Gnoll(Monster):
     """Gnoll"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "5d8",
@@ -33,16 +34,14 @@ class Gnoll(Monster):
                 "cha": 7,
                 "gear": [Spear(), Longbow(), Hide(), Shield()],
                 "actions": [
-                    MeleeAttack(
-                        "Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING
-                    )
+                    MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)
                 ],
             }
         )
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a gnoll looks like on the arena"""
         if self.is_alive():
             return colors.blue("G")
@@ -56,18 +55,16 @@ class TestGnoll(unittest.TestCase):
     """Test Gnoll"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = Gnoll(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC matches equipment"""
         self.assertEqual(self.beast.ac, 15)
 

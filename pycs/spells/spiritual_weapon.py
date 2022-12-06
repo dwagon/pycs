@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/spiritual-weapon"""
 
+from typing import Any
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.spell import SpellAction
@@ -11,7 +12,7 @@ class SpiritualWeapon(SpellAction):
     choice within range, granting it a +2 bonus to AC for the duration.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Spiritual Weapon"
         kwargs.update(
             {
@@ -24,12 +25,12 @@ class SpiritualWeapon(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         return True
 
     ###########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if not self.owner.spell_available(self):
             return 0

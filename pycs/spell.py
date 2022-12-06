@@ -1,8 +1,12 @@
 """ Handle non-attack Actions """
 from collections import namedtuple
+from typing import Any, NamedTuple, Optional
 import dice
 from pycs.action import Action
+from pycs.creature import Creature
 from pycs.constant import SpellType
+from pycs.constant import ActionType
+from pycs.constant import Stat
 from pycs.util import check_args
 
 
@@ -13,19 +17,19 @@ class SpellAction(Action):
     """Spell action"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.reach = kwargs.get("reach", 0) / 5
-        self.type = kwargs.get("type")
+        self.type: SpellType = kwargs.get("type", SpellType.UNKNOWN)    # type: ignore
         self.cure_hp = kwargs.get("cure_hp")
-        self.level = kwargs.get("level")
+        self.level: int = kwargs.get("level", 0)
         self.concentration = kwargs.get("concentration")
-        self.caster = None
-        self.target = None
+        self.caster: Creature
+        self.target: Creature
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {
             "reach",
@@ -36,45 +40,45 @@ class SpellAction(Action):
         }
 
     ########################################################################
-    def is_available(self):
+    def is_available(self) -> bool:
         """Is this action available?"""
         return self.owner.spell_available(self)
 
     ########################################################################
-    def failed_save(self, source, target, dmg):
+    def failed_save(self, source: Creature, target: Creature, dmg: int) -> None:
         """Called when the target failed save"""
 
     ########################################################################
-    def made_save(self, source, target, dmg):
+    def made_save(self, source: Creature, target: Creature, dmg: int) -> None:
         """Called when the target made save"""
 
     ########################################################################
-    def is_type(self, *types):
+    def is_type(self, *types: SpellType) -> bool:
         """Is this spell of the specified types"""
         return self.type in types
 
     ########################################################################
-    def range(self):
+    def range(self) -> tuple[int, int]:
         """Return the good / worse range for the spell"""
         return self.reach, self.reach
 
     ########################################################################
-    def spell_modifier(self, attacker):
+    def spell_modifier(self, attacker: Creature) -> int:
         """Spell Casting modifier"""
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def atk_modifier(self, attacker):
+    def atk_modifier(self, attacker: Creature) -> int:
         """Attack modifier"""
         return self.spell_modifier(attacker)
 
     ########################################################################
-    def dmg_modifier(self, attacker):
+    def dmg_modifier(self, attacker: Creature) -> int:
         """Damage modifier"""
         return 0
 
     ########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Cast the spell"""
         if not self.owner.spell_available(self):
             return False
@@ -89,35 +93,41 @@ class SpellAction(Action):
         return result
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if not self.owner.spell_available(self):
             return 0
         return 1
 
     ########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Needs to be replaced"""
-        raise NotImplementedError(f"SpellAction.{__class__.__name__} needs a cast()")
+        raise NotImplementedError(f"SpellAction.{self.__class__.__name__} needs a cast()")
 
+    ##########################################################################
+    def end_concentration(self) -> None:
+        """What happens when we stop concentrating"""
 
 ##############################################################################
-def health_level_of_peers(doer):
+class HealthResult(NamedTuple):
+        health: int
+        id: int
+        target: Creature
+
+##############################################################################
+def health_level_of_peers(doer: Creature) -> Optional[HealthResult]:
     """Return the health levels (missing hp) of peers"""
-    result = namedtuple("Result", "health id target")
-    peers = [
-        result(_.max_hp - _.hp, id(_), _)
-        for _ in doer.arena.my_side(doer.side)
-        if _.max_hp != 0
+    hurt_peers = [
+        HealthResult(_.max_hp - _.hp, id(_), _) for _ in doer.arena.my_side(doer.side) if _.max_hp != 0
     ]
-    if not peers:
+    if not hurt_peers:
         return None
-    peers.sort(reverse=True)
-    return peers[0]
+    hurt_peers.sort(reverse=True)
+    return hurt_peers[0]
 
 
 ##############################################################################
-def healing_heuristic(doer, spell):
+def healing_heuristic(doer: Creature, spell: SpellAction) -> int:
     """Should we cast this"""
     if not doer.spell_available(spell):
         return 0
@@ -128,9 +138,12 @@ def healing_heuristic(doer, spell):
 
 
 ##############################################################################
-def pick_heal_target(doer):
+def pick_heal_target(doer: Creature) -> Optional[Creature]:
     """Who to heal"""
-    return health_level_of_peers(doer).target
+    recip = health_level_of_peers(doer)
+    if recip is None:
+        return None
+    return recip.target
 
 
 ##############################################################################
@@ -140,26 +153,26 @@ class AttackSpell(SpellAction):
     """A spell attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
-        self.style = kwargs.get("style", SpellType.TOHIT)
-        self.type = kwargs.get("type")
+        self.style: SpellType = kwargs.get("style", SpellType.TOHIT)
+        self.type: SpellType = kwargs.get("type", SpellType.UNKNOWN)
         self.save_stat = kwargs.get("save_stat")
         self.save_dc = kwargs.get("save_dc")
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {"style", "type", "save_stat", "save_dc"}
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker):
+    def stat_dmg_bonus(self, attacker: Creature) -> int:
         """No spell bonus to damage"""
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def roll_dmg(self, victim, critical=False):
+    def roll_dmg(self, victim: Creature, critical: bool = False) -> int:
         """Special spell damage"""
         if self.style == SpellType.TOHIT:
             return super().roll_dmg(victim, critical)
@@ -183,7 +196,7 @@ class AttackSpell(SpellAction):
         return max(dmg, 0)
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we cast this"""
         if not self.owner.spell_available(self):
             return 0
@@ -195,25 +208,20 @@ class AttackSpell(SpellAction):
         return self.max_dmg()
 
     ########################################################################
-    def roll_to_hit(self, target):
+    def roll_to_hit(self, target: Creature) -> tuple[int, bool, bool]:
         """Special spell attack"""
         if self.style == SpellType.TOHIT:
             return super().roll_to_hit(target)
         return 999, False, False
 
     ########################################################################
-    def range(self):
+    def range(self) -> tuple[int, int]:
         """Return the range of the attack"""
         return self.reach, self.reach
 
     ########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Cast the attack spell - overwrite if required"""
         return self.do_attack()
-
-    ##########################################################################
-    def end_concentration(self):
-        """What happens when we stop concentrating"""
-
 
 # EOF

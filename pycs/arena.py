@@ -1,34 +1,39 @@
 """ Class defining the play area """
 import math
 import random
+from typing import Any, Optional
 from collections import defaultdict
 from collections import namedtuple
 from astar import AStar
-from pycs.constant import Stat
+from pycs.constant import Stat, MonsterType
+from pycs.creature import Creature
 
 
+##############################################################################
 ##############################################################################
 ##############################################################################
 class Arena(AStar):
     """Arena Class"""
 
     ##############################################################################
-    def __init__(self, **kwargs):
-        self.max_x = kwargs.get("max_x", 20)
-        self.max_y = kwargs.get("max_y", 20)
-        self.grid = {}
-        self._combatants = []
+    def __init__(self, **kwargs: Any):
+        self.max_x: int = kwargs.get("max_x", 20)
+        self.max_y: int = kwargs.get("max_y", 20)
+        self.grid: dict = {}
+        self._combatants: list = []
         for j in range(self.max_y):
             for i in range(self.max_x):
                 self.grid[(i, j)] = None
 
     ##############################################################################
-    def distance_between(self, n1, n2):  # pylint: disable=unused-argument, invalid-name
+    def distance_between(
+        self, n1: tuple[int, int], n2: tuple[int, int]
+    ) -> int:  # pylint: disable=unused-argument, invalid-name
         """This method always returns 1, as two 'neighbors' are always adjacent"""
         return 1
 
     ##########################################################################
-    def heuristic_cost_estimate(self, current, goal):
+    def heuristic_cost_estimate(self, current: tuple[int, int], goal: tuple[int, int]) -> float:
         """computes the 'direct' distance between two (x,y) tuples"""
         (point_x1, point_y1) = current
         (point_x2, point_y2) = goal
@@ -36,7 +41,7 @@ class Arena(AStar):
         return hce
 
     ##########################################################################
-    def neighbors(self, node):
+    def neighbors(self, node: tuple[int, int]) -> list[tuple[int, int]]:
         """Returns all the places we can reach from node"""
         node_x, node_y = node
         ans = []
@@ -53,29 +58,27 @@ class Arena(AStar):
         return ans
 
     ##############################################################################
-    def do_initiative(self):
+    def do_initiative(self) -> None:
         """Roll everyone's initiative and sort"""
         # ID is here as an ultimate tie breaker
-        tmp = [
-            (_.roll_initiative(), _.stats[Stat.DEX], id(_), _) for _ in self._combatants
-        ]
+        tmp = [(_.roll_initiative(), _.stats[Stat.DEX], id(_), _) for _ in self._combatants]
         tmp.sort(reverse=True)
         self._combatants = [_[-1] for _ in tmp]
         print(f"Initiative: {self._combatants}")
 
     ##############################################################################
-    def turn(self):
+    def turn(self) -> None:
         """Give all the combatants a turn in initiative order"""
         for comb in self.pick_everyone():
             comb.turn()
 
     ##############################################################################
-    def remove_combatant(self, comb) -> None:
+    def remove_combatant(self, comb: Creature) -> None:
         """Remove combatant from arena - generally means dead"""
         self[comb.coords] = None
 
     ##############################################################################
-    def add_combatant(self, comb, coords=None) -> None:
+    def add_combatant(self, comb: Creature, coords: Optional[tuple[int, int]] = None) -> None:
         """Add a combatant"""
         comb.arena = self
         self._combatants.append(comb)
@@ -90,14 +93,14 @@ class Arena(AStar):
         comb.coords = coords
 
     ##############################################################################
-    def distance(self, one, two):
+    def distance(self, one: Creature, two: Creature) -> int:
         """Return the distance in moves between two protagonists"""
         assert one.coords is not None
         assert two.coords is not None
         return self.distance_coords(one.coords, two.coords)
 
     ##############################################################################
-    def distance_coords(self, one, two):
+    def distance_coords(self, one: tuple[int, int], two: tuple[int, int]) -> int:
         """Distance between two points"""
         assert isinstance(one, tuple)
         assert isinstance(two, tuple)
@@ -106,14 +109,12 @@ class Arena(AStar):
         return math.floor(dist)
 
     ##############################################################################
-    def move_away(self, creat, cause):
+    def move_away(self, creat: Creature, cause: Creature) -> tuple[int, int]:
         """Move away from {cause}"""
         dists = []
         result = namedtuple("result", "distance id coord")
         for nbour in self.neighbors(creat.coords):
-            dists.append(
-                result(self.distance_coords(nbour, cause.coords), id(nbour), nbour)
-            )
+            dists.append(result(self.distance_coords(nbour, cause.coords), id(nbour), nbour))
         dists.sort(reverse=True)
         dest = dists[0].coord
         self[creat.coords] = None
@@ -121,7 +122,7 @@ class Arena(AStar):
         return dest
 
     ##############################################################################
-    def move_towards(self, creat, target):
+    def move_towards(self, creat: Creature, target: tuple[int, int]) -> tuple[int, int]:
         """Move the creature creat towards target coords one step"""
         # We can't move to the target square because it is occupied so no route
         # so try all the adjacent squares for the shortest route
@@ -138,7 +139,7 @@ class Arena(AStar):
 
         # Now pick the shortest workable route
         shortest = 999
-        target_adj = None
+        target_adj: tuple[int, int]
         for dest, rout in routes.items():
             if rout and len(rout) < shortest:
                 shortest = len(rout)
@@ -151,34 +152,30 @@ class Arena(AStar):
 
         dest = route[1]
         if self[dest] is not None:
-            print(
-                f"{creat} @ {creat.coords} trying to jump in with {self[dest]} @ {dest}"
-            )
+            print(f"{creat} @ {creat.coords} trying to jump in with {self[dest]} @ {dest}")
         self[creat.coords] = None
         self[dest] = creat
         return dest
 
     ##############################################################################
-    def remaining_type(self, creat, typ_):
+    def remaining_type(self, creat: Creature, typ_: MonsterType) -> list[Creature]:
         """Return the remaining combatants of the specified type"""
-        remain = [
-            _ for _ in self.pick_alive() if _.side != creat.side and _.is_type(typ_)
-        ]
+        remain = [_ for _ in self.pick_alive() if _.side != creat.side and _.is_type(typ_)]
         return remain
 
     ##############################################################################
-    def pick_everyone(self):
+    def pick_everyone(self) -> list[Creature]:
         """Return all combatants"""
         return self._combatants
 
     ##############################################################################
-    def pick_alive(self):
+    def pick_alive(self) -> list[Creature]:
         """Return the list of living combatants"""
         combs = [_ for _ in self._combatants if _.is_alive()]
         return combs
 
     ##############################################################################
-    def pick_closest_friends(self, creat):
+    def pick_closest_friends(self, creat: Creature) -> list[Creature]:
         """Pick the closest friends to creat sorted by distance"""
         result = namedtuple("result", "distance id creature")
         combs = [
@@ -187,11 +184,11 @@ class Arena(AStar):
             if _.side == creat.side and _ != creat
         ]
         combs.sort()
-        result = [_.creature for _ in combs]
-        return result
+        res = [_.creature for _ in combs]
+        return res
 
     ##############################################################################
-    def pick_closest_enemy(self, creat):
+    def pick_closest_enemy(self, creat: Creature) -> list[Creature]:
         """Pick the closest enemy creatures to {creat} sorted by distance"""
         result = namedtuple("result", "distance id creature")
         combs = [
@@ -200,11 +197,11 @@ class Arena(AStar):
             if _.side != creat.side
         ]
         combs.sort()
-        result = [_.creature for _ in combs]
-        return result
+        res = [_.creature for _ in combs]
+        return res
 
     ##############################################################################
-    def still_going(self):
+    def still_going(self) -> bool:
         """Do we still have alive combatants on both sides"""
         sides = self.remaining_participants_count()
         if len([_ for _ in sides if _]) > 1:
@@ -212,26 +209,26 @@ class Arena(AStar):
         return False
 
     ##############################################################################
-    def my_side(self, side):
+    def my_side(self, side: str) -> list[Creature]:
         """Who is still standing on my side"""
         return [_ for _ in self.pick_alive() if _.side == side]
 
     ##############################################################################
-    def remaining_participants_count(self):
+    def remaining_participants_count(self) -> defaultdict[str, int]:
         """How many are still standing"""
-        sides = defaultdict(int)
+        sides: defaultdict[str, int] = defaultdict(int)
         for participant in self.pick_alive():
             sides[participant.side] += 1
         return sides
 
     ##############################################################################
-    def winning_side(self):
+    def winning_side(self) -> str:
         """Which side won?"""
         sides = self.remaining_participants_count()
         return list(sides.keys())[0]
 
     ##############################################################################
-    def __setitem__(self, key, val):
+    def __setitem__(self, key: tuple[int, int], val: Any) -> None:
         """Change the grid"""
         assert isinstance(key, tuple)
         assert isinstance(key[0], int)
@@ -243,12 +240,12 @@ class Arena(AStar):
         self.grid[key] = val
 
     ##############################################################################
-    def __getitem__(self, key):
+    def __getitem__(self, key: tuple[int, int]) -> Any:
         """Access the grid"""
         return self.grid[key]
 
     ##############################################################################
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Display the grid"""
         output = []
         for j in range(self.max_y):

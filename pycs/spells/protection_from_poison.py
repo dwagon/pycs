@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/protection-from-poison"""
 
+from typing import Any
 from pycs.spell import SpellAction
 from pycs.constant import SpellType
 
@@ -8,7 +9,7 @@ from pycs.constant import SpellType
 class ProtectionFromPoison(SpellAction):
     """Spell"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Protection From Poison"
         kwargs.update(
             {
@@ -19,8 +20,9 @@ class ProtectionFromPoison(SpellAction):
         )
         super().__init__(name, **kwargs)
 
-    def cast(self):
+    def cast(self) -> bool:
         """Not implemented yet"""
+        return False
 
 
 # EOF

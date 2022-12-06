@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/hellish-rebuke"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
@@ -19,7 +20,7 @@ class HellishRebuke(AttackSpell):
     level above 1st."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Hellish Rebuke"
         kwargs.update(
             {
@@ -36,9 +37,9 @@ class HellishRebuke(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def hook_postdmg(self):
+    def hook_postdmg(self) -> None:
         """We are a post damage hook"""
-        return super().perform_action()
+        super().perform_action()
 
 
 # EOF

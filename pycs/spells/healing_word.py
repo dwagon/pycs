@@ -1,5 +1,7 @@
 """https://www.dndbeyond.com/spells/healing-word"""
 
+from typing import Any, Optional
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.spell import pick_heal_target
 from pycs.spell import healing_heuristic
@@ -18,7 +20,7 @@ class HealingWord(SpellAction):
     2nd level or higher, the healing increases by 1d4 for each slot
     level above 1st."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Healing Word"
         kwargs.update(
             {
@@ -30,18 +32,18 @@ class HealingWord(SpellAction):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self.owner.target.heal("1d4", self.spell_modifier(self.owner))
         return True
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we target"""
         return pick_heal_target(self.owner)
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we cast this"""
         return healing_heuristic(self.owner, self)
 
@@ -53,12 +55,12 @@ class TestHealingWord(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(HealingWord())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.friend.hp = 5
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)

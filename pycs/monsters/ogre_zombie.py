@@ -1,4 +1,5 @@
 """ Ogre Zombie Monster Class """
+from typing import Any
 import unittest
 from unittest.mock import patch, Mock
 import colors
@@ -17,7 +18,7 @@ class OgreZombie(Monster):
     """Ogre Zombie - https://www.dndbeyond.com/monsters/ogre-zombie"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "9d10+36",
@@ -45,7 +46,7 @@ class OgreZombie(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def fallen_unconscious(self, dmg, dmg_type, critical):
+    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
         """Undead Fortitude. If damage reduces the zombie to 0 hit points,
         it must make a Constitution saving throw with a DC of 5 + the damage
         taken, unless the damage is radiant or from a critical hit.
@@ -59,7 +60,7 @@ class OgreZombie(Monster):
         super().fallen_unconscious(dmg, dmg_type, critical)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("O")
@@ -73,14 +74,14 @@ class TestOgreZombie(unittest.TestCase):
     """Test Ogre Zombie"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the graveyard"""
         self.arena = Arena()
         self.beast = OgreZombie(side="a")
         self.arena.add_combatant(self.beast)
 
     ##########################################################################
-    def test_zombie_fortitude(self):
+    def test_zombie_fortitude(self) -> None:
         """Test being hit unconscious and recovering"""
         self.beast.hp = 1
         with patch.object(Creature, "rolld20") as mock:
@@ -89,7 +90,7 @@ class TestOgreZombie(unittest.TestCase):
             self.assertEqual(self.beast.hp, 1)
 
     ##########################################################################
-    def test_zombie_no_fort(self):
+    def test_zombie_no_fort(self) -> None:
         """Test being hit unconscious"""
         self.beast.hp = 1
         with patch.object(Creature, "rolld20") as mock:

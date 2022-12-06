@@ -2,6 +2,7 @@
 
 """The setup script."""
 
+from typing import Any
 from setuptools import setup, find_packages
 
 with open("README.md", encoding="utf-8") as readme_file:
@@ -10,7 +11,7 @@ with open("README.md", encoding="utf-8") as readme_file:
 with open("requirements.txt", encoding="utf-8") as requirements_file:
     requirements = requirements_file.readlines()
 
-test_requirements = []
+test_requirements: list[Any] = []
 
 setup(
     author="Dougal Scott",

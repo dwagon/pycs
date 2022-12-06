@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 import colors
 import dice
 
+from pycs.creature import Creature
 from pycs.monsters import AdultGoldDragon, YoungWhiteDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
@@ -63,10 +64,10 @@ HUMAN_ARMY = True
 
 
 ##############################################################################
-def start(rounds):
+def start(rounds: int) -> None:
     """Main"""
-    winning_stats = defaultdict(int)
-    all_stats = {}
+    winning_stats: defaultdict[str, int] = defaultdict(int)
+    all_stats: dict[str, int] = {}
     for _ in range(rounds):
         winner, stats = combat_test()
         winning_stats[winner] += 1
@@ -114,7 +115,7 @@ def update_stats(all_stats: dict, stats: dict) -> dict:
 
 
 ##############################################################################
-def win_report(stats, rounds):
+def win_report(stats: dict[str, int], rounds: int) -> None:
     """Who is winning"""
     print("\nWinning stats")
     tbl = PrettyTable()
@@ -126,14 +127,14 @@ def win_report(stats, rounds):
 
 
 ##############################################################################
-def flaming_weapon(source, target, dmg):
+def flaming_weapon(source: Creature, target: Creature, dmg: int) -> None:
     """Add some extra spice"""
     dmg = int(dice.roll("1d6"))
     target.hit(dmg, DamageType.FIRE, source, False, "Flaming Weapon")
 
 
 ##############################################################################
-def statistics_report(arena):
+def statistics_report(arena: Arena) -> dict[str, dict[str, int]]:
     """Dump the hit statistics at the end"""
     # Damage Details
     tbl = PrettyTable()
@@ -146,10 +147,10 @@ def statistics_report(arena):
         "Damage",
         "Crit %",
     ]
-    all_stats = {}
+    all_stats: dict[str, dict[str, int]] = {}
     for creat in arena.pick_everyone():
         tmp = creat.dump_statistics()
-        all_stats[creat] = tmp
+        all_stats[creat.name] = tmp
         for key, val in tmp.items():
             try:
                 crit_p = int(100.0 * val["crits"] / val["hits"])
@@ -189,7 +190,7 @@ def statistics_report(arena):
 
 
 ##############################################################################
-def participant_report(arena):
+def participant_report(arena: Arena) -> None:
     """Report on participants"""
     sides = defaultdict(list)
     for part in arena.pick_everyone():
@@ -205,7 +206,7 @@ def participant_report(arena):
 
 
 ##############################################################################
-def dragon_army(arena):
+def dragon_army(arena: Arena) -> None:
     """Dragon and friends"""
     arena.add_combatant(AdultGoldDragon(name="Adult Gold Dragon", side="Dragon"))
     for i in range(9):
@@ -214,7 +215,7 @@ def dragon_army(arena):
 
 
 ##############################################################################
-def undead_army(arena):
+def undead_army(arena: Arena) -> None:
     """Not a pulse amongst them"""
     for i in range(3):
         arena.add_combatant(Ghast(name=f"Ghast{i}", side="Undead"))
@@ -228,13 +229,11 @@ def undead_army(arena):
         arena.add_combatant(OgreZombie(name=f"OgreZombie{i}", side="Undead"))
     arena.add_combatant(VampireSpawn(name="VampireSpawn", side="Undead"))
     for i in range(5):
-        arena.add_combatant(
-            MinotaurSkeleton(name=f"MinotaurSkeleton{i}", side="Undead")
-        )
+        arena.add_combatant(MinotaurSkeleton(name=f"MinotaurSkeleton{i}", side="Undead"))
 
 
 ##############################################################################
-def monster_army(arena):
+def monster_army(arena: Arena) -> None:
     """Just a bunch of guys"""
     arena.add_combatant(BarbedDevil(name="Barbed Devil", side="Monsters"))
     for i in range(4):
@@ -254,7 +253,7 @@ def monster_army(arena):
 
 
 ##############################################################################
-def gnoll_army(arena):
+def gnoll_army(arena: Arena) -> None:
     """The hunger"""
     for i in range(8):
         arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
@@ -269,7 +268,7 @@ def gnoll_army(arena):
 
 
 ##############################################################################
-def human_army(arena):
+def human_army(arena: Arena) -> None:
     """Murder Hobos"""
     arena.add_combatant(
         Barbarian(
@@ -373,7 +372,7 @@ def human_army(arena):
 
 
 ##############################################################################
-def combat_test():
+def combat_test() -> tuple[str, dict[Creature, int]]:
     """Run through a combat"""
     turn = 0
     print("#" * 80)

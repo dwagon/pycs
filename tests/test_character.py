@@ -21,7 +21,7 @@ class TestCharacter(unittest.TestCase):
     """Tests for `character` package."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         kwargs = {
             "str": 6,
@@ -41,11 +41,11 @@ class TestCharacter(unittest.TestCase):
         self.arena.add_combatant(self.creat)
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_saving_throw(self):
+    def test_saving_throw(self) -> None:
         """Test saving_throw"""
         # If unconscious - auto fail STR saves
         self.creat.add_condition(Condition.UNCONSCIOUS)
@@ -72,7 +72,7 @@ class TestCharacter(unittest.TestCase):
             self.assertTrue(res)
 
     ########################################################################
-    def test_death_saving(self):
+    def test_death_saving(self) -> None:
         """Test death saving throws"""
         self.creat.hp = 10
         self.creat.hit(

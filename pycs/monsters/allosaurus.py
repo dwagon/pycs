@@ -1,4 +1,5 @@
 """ Allosaurus MM p79"""
+from typing import Any
 import unittest
 import colors
 from pycs.arena import Arena
@@ -13,7 +14,7 @@ class Allosaurus(Monster):
     """Allosaurus"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "6d10+18",
@@ -27,12 +28,8 @@ class Allosaurus(Monster):
                 "wis": 12,
                 "cha": 5,
                 "actions": [
-                    MeleeAttack(
-                        "Bite", reach=5, dmg=("2d10", 0), dmg_type=DamageType.PIERCING
-                    ),
-                    MeleeAttack(
-                        "Claw", reach=5, dmg=("1d8", 0), dmg_type=DamageType.SLASHING
-                    ),
+                    MeleeAttack("Bite", reach=5, dmg=("2d10", 0), dmg_type=DamageType.PIERCING),
+                    MeleeAttack("Claw", reach=5, dmg=("1d8", 0), dmg_type=DamageType.SLASHING),
                 ],
             }
         )
@@ -40,7 +37,7 @@ class Allosaurus(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a allosaurus looks like on the arena"""
         if self.is_alive():
             return colors.blue("A")
@@ -54,14 +51,14 @@ class TestAllosaurus(unittest.TestCase):
     """Test Allosaurus"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = Allosaurus(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC exists"""
         self.assertEqual(self.beast.ac, 13)
 

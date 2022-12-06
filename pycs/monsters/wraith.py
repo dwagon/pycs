@@ -1,4 +1,5 @@
 """ Wraith Monster Class """
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
@@ -17,7 +18,7 @@ class Wraith(Monster):
     """Wraith - https://www.dndbeyond.com/monsters/wraith"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "9d8+27",
@@ -68,7 +69,9 @@ class Wraith(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def life_drain(self, source, target, dmg):  # pylint: disable=unused-argument
+    def life_drain(
+        self, source: Creature, target: Creature, dmg: int
+    ) -> None:  # pylint: disable=unused-argument
         """The target must succeed on a DC 14 Constitution saving throw
         or its hit point maximum is reduced by an amount equal to the damage
         taken. This reduction lasts until the target finishes a long rest.
@@ -81,7 +84,7 @@ class Wraith(Monster):
             target.max_hp = max(target.max_hp - dmg, 0)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a wraith looks like on the arena"""
         if self.is_alive():
             return colors.red("W")
@@ -95,20 +98,19 @@ class TestWraith(unittest.TestCase):
     """Test Wraith"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the crypt"""
         self.arena = Arena()
         self.beast = Wraith(side="a")
         self.arena.add_combatant(self.beast, coords=(1, 1))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_drain(self):
+    def test_drain(self) -> None:
         """Test life drain"""
         lfdr = self.beast.pick_action_by_name("Life Drain")
+        assert lfdr is not None
         self.beast.target = self.victim
 
         # Ensure we hit

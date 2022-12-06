@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/classes/cleric """
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
@@ -9,6 +10,7 @@ from pycs.constant import ActionType, DamageType, MonsterType, SpellType, Stat
 from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.monsters import Skeleton
+from pycs.spell import SpellAction
 from pycs.spells import Aid
 from pycs.spells import BeaconOfHope
 from pycs.spells import Bless
@@ -32,7 +34,7 @@ class Cleric(Character):
     """Cleric class"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.channel_divinity = 0
         kwargs.update(
             {
@@ -65,7 +67,7 @@ class Cleric(Character):
         )
         level = kwargs.get("level", 1)
         if level >= 1:
-            self.destroy_undead = 0
+            self.destroy_undead = 0.0
             self.spell_slots = {1: 2}
             kwargs["hp"] = 10
         if level >= 2:
@@ -95,13 +97,13 @@ class Cleric(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Character report"""
         super().report()
         print(f"|  Spells: {self.spell_slots}")
 
     ##########################################################################
-    def spell_available(self, spell):
+    def spell_available(self, spell: SpellAction) -> bool:
         """Do we have enough slots to cast a spell"""
         if spell.level == 0:
             return True
@@ -110,7 +112,7 @@ class Cleric(Character):
         return False
 
     ##########################################################################
-    def cast(self, spell):
+    def cast(self, spell: SpellAction) -> bool:
         """Cast a spell"""
         if spell.level == 0:
             return True
@@ -120,7 +122,7 @@ class Cleric(Character):
         return True
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a cleric looks like in the arena"""
         if self.is_alive():
             return colors.blue("C", bg="green")
@@ -150,15 +152,15 @@ class TurnUndead(Action):
     in the Destroy Undead table."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Turn Undead", **kwargs)
 
     ##########################################################################
-    def is_available(self):
+    def is_available(self) -> bool:
         return self.owner.channel_divinity >= 1
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         heur = 0
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
@@ -168,7 +170,7 @@ class TurnUndead(Action):
         return heur
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
         undead = self.owner.arena.remaining_type(self.owner, MonsterType.UNDEAD)
         self.owner.channel_divinity -= 1
@@ -180,12 +182,11 @@ class TurnUndead(Action):
                         continue
                     if und.challenge <= self.owner.destroy_undead:
                         print(f"{und} has been destroyed by {self.owner}")
-                        und.hit(
-                            und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead"
-                        )
+                        und.hit(und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead")
                     else:
                         print(f"{und} has been turned by {self.owner}")
                         und.add_effect(TurnedUndeadEffect(cause=self.owner))
+        return True
 
 
 ##############################################################################
@@ -193,21 +194,21 @@ class TurnUndead(Action):
 ##############################################################################
 class TurnedUndeadEffect(Effect):
     """A turned creature must spend its turns trying to move as far away
-    from you as it can, and it can’t willingly move to a space within
-    30 feet of you. It also can’t take reactions. For its action, it
+    from you as it can, and it can't willingly move to a space within
+    30 feet of you. It also can't take reactions. For its action, it
     can use only the Dash action or try to escape from an effect that
-    prevents it from moving. If there’s nowhere to move, the creature
+    prevents it from moving. If there's nowhere to move, the creature
     can use the Dodge action"""
 
     ########################################################################
-    def __init__(self, cause, **kwargs):
+    def __init__(self, cause: Creature, **kwargs: Any):
         """Initialise"""
         kwargs["cause"] = cause  # Cleric who is doing the turning
         super().__init__("Turned", **kwargs)
 
     ########################################################################
-    def flee(self):
-        return self.cause
+    def flee(self) -> None:
+        raise NotImplementedError
 
 
 ##############################################################################
@@ -217,7 +218,7 @@ class TestTurnUndead(unittest.TestCase):
     """Test Turning"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.cleric = Cleric(name="Cyril", side="a", level=2)
         self.arena.add_combatant(self.cleric, coords=(1, 1))
@@ -225,10 +226,11 @@ class TestTurnUndead(unittest.TestCase):
         self.arena.add_combatant(self.skel, coords=(2, 2))
 
     ########################################################################
-    def test_turn_fail(self):
+    def test_turn_fail(self) -> None:
         """Test inflicting the turn and failing the save"""
         self.assertTrue(self.skel.is_alive())
         act = self.cleric.pick_action_by_name("Turn Undead")
+        assert act is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             act.perform_action()
@@ -237,10 +239,11 @@ class TestTurnUndead(unittest.TestCase):
         self.assertTrue(self.skel.has_effect("Turned"))
 
     ########################################################################
-    def test_turn_save(self):
+    def test_turn_save(self) -> None:
         """Test inflicting the turn and making the save"""
         self.assertTrue(self.skel.is_alive())
         act = self.cleric.pick_action_by_name("Turn Undead")
+        assert act is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 20
             act.perform_action()
@@ -248,12 +251,13 @@ class TestTurnUndead(unittest.TestCase):
         self.assertFalse(self.skel.has_effect("Turned"))
 
     ########################################################################
-    def test_destroy(self):
+    def test_destroy(self) -> None:
         """Test inflicting the turn with senior cleric"""
         self.assertTrue(self.skel.is_alive())
         self.cleric = Cleric(name="St Cyril", side="a", level=5)
         self.arena.add_combatant(self.cleric, coords=(1, 1))
         act = self.cleric.pick_action_by_name("Turn Undead")
+        assert act is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             act.perform_action()

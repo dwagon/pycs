@@ -1,7 +1,9 @@
 """https://www.dndbeyond.com/spells/aid"""
 
+from typing import Any
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.spell import SpellAction
 from .spelltest import SpellTest
@@ -21,13 +23,13 @@ class Aid(SpellAction):
     5 for each slot level above 2nd."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Aid"
         kwargs.update({"reach": 30, "level": 2, "type": SpellType.BUFF})
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell
         the more people it can effect the more we should do it"""
         close = 0
@@ -39,14 +41,14 @@ class Aid(SpellAction):
         return close
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Creature:
         """Who should we do the spell to"""
         # Pick three people near where we are
         # TO DO - better this to move to where we can get 3 peeps
         return self.owner
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         targets = 3
         for targ in self.owner.arena.my_side(self.owner.side):
@@ -64,10 +66,10 @@ class Aid(SpellAction):
 class AidEffect(Effect):
     """Effect of the aid spell"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Aid", **kwargs)
 
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """Initial effects of Aid"""
         target.hp += 5
         target.max_hp += 5
@@ -80,13 +82,13 @@ class TestAid(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test"""
         super().setUp()
         self.caster.add_action(Aid())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.friend.hp = 5
         self.assertFalse(self.friend.has_effect("Aid"))

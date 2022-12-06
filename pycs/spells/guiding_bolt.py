@@ -1,5 +1,6 @@
 """ https://www.dndbeyond.com/spells/guiding-bolt"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import SpellType
@@ -18,7 +19,7 @@ class GuidingBolt(AttackSpell):
     then."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Guiding Bolt"
         kwargs.update(
             {
@@ -33,13 +34,13 @@ class GuidingBolt(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self.owner.target.add_effect(GuidingBoltEffect(cause=self.owner))
         return True
 
     ###########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if not self.owner.spell_available(self):
             return 0
@@ -53,18 +54,18 @@ class GuidingBoltEffect(Effect):
     """Spell"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Guiding Bolt", **kwargs)
 
     ##########################################################################
-    def hook_gives_advantage_against(self):
+    def hook_gives_advantage_against(self) -> bool:
         """Gives advantage against creature who has effect"""
         print(f"{self.name} gives you advantage")
         return True
 
     ##########################################################################
-    def removal_after_being_attacked(self):
+    def removal_after_being_attacked(self) -> bool:
         """Do we remove the effect after being turned"""
         return True
 

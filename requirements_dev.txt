@@ -1,8 +1,10 @@
 -r requirements.txt
 Sphinx
+black
 bump2version
 coverage
 flake8
+mypy
 pip
 pylint
 pytest

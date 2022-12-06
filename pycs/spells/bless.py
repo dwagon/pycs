@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/bless"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.creature import Creature
@@ -25,7 +26,7 @@ class Bless(SpellAction):
     each slot level above 1st."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Bless"
         kwargs.update(
             {
@@ -35,11 +36,11 @@ class Bless(SpellAction):
                 "concentration": SpellType.CONCENTRATION,
             }
         )
-        self._affected = []
+        self._affected: list[Creature] = []
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         # The more applicable targets the more likely we should do it
         close = 0
@@ -51,13 +52,13 @@ class Bless(SpellAction):
         return close
 
     ###########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         # Improve this
         return self.owner
 
     ###########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self._affected = []
         targets = 3
@@ -73,7 +74,7 @@ class Bless(SpellAction):
         return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
         for pers in self._affected:
             pers.remove_effect("Bless")
@@ -85,17 +86,17 @@ class Bless(SpellAction):
 class BlessEffect(Effect):
     """The Effect of the bless spell"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Bless", **kwargs)
 
-    def hook_attack_to_hit(self, **kwargs):
+    def hook_attack_to_hit(self, **kwargs: Any) -> int:
         """Mod attack roll"""
         eff = super().hook_attack_to_hit(**kwargs)
         eff += int(dice.roll("d4"))
         return eff
 
-    def hook_saving_throw(self, stat, **kwargs):
+    def hook_saving_throw(self, stat: Stat, **kwargs: Any) -> dict:
         """Mod saving throw"""
         eff = super().hook_saving_throw(stat, **kwargs)
         eff.update({"bonus": int(dice.roll("d4"))})
@@ -110,20 +111,20 @@ class TestBless(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """setup"""
         super().setUp()
         self.caster.add_action(Bless())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """test casting"""
         self.assertFalse(self.friend.has_effect("Bless"))
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
         self.assertTrue(self.friend.has_effect("Bless"))
 
     ##########################################################################
-    def test_saving_throw_effect(self):
+    def test_saving_throw_effect(self) -> None:
         """test the bless effect on saving throws"""
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 9
@@ -136,7 +137,7 @@ class TestBless(SpellTest):
             self.assertTrue(save)
 
     ##########################################################################
-    def test_to_hit_effect(self):
+    def test_to_hit_effect(self) -> None:
         """test the bless effect on attack rolls"""
         act = self.friend.actions[0]
         with patch.object(Creature, "rolld20") as mock:
@@ -152,7 +153,7 @@ class TestBless(SpellTest):
         self.assertGreaterEqual(to_hit, 10)
 
     ##########################################################################
-    def test_concentration(self):
+    def test_concentration(self) -> None:
         """Does the effect remove when we end concentration"""
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
         self.assertTrue(self.friend.has_effect("Bless"))

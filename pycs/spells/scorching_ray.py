@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/scorching-ray"""
 
+from typing import Any, Optional
 from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
@@ -22,7 +23,7 @@ class ScorchingRay(AttackSpell):
     level above 2nd."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Scorching Ray"
         kwargs.update(
             {
@@ -38,7 +39,7 @@ class ScorchingRay(AttackSpell):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell - reevaluate targets each ray in case the ray
         has already killed the target"""
         for _ in range(3):
@@ -47,7 +48,7 @@ class ScorchingRay(AttackSpell):
                 if self.owner.distance(enemy) < self.range()[0]:
                     targets.append(enemy)
             if not targets:
-                return
+                return False
             target = targets[0]
             print(f"Targeting {target} with Scorching Ray")
             to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
@@ -55,12 +56,11 @@ class ScorchingRay(AttackSpell):
                 dmg = self.roll_dmg(self.owner, target)
                 target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
             else:
-                print(
-                    f"Scorching Ray missed {target} (Rolled {to_hit} < AC: {target.ac})"
-                )
+                print(f"Scorching Ray missed {target} (Rolled {to_hit} < AC: {target.ac})")
+        return True
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         for enemy in self.owner.pick_closest_enemy():
             if self.owner.distance(enemy) < self.range()[0]:
@@ -68,7 +68,7 @@ class ScorchingRay(AttackSpell):
         return None
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         targets = 0
         for enemy in self.owner.pick_closest_enemy():
@@ -84,13 +84,13 @@ class TestScorchingRay(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """setup tests"""
         super().setUp()
         self.caster.add_action(ScorchingRay())
 
     ##########################################################################
-    def test_cast_miss(self):
+    def test_cast_miss(self) -> None:
         """test casting where misses victim"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(Creature, "rolld20") as mock:
@@ -100,7 +100,7 @@ class TestScorchingRay(SpellTest):
         self.assertEqual(self.enemy.damage_this_turn, [])
 
     ##########################################################################
-    def test_cast_hit(self):
+    def test_cast_hit(self) -> None:
         """test casting where victim fails saving throw"""
         self.enemy.max_hp = 100  # Need enough hp to survive 3 rays
         self.enemy.hp = 100

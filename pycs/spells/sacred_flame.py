@@ -1,5 +1,6 @@
 """ https://www.dndbeyond.com/spells/sacred-flame"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import Stat
@@ -17,7 +18,7 @@ class SacredFlame(AttackSpell):
     11th level (3d8), and 17th level (4d8)."""
 
     ###########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Sacred Flame"
         kwargs.update(
             {

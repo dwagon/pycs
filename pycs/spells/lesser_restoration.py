@@ -1,5 +1,7 @@
 """https://www.dndbeyond.com/spells/lesser-restoration"""
 
+from typing import Any, Optional
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.constant import SpellType
 from pycs.constant import Condition
@@ -14,7 +16,7 @@ class LesserRestoration(SpellAction):
     paralyzed, or poisoned."""
 
     ###########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Lesser Restoration"
         kwargs.update(
             {
@@ -26,7 +28,7 @@ class LesserRestoration(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         if not self.owner.target:
             return False
@@ -43,7 +45,7 @@ class LesserRestoration(SpellAction):
         return True
 
     ###########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who are we going to cast it on"""
         friends = self.owner.pick_closest_friends()
         for friend in friends:
@@ -58,7 +60,7 @@ class LesserRestoration(SpellAction):
         return None
 
     ###########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if self.pick_target() is None:
             return 0
@@ -72,12 +74,12 @@ class TestLesserRestoration(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(LesserRestoration())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.caster.moves = 90  # Make sure we can get there
         self.friend.add_condition(Condition.BLINDED)
