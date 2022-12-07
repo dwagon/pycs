@@ -1,15 +1,17 @@
 """ All sorts of equipment """
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import dice
 from pycs.action import Action
 from pycs.attack import MeleeAttack
 from pycs.attack import RangedAttack
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
-from pycs.constant import DamageType
 from pycs.constant import Stat
-from pycs.creature import Creature
 from pycs.util import check_args
+
+if TYPE_CHECKING:
+    from pycs.creature import Creature
+
 
 
 ##############################################################################
@@ -23,7 +25,7 @@ class Equipment:  # pylint: disable=too-few-public-methods
         """init"""
         check_args(self._valid_args(), name, kwargs)
         self.name = name
-        self.owner: Creature  # Set by add_gear()
+        self.owner: "Creature"  # Set by add_gear()
         self.actions: list[Action] = []
 
     ##########################################################################
@@ -57,7 +59,7 @@ class Weapon(Equipment):
         return super()._valid_args() | {"magic_bonus", "side_effect", "actions"}
 
     ##########################################################################
-    def hook_attack_to_hit(self, target: Creature) -> int:  # pylint: disable=unused-argument
+    def hook_attack_to_hit(self, target: "Creature") -> int:  # pylint: disable=unused-argument
         """Any modifier to hit"""
         return self.magic_bonus
 
@@ -273,7 +275,7 @@ class DrinkPotion(Action):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def pick_target(self) -> Creature:
+    def pick_target(self) -> "Creature":
         """Who do we do it do"""
         return self.owner
 

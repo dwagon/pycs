@@ -1,11 +1,13 @@
 """ Handle Attacks """
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import dice
 from pycs.action import Action
-from pycs.creature import Creature
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.util import check_args
+
+if TYPE_CHECKING:
+    from pycs.creature import Creature
 
 
 ##############################################################################
@@ -44,14 +46,14 @@ class Attack(Action):
         return response
 
     ########################################################################
-    def atk_modifier(self, attacker: Creature) -> int:
+    def atk_modifier(self, attacker: "Creature") -> int:
         """The ranged attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier
         return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def dmg_modifier(self, attacker: Creature) -> int:
+    def dmg_modifier(self, attacker: "Creature") -> int:
         """The ranged damage modifier"""
         return attacker.stat_bonus(self.use_stat)
 
@@ -140,7 +142,7 @@ class RangedAttack(Attack):
         return self.s_range, self.l_range
 
     ########################################################################
-    def has_disadvantage(self, target: Creature, rnge: int) -> bool:
+    def has_disadvantage(self, target: "Creature", rnge: int) -> bool:
         """Does this attack have disadvantage at this range"""
         if rnge == 1:
             return True

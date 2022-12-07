@@ -1,14 +1,13 @@
 """ Handle non-attack Actions """
 from collections import namedtuple
-from typing import Any, NamedTuple, Optional
+from typing import Any, NamedTuple, Optional, TYPE_CHECKING
 import dice
 from pycs.action import Action
-from pycs.creature import Creature
 from pycs.constant import SpellType
-from pycs.constant import ActionType
-from pycs.constant import Stat
 from pycs.util import check_args
 
+if TYPE_CHECKING:
+    from pycs.creature import Creature
 
 ##############################################################################
 ##############################################################################
@@ -25,8 +24,8 @@ class SpellAction(Action):
         self.cure_hp = kwargs.get("cure_hp")
         self.level: int = kwargs.get("level", 0)
         self.concentration = kwargs.get("concentration")
-        self.caster: Creature
-        self.target: Creature
+        self.caster: "Creature"
+        self.target: "Creature"
 
     ##########################################################################
     def _valid_args(self) -> set[str]:
@@ -45,11 +44,11 @@ class SpellAction(Action):
         return self.owner.spell_available(self)
 
     ########################################################################
-    def failed_save(self, source: Creature, target: Creature, dmg: int) -> None:
+    def failed_save(self, source: "Creature", target: "Creature", dmg: int) -> None:
         """Called when the target failed save"""
 
     ########################################################################
-    def made_save(self, source: Creature, target: Creature, dmg: int) -> None:
+    def made_save(self, source: "Creature", target: "Creature", dmg: int) -> None:
         """Called when the target made save"""
 
     ########################################################################
@@ -63,17 +62,17 @@ class SpellAction(Action):
         return self.reach, self.reach
 
     ########################################################################
-    def spell_modifier(self, attacker: Creature) -> int:
+    def spell_modifier(self, attacker: "Creature") -> int:
         """Spell Casting modifier"""
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def atk_modifier(self, attacker: Creature) -> int:
+    def atk_modifier(self, attacker: "Creature") -> int:
         """Attack modifier"""
         return self.spell_modifier(attacker)
 
     ########################################################################
-    def dmg_modifier(self, attacker: Creature) -> int:
+    def dmg_modifier(self, attacker: "Creature") -> int:
         """Damage modifier"""
         return 0
 
@@ -112,10 +111,10 @@ class SpellAction(Action):
 class HealthResult(NamedTuple):
         health: int
         id: int
-        target: Creature
+        target: "Creature"
 
 ##############################################################################
-def health_level_of_peers(doer: Creature) -> Optional[HealthResult]:
+def health_level_of_peers(doer: "Creature") -> Optional[HealthResult]:
     """Return the health levels (missing hp) of peers"""
     hurt_peers = [
         HealthResult(_.max_hp - _.hp, id(_), _) for _ in doer.arena.my_side(doer.side) if _.max_hp != 0
@@ -127,7 +126,7 @@ def health_level_of_peers(doer: Creature) -> Optional[HealthResult]:
 
 
 ##############################################################################
-def healing_heuristic(doer: Creature, spell: SpellAction) -> int:
+def healing_heuristic(doer: "Creature", spell: SpellAction) -> int:
     """Should we cast this"""
     if not doer.spell_available(spell):
         return 0
@@ -138,7 +137,7 @@ def healing_heuristic(doer: Creature, spell: SpellAction) -> int:
 
 
 ##############################################################################
-def pick_heal_target(doer: Creature) -> Optional[Creature]:
+def pick_heal_target(doer: "Creature") -> Optional["Creature"]:
     """Who to heal"""
     recip = health_level_of_peers(doer)
     if recip is None:
@@ -167,12 +166,12 @@ class AttackSpell(SpellAction):
         return super()._valid_args() | {"style", "type", "save_stat", "save_dc"}
 
     ########################################################################
-    def stat_dmg_bonus(self, attacker: Creature) -> int:
+    def stat_dmg_bonus(self, attacker: "Creature") -> int:
         """No spell bonus to damage"""
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def roll_dmg(self, victim: Creature, critical: bool = False) -> int:
+    def roll_dmg(self, victim: "Creature", critical: bool = False) -> int:
         """Special spell damage"""
         if self.style == SpellType.TOHIT:
             return super().roll_dmg(victim, critical)
@@ -208,7 +207,7 @@ class AttackSpell(SpellAction):
         return self.max_dmg()
 
     ########################################################################
-    def roll_to_hit(self, target: Creature) -> tuple[int, bool, bool]:
+    def roll_to_hit(self, target: "Creature") -> tuple[int, bool, bool]:
         """Special spell attack"""
         if self.style == SpellType.TOHIT:
             return super().roll_to_hit(target)

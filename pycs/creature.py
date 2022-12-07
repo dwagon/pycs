@@ -5,12 +5,10 @@ from __future__ import annotations
 import random
 from collections import defaultdict
 from collections import namedtuple
-from typing import Optional, Any
+from typing import Optional, Any, TYPE_CHECKING
 
 import dice
-# from pycs.action import Action
-from pycs.arena import Arena
-from pycs.attack import Attack
+from pycs.action import Action
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
@@ -20,10 +18,15 @@ from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.constant import Statistics
-from pycs.effect import Effect
-from pycs.equipment import Armour, Equipment
-from pycs.spell import SpellAction
 from pycs.util import check_args
+from pycs.equipment import Armour, Equipment
+from pycs.attack import Attack
+from pycs.spell import SpellAction
+
+
+if TYPE_CHECKING:
+    from pycs.effect import Effect
+    from pycs.arena import Arena
 
 
 ##############################################################################
@@ -35,7 +38,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def __init__(self, **kwargs: Any):
         check_args(self._valid_args(), self.__class__.__name__, kwargs)
-        self.arena: Arena  # Set by adding to arena
+        self.arena: "Arena"  # Set by adding to arena
         self.name = kwargs.get("name", self.__class__.__name__)
         self._ac = kwargs.get("ac", None)
         self.speed = int(kwargs.get("speed", 30) / 5)
@@ -86,7 +89,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.coords: tuple[int, int]
         self.statistics: list[Statistics] = []
         self.options_this_turn: list[ActionCategory] = []
-        self.concentration: Optional[SpellAction] = None
+        self.concentration: Optional["SpellAction"] = None
         self.damage_this_turn: list[Damage] = []
         self.damage_last_turn: list[Damage] = []
 
@@ -489,7 +492,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return name in self.effects
 
     ##########################################################################
-    def add_effect(self, effect: Effect) -> None:
+    def add_effect(self, effect: "Effect") -> None:
         """Add an effect"""
         self.effects[effect.name] = effect
         effect.owner = self
@@ -576,7 +579,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def spell_available(  # pylint: disable=no-self-use
-        self, spell: SpellAction  # pylint: disable=unused-argument
+        self, spell: "SpellAction"  # pylint: disable=unused-argument
     ) -> bool:
         """Spell casters should redefine this"""
         return False
@@ -776,7 +779,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 self.options_this_turn.remove(categ)
 
     ##########################################################################
-    def add_concentration(self, spell: SpellAction) -> None:
+    def add_concentration(self, spell: "SpellAction") -> None:
         """Start a new concentration spell"""
         if self.concentration:
             print(f"{self} removing {self.concentration} as casting {spell}")
