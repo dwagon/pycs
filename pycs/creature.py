@@ -850,16 +850,16 @@ class BreakGrapple(Action):
         """Do this"""
         enemy = self.owner.grappled_by
         if self.owner.stats[Stat.STR] > self.owner.stats[Stat.DEX]:
-            targ = self.owner.rolld20("str")
+            targ = self.owner.rolld20(Stat.STR)
             targ += self.owner.stat_bonus(Stat.STR)
         else:
-            targ = self.owner.rolld20("dex")
+            targ = self.owner.rolld20(Stat.DEX)
             targ += self.owner.stat_bonus(Stat.DEX)
 
         if self.owner.escape_grapple_dc:
             escape = self.owner.escape_grapple_dc
         else:
-            escape = enemy.rolld20("str")
+            escape = enemy.rolld20(Stat.STR)
             escape += enemy.stat_bonus(Stat.STR)
 
         if targ > escape:

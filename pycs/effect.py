@@ -1,5 +1,5 @@
 """ Handle Effects """
-from typing import Any, Tuple, Optional
+from typing import Any, Optional
 from pycs.action import Action
 from pycs.creature import Creature
 from pycs.constant import DamageType

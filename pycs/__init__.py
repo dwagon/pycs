@@ -22,7 +22,7 @@ from pycs.monsters import (
     Wraith,
     Zombie,
 )
-from pycs.monsters import GiantFrog
+# from pycs.monsters import GiantFrog
 from pycs.monsters import (
     Gnoll,
     GnollPackLord,
@@ -236,8 +236,8 @@ def undead_army(arena: Arena) -> None:
 def monster_army(arena: Arena) -> None:
     """Just a bunch of guys"""
     arena.add_combatant(BarbedDevil(name="Barbed Devil", side="Monsters"))
-    for i in range(4):
-        arena.add_combatant(GiantFrog(name=f"Giant Frog{i}", side="Monsters"))
+    # for i in range(4):
+    #    arena.add_combatant(GiantFrog(name=f"Giant Frog{i}", side="Monsters"))
     arena.add_combatant(VioletFungus(name="Violet Fungus", side="Monsters"))
     arena.add_combatant(Troll(name="Troll", side="Monsters"))
     for i in range(4):
