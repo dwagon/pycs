@@ -19,4 +19,4 @@ jobs:
         pip install black
     - name: Analysing the code with black
       run: |
-        black -l 100 --check .
+        black -l 120 --check .

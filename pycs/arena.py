@@ -179,9 +179,7 @@ class Arena(AStar):
         """Pick the closest friends to creat sorted by distance"""
         result = namedtuple("result", "distance id creature")
         combs = [
-            result(self.distance(creat, _), id(_), _)
-            for _ in self.pick_alive()
-            if _.side == creat.side and _ != creat
+            result(self.distance(creat, _), id(_), _) for _ in self.pick_alive() if _.side == creat.side and _ != creat
         ]
         combs.sort()
         res = [_.creature for _ in combs]
@@ -191,11 +189,7 @@ class Arena(AStar):
     def pick_closest_enemy(self, creat: Creature) -> list[Creature]:
         """Pick the closest enemy creatures to {creat} sorted by distance"""
         result = namedtuple("result", "distance id creature")
-        combs = [
-            result(self.distance(creat, _), id(_), _)
-            for _ in self.pick_alive()
-            if _.side != creat.side
-        ]
+        combs = [result(self.distance(creat, _), id(_), _) for _ in self.pick_alive() if _.side != creat.side]
         combs.sort()
         res = [_.creature for _ in combs]
         return res

@@ -1,7 +1,7 @@
 """https://www.dndbeyond.com/spells/branding-smite"""
 
-from pycs.action import Action
 from typing import Any, Optional
+from pycs.action import Action
 from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.constant import SpellType

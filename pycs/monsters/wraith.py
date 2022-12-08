@@ -69,9 +69,7 @@ class Wraith(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def life_drain(
-        self, source: Creature, target: Creature, dmg: int
-    ) -> None:  # pylint: disable=unused-argument
+    def life_drain(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """The target must succeed on a DC 14 Constitution saving throw
         or its hit point maximum is reduced by an amount equal to the damage
         taken. This reduction lasts until the target finishes a long rest.

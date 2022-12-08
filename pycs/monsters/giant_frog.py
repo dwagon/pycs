@@ -48,9 +48,7 @@ class GiantFrog(Monster):
         self._swallowed: Optional[Creature] = None
 
     ##########################################################################
-    def bite_swallow(
-        self, source: Creature, target: Creature, dmg: int
-    ) -> None:  # pylint: disable=unused-argument
+    def bite_swallow(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """Swallow. The frog makes one bite attack against a Small or smaller target
         it is grappling. If the attack hits, the target is swallowed, and the grapple
         ends. The swallowed target is blinded and restrained, it has total cover

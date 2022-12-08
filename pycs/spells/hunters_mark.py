@@ -61,25 +61,23 @@ class HuntersMark(SpellAction):
                 continue
             if enemy.has_effect("Hunters Mark"):
                 continue
-            self.target = enemy
             return enemy
         return None
 
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        assert self.target is not None
-        self.target.add_effect(HuntersMarkEffect(caster=self.owner))
-        print(f"Cast Hunters Mark on {self.target}")
+        self.owner.target.add_effect(HuntersMarkEffect(caster=self.owner))
+        print(f"Cast Hunters Mark on {self.owner.target}")
         return True
 
     ##########################################################################
     def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
-        if self.target:
-            print(f"Removing Hunters Mark from {self.target}")
-            self.target.remove_effect("Hunters Mark")
-            self.target = None
+        if self.owner.target:
+            print(f"Removing Hunters Mark from {self.owner.target}")
+            self.owner.target.remove_effect("Hunters Mark")
+            self.owner.target = None
 
 
 ##############################################################################

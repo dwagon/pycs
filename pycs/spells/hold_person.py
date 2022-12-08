@@ -58,9 +58,7 @@ class HoldPerson(SpellAction):
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        svth = self.owner.target.saving_throw(
-            Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED
-        )
+        svth = self.owner.target.saving_throw(Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED)
         # TO DO: If the saving throw is made the spell should end
         if not svth:
             self.owner.target.add_effect(HoldPersonEffect(caster=self.owner))

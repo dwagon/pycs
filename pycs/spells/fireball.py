@@ -87,7 +87,6 @@ class Fireball(AttackSpell):
         if targets:
             self._num_enemy = targets[0].enemies
             self._num_friend = -targets[0].friends + 999
-            self.target = targets[0].target
             targets.sort(reverse=True)
             return targets[0].target
         return None
@@ -96,10 +95,7 @@ class Fireball(AttackSpell):
     def heuristic(self) -> int:
         """Should we do the spell"""
         if self.pick_target():
-            val = (
-                int(dice.roll_max("8d6")) * self._num_enemy
-                - int(1.5 * int(dice.roll_max("8d6"))) * self._num_friend
-            )
+            val = int(dice.roll_max("8d6")) * self._num_enemy - int(1.5 * int(dice.roll_max("8d6"))) * self._num_friend
             return val
         return 0
 

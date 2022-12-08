@@ -75,9 +75,7 @@ class MartialAdvantage(Effect):
         """Additional damage?"""
         if self.used_this_turn:
             return ("", 0, None)
-        allies = [
-            _ for _ in source.pick_closest_friends() if _ != source and _.distance(target) <= 1
-        ]
+        allies = [_ for _ in source.pick_closest_friends() if _ != source and _.distance(target) <= 1]
         if allies:
             self.used_this_turn = True
             return ("2d6", 0, None)

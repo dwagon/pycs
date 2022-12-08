@@ -71,17 +71,11 @@ class Ghast(Monster):
         if creat.side == self.side:
             return
         dist = self.arena.distance(self, creat)
-        if (
-            dist <= 1
-            and Condition.POISONED not in creat.immunity
-            and not creat.has_effect("Ghast Stench")
-        ):
+        if dist <= 1 and Condition.POISONED not in creat.immunity and not creat.has_effect("Ghast Stench"):
             creat.add_effect(GhastStenchEffect(cause=self))
 
     ##########################################################################
-    def ghast_claws(
-        self, source: Creature, target: Creature, dmg: int
-    ) -> None:  # pylint: disable=unused-argument
+    def ghast_claws(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """If the target is a creature other than an undead, it must
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each

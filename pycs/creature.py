@@ -58,9 +58,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         }
         self.stat_prof = kwargs.get("stat_prof", [])
         self.spellcast_bonus_stat: Stat = kwargs.get("spellcast_bonus_stat", Stat.INT)
-        self.action_preference = kwargs.get(
-            "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
-        )
+        self.action_preference = kwargs.get("action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4})
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
@@ -98,7 +96,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.add_gear(gear)
 
     ##########################################################################
-    def _valid_args(self) -> set[str]:  # pylint: disable=no-self-use
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return {
             "name",
@@ -233,9 +231,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(  # pylint: disable=invalid-name
-        self, stat: Stat, dc: int, **kwargs: Any
-    ) -> bool:
+    def saving_throw(self, stat: Stat, dc: int, **kwargs: Any) -> bool:  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
             print(f"{self} automatically failed {stat.value} saving throw as unconscious")
@@ -352,15 +348,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self._react_postdmg(source)
 
     ##########################################################################
-    def _react_predmg(
-        self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool
-    ) -> int:
+    def _react_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
         """About to take damage - do we have a reaction that can alter the damage"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return dmg
-        react = self._pick_action(
-            typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg"
-        )
+        react = self._pick_action(typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg")
         if react is not None:
             print(f"{self} reacts against {source}")
             dmg = react.hook_predmg(dmg=dmg, dmg_type=dmg_type, source=source, critical=critical)
@@ -372,9 +364,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         """React to an incoming attack with a reaction"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return
-        react = self._pick_action(
-            typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg"
-        )
+        react = self._pick_action(typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg")
         if react is not None:
             print(f"{self} reacts against {source}")
             react.hook_postdmg()
@@ -432,7 +422,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return True
 
     ##########################################################################
-    def shortrepr(self) -> str:  # pylint: disable=no-self-use
+    def shortrepr(self) -> str:
         """What it looks like on the arena"""
         return "?"
 
@@ -457,9 +447,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def creature_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
         """How you actually fall unconscious depends on what you are"""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} needs a creature_fallen_unconscious()"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} needs a creature_fallen_unconscious()")
 
     ##########################################################################
     def hook_see_someone_die(self, creat: Creature) -> None:
@@ -539,7 +527,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
-    def damage_summary(self, dmglist: list[Damage]) -> str:  # pylint: disable=no-self-use
+    def damage_summary(self, dmglist: list[Damage]) -> str:
         """Summarise damage"""
         if not dmglist:
             return "None"
@@ -578,9 +566,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(  # pylint: disable=no-self-use
-        self, spell: "SpellAction"  # pylint: disable=unused-argument
-    ) -> bool:
+    def spell_available(self, spell: "SpellAction") -> bool:  # pylint: disable=unused-argument
         """Spell casters should redefine this"""
         return False
 

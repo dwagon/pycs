@@ -109,6 +109,8 @@ class SpellAction(Action):
 
 ##############################################################################
 class HealthResult(NamedTuple):
+    """Used to sort health of creatures for healing"""
+
     health: int
     id: int
     target: "Creature"
@@ -117,11 +119,7 @@ class HealthResult(NamedTuple):
 ##############################################################################
 def health_level_of_peers(doer: "Creature") -> Optional[HealthResult]:
     """Return the health levels (missing hp) of peers"""
-    hurt_peers = [
-        HealthResult(_.max_hp - _.hp, id(_), _)
-        for _ in doer.arena.my_side(doer.side)
-        if _.max_hp != 0
-    ]
+    hurt_peers = [HealthResult(_.max_hp - _.hp, id(_), _) for _ in doer.arena.my_side(doer.side) if _.max_hp != 0]
     if not hurt_peers:
         return None
     hurt_peers.sort(reverse=True)

@@ -20,9 +20,7 @@ class Effect:
         self.owner: Optional[Creature]  # Set when added to a creature
 
     ##########################################################################
-    def hook_heuristic_mod(
-        self, action: Action, actor: Creature
-    ) -> int:  # pylint: disable=unused-argument
+    def hook_heuristic_mod(self, action: Action, actor: Creature) -> int:  # pylint: disable=unused-argument
         """Modification to the actions {action} heuristic"""
         return 0
 
@@ -32,16 +30,12 @@ class Effect:
         return 0
 
     ##########################################################################
-    def hook_being_hit(
-        self, dmg: int, dmgtype: DamageType
-    ) -> int:  # pylint: disable=unused-argument
+    def hook_being_hit(self, dmg: int, dmgtype: DamageType) -> int:  # pylint: disable=unused-argument
         """We've been hit by an attack; return the new dmg"""
         return dmg
 
     ##########################################################################
-    def hook_saving_throw(
-        self, stat: Stat, **kwargs: Any  # pylint: disable=unused-argument
-    ) -> dict:
+    def hook_saving_throw(self, stat: Stat, **kwargs: Any) -> dict:  # pylint: disable=unused-argument
         """Modify the saving throw roll"""
         return {"bonus": 0, "advantage": False, "disadvantage": False}
 

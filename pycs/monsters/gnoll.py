@@ -33,9 +33,7 @@ class Gnoll(Monster):
                 "wis": 10,
                 "cha": 7,
                 "gear": [Spear(), Longbow(), Hide(), Shield()],
-                "actions": [
-                    MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)
-                ],
+                "actions": [MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)],
             }
         )
         super().__init__(**kwargs)

@@ -102,7 +102,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
 
     ########################################################################
     def hook_predmg(
-        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool
+        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool  # pylint: disable=unused-argument
     ) -> int:
         """Should be overwritten"""
         return 0
@@ -119,9 +119,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     ########################################################################
     def heuristic(self) -> int:  # pylint: disable=method-hidden
         """Should we do this thing"""
-        raise NotImplementedError(
-            f"{self.name} {self.__class__.__name__}.heuristic() not implemented"
-        )
+        raise NotImplementedError(f"{self.name} {self.__class__.__name__}.heuristic() not implemented")
 
     ########################################################################
     def range(self) -> tuple[int, int]:
@@ -275,8 +273,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             self.buff_attack_damage(target)
 
             print(
-                f"{self.owner} hit {target} (AC: {target.ac})"
-                f" with {self} for {dmg} hp {self.dmg_type.value} damage"
+                f"{self.owner} hit {target} (AC: {target.ac})" f" with {self} for {dmg} hp {self.dmg_type.value} damage"
             )
         else:
             self.owner.statistics.append(Statistics(self.name, 0, None, False))

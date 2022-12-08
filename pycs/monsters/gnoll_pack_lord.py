@@ -32,9 +32,7 @@ class GnollPackLord(Monster):
                 "wis": 11,
                 "cha": 9,
                 "gear": [ChainShirt(), Glaive(), Longbow()],
-                "actions": [
-                    MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)
-                ],
+                "actions": [MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)],
             }
         )
         super().__init__(**kwargs)

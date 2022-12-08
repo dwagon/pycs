@@ -139,9 +139,7 @@ class BiteAttack(MeleeAttack):
         return 0
 
     ##########################################################################
-    def bite_side_effect(
-        self, source: Creature, target: Creature, dmg: int
-    ) -> None:  # pylint: disable=unused-argument
+    def bite_side_effect(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """Do the side_effect"""
         necro_dmg = int(dice.roll("2d6"))
         target.hit(necro_dmg, DamageType.NECROTIC, source, False, "Vampire Spawn Bite")

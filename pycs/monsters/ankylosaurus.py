@@ -41,9 +41,7 @@ class Ankylosaurus(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def anktail(
-        self, source: Creature, target: Creature, dmg: DamageType
-    ) -> None:  # pylint: disable=unused-argument
+    def anktail(self, source: Creature, target: Creature, dmg: DamageType) -> None:  # pylint: disable=unused-argument
         """Ank Tail - must succeed at a DC14 strength save or be knocked prone"""
         svth = target.saving_throw(Stat.STR, 14)
         if not svth:

@@ -1,7 +1,7 @@
 """ Paladin """
 import unittest
-import colors
 from typing import Any, Optional
+import colors
 from pycs.action import Action
 from pycs.creature import Creature
 from pycs.spell import SpellAction

@@ -84,9 +84,7 @@ class YetiMultiAttack(Action):
         return True
 
     ##########################################################################
-    def cold_claw(
-        self, source: Creature, target: Creature, dmg: int
-    ) -> None:  # pylint: disable=unused-argument
+    def cold_claw(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """Additional 1d6 Cold damage to claw"""
         cold_dmg = int(dice.roll("1d6"))
         target.hit(cold_dmg, DamageType.COLD, source, False, "Yeti Cold Claws")
