@@ -202,9 +202,7 @@ class TestCreature(unittest.TestCase):
     def test_hit(self) -> None:
         """Test creature hurting"""
         self.creat.hp = 30
-        self.creat.hit(
-            5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack"
-        )
+        self.creat.hit(5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack")
         self.assertEqual(self.creat.hp, 25)
         # Vulnerable = twice damaage
         self.creat.vulnerable.append(DamageType.PIERCING)

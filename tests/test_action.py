@@ -131,10 +131,14 @@ class DummyEffect(Effect):
     def __init__(self, **kwargs: Any):
         super().__init__("Dummy Effect", **kwargs)
 
-    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature)-> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         return ("", 2, DamageType.FIRE)
 
-    def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature)-> tuple[str, int, Optional[DamageType]]:
+    def hook_target_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         return ("", 4, DamageType.ACID)
 
     def hook_attack_to_hit(self, **kwargs: Any) -> int:
