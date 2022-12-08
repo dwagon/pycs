@@ -56,7 +56,7 @@ from pycs.gear import (
 )
 
 
-DRAGON_ARMY = True
+DRAGON_ARMY = False
 UNDEAD_ARMY = False
 MONSTER_ARMY = True
 GNOLL_ARMY = False
@@ -134,7 +134,7 @@ def flaming_weapon(source: Creature, target: Creature, dmg: int) -> None:
 
 
 ##############################################################################
-def statistics_report(arena: Arena) -> dict[str, dict[str, int]]:
+def statistics_report(arena: Arena) -> dict[str, dict[str, dict[str, int]]]:
     """Dump the hit statistics at the end"""
     # Damage Details
     tbl = PrettyTable()
@@ -147,7 +147,7 @@ def statistics_report(arena: Arena) -> dict[str, dict[str, int]]:
         "Damage",
         "Crit %",
     ]
-    all_stats: dict[str, dict[str, int]] = {}
+    all_stats: dict[str, dict[str, dict[str, int]]] = {}
     for creat in arena.pick_everyone():
         tmp = creat.dump_statistics()
         all_stats[creat.name] = tmp
@@ -372,7 +372,7 @@ def human_army(arena: Arena) -> None:
 
 
 ##############################################################################
-def combat_test() -> tuple[str, dict[Creature, int]]:
+def combat_test() -> tuple[str, dict[str, dict[str, dict[str, int]]]]:
     """Run through a combat"""
     turn = 0
     print("#" * 80)
