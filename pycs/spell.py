@@ -1,5 +1,4 @@
 """ Handle non-attack Actions """
-from collections import namedtuple
 from typing import Any, NamedTuple, Optional, TYPE_CHECKING, cast
 import dice
 from pycs.action import Action
@@ -8,6 +7,7 @@ from pycs.util import check_args
 
 if TYPE_CHECKING:
     from pycs.creature import Creature
+
 
 ##############################################################################
 ##############################################################################
