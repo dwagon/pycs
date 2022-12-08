@@ -44,7 +44,6 @@ class HuntersMark(SpellAction):
             }
         )
         super().__init__(name, **kwargs)
-        self._victim: Optional[Creature]
 
     ##########################################################################
     def heuristic(self) -> int:
@@ -69,18 +68,18 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        self._victim = self.target
-        self._victim.add_effect(HuntersMarkEffect(caster=self.owner))
-        print(f"Cast Hunters Mark on {self._victim}")
+        assert self.target is not None
+        self.target.add_effect(HuntersMarkEffect(caster=self.owner))
+        print(f"Cast Hunters Mark on {self.target}")
         return True
 
     ##########################################################################
     def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
-        if self._victim:
-            print(f"Removing Hunters Mark from {self._victim}")
-            self._victim.remove_effect("Hunters Mark")
-            self._victim = None
+        if self.target:
+            print(f"Removing Hunters Mark from {self.target}")
+            self.target.remove_effect("Hunters Mark")
+            self.target = None
 
 
 ##############################################################################

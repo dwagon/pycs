@@ -22,13 +22,12 @@ class Frostbite(AttackSpell):
     disadvantage on the next weapon attack roll it makes before the end
     of its next turn.
 
-    The spell’s damage increases by 1d6 when you reach 5th level (2d6),
+    The spell's damage increases by 1d6 when you reach 5th level (2d6),
     11th level (3d6), and 17th level (4d6)."""
 
     ##########################################################################
     def __init__(self, **kwargs: Any):
         name = "Frostbite"
-        self._target: Creature
         kwargs.update(
             {
                 "reach": 60,
@@ -50,8 +49,7 @@ class Frostbite(AttackSpell):
     ##########################################################################
     def failed_save(self, source: Creature, target: Creature, dmg: int) -> None:
         """What to when we target fails save"""
-        self._target.add_effect(FrostbiteEffect(cause=source))
-
+        self.owner.target.add_effect(FrostbiteEffect(cause=source))
 
 ##############################################################################
 ##############################################################################
@@ -102,6 +100,7 @@ class TestFrostbite(SpellTest):
     def test_cast_hit(self) -> None:
         """test casting where victim fails saving throw"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
+        self.caster.target = self.enemy
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 1
             self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=False)
