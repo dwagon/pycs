@@ -1,5 +1,5 @@
 """ All sorts of equipment """
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, cast
 import dice
 from pycs.action import Action
 from pycs.attack import MeleeAttack
@@ -81,7 +81,7 @@ class MeleeWeapon(Weapon):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.finesse = kwargs.get("finesse", False)
-        self.reach: int = kwargs.get("reach")
+        self.reach: int = cast(int, kwargs.get("reach"))
         self.actions.append(
             MeleeAttack(
                 name,
@@ -241,26 +241,27 @@ class HealingPotion(Potion):
     ##########################################################################
     def __init__(self, name: str, **kwargs: Any):
         """init"""
-        self.curing = kwargs.get("curing")
+        self.cure_dice = cast(str, kwargs.get("cure_dice"))
+        self.cure_bonus = cast(int, kwargs.get("cure_bonus"))
         super().__init__(name, **kwargs)
         self.act.type = ActionType.HEALING
 
     ##########################################################################
     def perform_action(self) -> None:
         """Drink the healing potion"""
-        self.owner.heal(*self.curing)
+        self.owner.heal(self.cure_dice, self.cure_bonus)
 
     ##########################################################################
     def heuristic(self) -> int:
         """Should we drink the potion"""
-        maxcure = int(dice.roll_max(self.curing[0])) + self.curing[1]
+        maxcure = int(dice.roll_max(self.cure_dice)) + self.cure_bonus
         return min(self.owner.max_hp - self.owner.hp, maxcure)
 
     ##########################################################################
     def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {
-            "curing",
+            "cure_dice", "cure_bonus"
         }
 
 
