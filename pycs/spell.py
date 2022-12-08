@@ -1,9 +1,9 @@
 """ Handle non-attack Actions """
 from collections import namedtuple
-from typing import Any, NamedTuple, Optional, TYPE_CHECKING
+from typing import Any, NamedTuple, Optional, TYPE_CHECKING, cast
 import dice
 from pycs.action import Action
-from pycs.constant import SpellType
+from pycs.constant import SpellType, Stat
 from pycs.util import check_args
 
 if TYPE_CHECKING:
@@ -25,7 +25,6 @@ class SpellAction(Action):
         self.level: int = kwargs.get("level", 0)
         self.concentration = kwargs.get("concentration")
         self.caster: "Creature"
-        self.target: "Creature"
 
     ##########################################################################
     def _valid_args(self) -> set[str]:
@@ -157,7 +156,7 @@ class AttackSpell(SpellAction):
         super().__init__(name, **kwargs)
         self.style: SpellType = kwargs.get("style", SpellType.TOHIT)
         self.type: SpellType = kwargs.get("type", SpellType.UNKNOWN)
-        self.save_stat = kwargs.get("save_stat")
+        self.save_stat: Stat = cast(Stat, kwargs.get("save_stat"))
         self.save_dc = kwargs.get("save_dc")
 
     ##########################################################################

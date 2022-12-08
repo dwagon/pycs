@@ -85,7 +85,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             effect.owner = self
             self.effects[effect.name] = effect
 
-        self.target = Optional[Creature]
+        self.target: Optional[Creature] = None
         self.coords: tuple[int, int]
         self.statistics: list[Statistics] = []
         self.options_this_turn: list[ActionCategory] = []
@@ -318,7 +318,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def hit(  # pylint: disable=too-many-arguments
-        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool, atkname: str
+        self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool, atkname: str
     ) -> None:
         """We've been hit by source- take damage"""
         dmg = self._react_predmg(dmg, dmg_type, source, critical)
@@ -353,7 +353,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def _react_predmg(
-        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool
+        self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool
     ) -> int:
         """About to take damage - do we have a reaction that can alter the damage"""
         if ActionCategory.REACTION not in self.options_this_turn:
@@ -368,7 +368,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return dmg
 
     ##########################################################################
-    def _react_postdmg(self, source: "Creature") -> None:
+    def _react_postdmg(self, source: Creature) -> None:
         """React to an incoming attack with a reaction"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return
@@ -395,7 +395,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.conditions.remove(cond)
 
     ##########################################################################
-    def add_condition(self, cond: Condition, source: Optional["Creature"] = None) -> None:
+    def add_condition(self, cond: Condition, source: Optional[Creature] = None) -> None:
         """Add a condition - inflicted by source"""
         if cond not in self.cond_immunity:
             if source:
@@ -462,7 +462,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         )
 
     ##########################################################################
-    def hook_see_someone_die(self, creat: "Creature") -> None:
+    def hook_see_someone_die(self, creat: Creature) -> None:
         """Someone has died - react"""
 
     ##########################################################################
@@ -588,7 +588,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def _pick_action(
         self,
         typ: ActionCategory = ActionCategory.ACTION,
-        target: Optional["Creature"] = None,
+        target: Optional[Creature] = None,
         need_hook: Optional[str] = None,
     ) -> Optional[Action]:
         """What are we going to do this turn based on individual action_preference
@@ -697,7 +697,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             creat.start_others_turn(self)
 
     ##########################################################################
-    def start_others_turn(self, creat: "Creature") -> None:
+    def start_others_turn(self, creat: Creature) -> None:
         """Hook for another creature starting a turn near me"""
 
     ##########################################################################
@@ -760,7 +760,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         if act is None:
             victims = self.pick_closest_enemy()
-            if victims is not None:
+            if victims:
                 self.target = victims[0]
 
         # Move closer to target
