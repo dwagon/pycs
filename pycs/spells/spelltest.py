@@ -30,8 +30,8 @@ class SpellTest(unittest.TestCase):
         }
         self.caster = Creature(name="caster", side="a", **kwargs)
         self.arena.add_combatant(self.caster)
-        self.caster.spell_available = Mock(return_value=True)   # type: ignore
-        self.caster.cast = Mock(return_value=True)              # type: ignore
+        self.caster.spell_available = Mock(return_value=True)  # type: ignore
+        self.caster.cast = Mock(return_value=True)  # type: ignore
 
         self.friend = Creature(name="friend", side="a", **kwargs)
         self.arena.add_combatant(self.friend)

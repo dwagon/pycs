@@ -20,7 +20,7 @@ class SpellAction(Action):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.reach = kwargs.get("reach", 0) / 5
-        self.type: SpellType = kwargs.get("type", SpellType.UNKNOWN)    # type: ignore
+        self.type: SpellType = kwargs.get("type", SpellType.UNKNOWN)  # type: ignore
         self.cure_hp = kwargs.get("cure_hp")
         self.level: int = kwargs.get("level", 0)
         self.concentration = kwargs.get("concentration")
@@ -106,17 +106,21 @@ class SpellAction(Action):
     def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
 
+
 ##############################################################################
 class HealthResult(NamedTuple):
-        health: int
-        id: int
-        target: "Creature"
+    health: int
+    id: int
+    target: "Creature"
+
 
 ##############################################################################
 def health_level_of_peers(doer: "Creature") -> Optional[HealthResult]:
     """Return the health levels (missing hp) of peers"""
     hurt_peers = [
-        HealthResult(_.max_hp - _.hp, id(_), _) for _ in doer.arena.my_side(doer.side) if _.max_hp != 0
+        HealthResult(_.max_hp - _.hp, id(_), _)
+        for _ in doer.arena.my_side(doer.side)
+        if _.max_hp != 0
     ]
     if not hurt_peers:
         return None
@@ -221,5 +225,6 @@ class AttackSpell(SpellAction):
     def cast(self) -> bool:
         """Cast the attack spell - overwrite if required"""
         return self.do_attack()
+
 
 # EOF

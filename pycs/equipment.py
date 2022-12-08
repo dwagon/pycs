@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from pycs.creature import Creature
 
 
-
 ##############################################################################
 ##############################################################################
 ##############################################################################
@@ -210,8 +209,8 @@ class Potion(Equipment):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.act = DrinkPotion(f"Drink {name}")
-        self.act.heuristic = kwargs.get("heuristic", self.heuristic)    # type: ignore
-        self.act.perform_action = kwargs.get("perform_action", self.perform_action) # type: ignore
+        self.act.heuristic = kwargs.get("heuristic", self.heuristic)  # type: ignore
+        self.act.perform_action = kwargs.get("perform_action", self.perform_action)  # type: ignore
         self.act.category = ActionCategory.BONUS
         self.act.ammo = kwargs.get("ammo")
         self.actions = [self.act]
@@ -260,9 +259,7 @@ class HealingPotion(Potion):
     ##########################################################################
     def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
-        return super()._valid_args() | {
-            "cure_dice", "cure_bonus"
-        }
+        return super()._valid_args() | {"cure_dice", "cure_bonus"}
 
 
 ##############################################################################

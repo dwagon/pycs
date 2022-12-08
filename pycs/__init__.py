@@ -22,6 +22,7 @@ from pycs.monsters import (
     Wraith,
     Zombie,
 )
+
 # from pycs.monsters import GiantFrog
 from pycs.monsters import (
     Gnoll,

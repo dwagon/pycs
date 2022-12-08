@@ -179,7 +179,7 @@ class SneakAttack(Effect):
                 return ("", 0, None)
             print("We have advantage on attack")
         self._used_this_turn = True
-        return self.owner.sneak_attack_dmg, 0, None # type: ignore
+        return self.owner.sneak_attack_dmg, 0, None  # type: ignore
 
 
 ##############################################################################

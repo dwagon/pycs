@@ -73,7 +73,7 @@ class TestRelentlessEndurance(unittest.TestCase):
         self.orc.add_effect(RelentlessEndurance())
         self.arena = Arena()
         self.arena.add_combatant(self.orc)
-        self.orc.creature_fallen_unconscious = Mock()   # type:ignore
+        self.orc.creature_fallen_unconscious = Mock()  # type:ignore
 
     ########################################################################
     def test_go_uncon(self) -> None:

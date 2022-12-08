@@ -35,9 +35,9 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
-        self.heuristic = kwargs.get("heuristic", self.heuristic)    # type: ignore
+        self.heuristic = kwargs.get("heuristic", self.heuristic)  # type: ignore
         self.ammo = kwargs.get("ammo", None)
-        self.gear: Optional["Equipment"] = None # Gear that induced the action (set when added)
+        self.gear: Optional["Equipment"] = None  # Gear that induced the action (set when added)
         # Creature owning the action (set when added) or sometimes explicitly
         self.owner = kwargs.get("owner", None)
         self.preferred_stat: Stat = Stat.STR
@@ -101,7 +101,9 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         """Should be overwritten"""
 
     ########################################################################
-    def hook_predmg(self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool) -> int:
+    def hook_predmg(
+        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool
+    ) -> int:
         """Should be overwritten"""
         return 0
 

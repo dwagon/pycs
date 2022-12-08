@@ -499,7 +499,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         effect.initial(self)
 
     ##########################################################################
-    def dump_statistics(self) -> dict[str,dict[str,int]]:
+    def dump_statistics(self) -> dict[str, dict[str, int]]:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
         for name, dmg, _, crit in self.statistics:
@@ -828,6 +828,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if ActionCategory.ACTION in self.options_this_turn:
                 self.dash()
         self.end_turn()
+
 
 ##############################################################################
 ##############################################################################

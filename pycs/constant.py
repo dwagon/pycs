@@ -81,6 +81,7 @@ class ActionType(Enum):
 ##############################################################################
 class SpellType(Enum):
     """What sort of spell is it"""
+
     UNKNOWN = "unknown"
     BUFF = "buff"
     CONCENTRATION = "concentration"
