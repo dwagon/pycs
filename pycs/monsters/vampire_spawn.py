@@ -1,4 +1,5 @@
 """ Vampire Spawn Monster Class """
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
@@ -18,7 +19,7 @@ class VampireSpawn(Monster):
     """Wraith - https://www.dndbeyond.com/monsters/vampire-spawn"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self._regen = 5
         kwargs.update(
             {
@@ -46,7 +47,7 @@ class VampireSpawn(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Regeneration. The vampire regains 10 hit points at the
         start of its turn if it has at least 1 hit point and isn't
         in sunlight or running water. If the vampire takes radiant
@@ -66,7 +67,7 @@ class VampireSpawn(Monster):
             self.heal("", 10)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a vampire spawn looks like on the arena"""
         if self.is_alive():
             return colors.red("V")
@@ -82,11 +83,11 @@ class VSMultiAttack(Action):
     """
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         enemy = self.owner.pick_closest_enemy()
         if enemy and self.owner.distance(enemy[0]) <= 1:
@@ -94,7 +95,7 @@ class VSMultiAttack(Action):
         return 0
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
         bite = BiteAttack(owner=self.owner)
         claw = ClawAttack(owner=self.owner)
@@ -103,6 +104,7 @@ class VSMultiAttack(Action):
             bite.do_attack()
         else:
             claw.do_attack()
+        return True
 
 
 ##############################################################################
@@ -120,7 +122,7 @@ class BiteAttack(MeleeAttack):
     if this effect reduces its hit point maximum to 0."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(
             "Bite",
             dmg=("1d6", 0),
@@ -130,14 +132,14 @@ class BiteAttack(MeleeAttack):
         )
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         if self.owner.has_grappled:
             return 5
         return 0
 
     ##########################################################################
-    def bite_side_effect(self, source, target, dmg):  # pylint: disable=unused-argument
+    def bite_side_effect(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """Do the side_effect"""
         necro_dmg = int(dice.roll("2d6"))
         target.hit(necro_dmg, DamageType.NECROTIC, source, False, "Vampire Spawn Bite")
@@ -158,13 +160,11 @@ class ClawAttack(MeleeAttack):
     the vampire can grapple the target (escape DC 13)."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
-        super().__init__(
-            "Claws", dmg=("2d4", 0), dmg_type=DamageType.SLASHING, **kwargs
-        )
+    def __init__(self, **kwargs: Any):
+        super().__init__("Claws", dmg=("2d4", 0), dmg_type=DamageType.SLASHING, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         enemy = self.owner.pick_closest_enemy()
         if enemy and self.owner.distance(enemy[0]) <= 1:
@@ -172,14 +172,15 @@ class ClawAttack(MeleeAttack):
         return 0
 
     ##########################################################################
-    def do_attack(self):
+    def do_attack(self) -> bool:
         """Do the attack"""
         if self.owner.has_grappled:
             super().do_attack()
         else:
             targ = self.pick_target()
-            if self.did_we_hit(targ):
+            if targ and self.did_we_hit(targ):
                 self.owner.grapple(targ, escape_dc=13)
+        return True
 
 
 ##############################################################################
@@ -189,7 +190,7 @@ class TestVampireSpawn(unittest.TestCase):
     """Test VampireSpawn"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the crypt"""
         self.vict_max_hp = 50
         self.arena = Arena()
@@ -208,9 +209,10 @@ class TestVampireSpawn(unittest.TestCase):
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_grapple_attack(self):
+    def test_grapple_attack(self) -> None:
         """Test attack with grapple"""
         multiatt = self.beast.pick_action_by_name("Multiattack")
+        assert multiatt is not None
         self.beast.target = self.victim
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [
@@ -224,10 +226,11 @@ class TestVampireSpawn(unittest.TestCase):
         self.assertEqual(self.victim.damage_this_turn, [])
 
     ##########################################################################
-    def test_already_grapple_attack(self):
+    def test_already_grapple_attack(self) -> None:
         """Test attack with grapple already in place"""
         self.beast.hp = 10
         multiatt = self.beast.pick_action_by_name("Multiattack")
+        assert multiatt is not None
         self.beast.target = self.victim
         self.victim.add_condition(Condition.GRAPPLED)
         self.beast.has_grappled = self.victim

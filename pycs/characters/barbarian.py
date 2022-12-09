@@ -1,5 +1,6 @@
 """ Barbarian """
 import unittest
+from typing import Any, Optional
 from unittest.mock import patch
 import colors
 import dice
@@ -24,7 +25,7 @@ class Barbarian(Character):
     """Barbarian class"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "str": 16,
@@ -61,14 +62,15 @@ class Barbarian(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Character Report"""
         super().report()
         javs = self.pick_action_by_name("Javelin")
+        assert javs is not None
         print(f"|  Javelins: {javs.ammo}")
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("B", bg="green")
@@ -82,28 +84,29 @@ class BarbarianRage(Action):
     """Shield biting stuff"""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Barbarian Rage", **kwargs)
         self.type = ActionType.BUFF
         self.category = ActionCategory.BONUS
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Creature:
         """Who do we do it to"""
         return self.owner
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do it"""
         if self.owner.has_effect("Rage"):
             return 0
         return 10
 
     ########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
         self.owner.add_effect(BarbarianRageEffect())
+        return True
 
 
 ##############################################################################
@@ -115,7 +118,7 @@ class BarbarianFrenziedRageEffect(Effect):
     this one. When your rage ends, you suffer one level of exhaustion."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Frenzied Rage", **kwargs)
 
@@ -130,12 +133,12 @@ class BarbarianRageEffect(Effect):
     raging."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Rage", **kwargs)
 
     ########################################################################
-    def hook_being_hit(self, dmg, dmgtype):
+    def hook_being_hit(self, dmg: int, dmgtype: DamageType) -> int:
         """Mod damage"""
         if dmgtype in (
             DamageType.BLUDGEONING,
@@ -146,14 +149,16 @@ class BarbarianRageEffect(Effect):
         return dmg
 
     ########################################################################
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """Rage causes dangerous things"""
         if issubclass(attack.__class__, MeleeAttack):
             return ("", 2, None)
         return ("", 0, None)
 
     ########################################################################
-    def hook_saving_throw(self, stat, **kwargs):
+    def hook_saving_throw(self, stat: Stat, **kwargs: Any) -> dict:
         """Advantage on strength"""
         eff = super().hook_saving_throw(stat, **kwargs)
         if stat == Stat.STR:
@@ -169,7 +174,7 @@ class BarbarianDangerSenseEffect(Effect):
     can see while not blinded, deafened, or incapacitated."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Danger Sense", **kwargs)
 
@@ -184,7 +189,7 @@ class BarbarianRecklessAttack(Effect):
     advantage until your next turn."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Reckless Attack", **kwargs)
 
@@ -196,7 +201,7 @@ class TestBarbarianRage(unittest.TestCase):
     """Test Rage"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.barb = Barbarian(name="Babs", side="a", level=2, gear=[Greataxe()])
         self.arena.add_combatant(self.barb, coords=(1, 1))
@@ -204,10 +209,11 @@ class TestBarbarianRage(unittest.TestCase):
         self.arena.add_combatant(self.orc, coords=(2, 2))
 
     ########################################################################
-    def test_rage(self):
+    def test_rage(self) -> None:
         """Lets get angry"""
         self.assertFalse(self.barb.has_effect("Rage"))
         rage = self.barb.pick_action_by_name("Barbarian Rage")
+        assert rage is not None
         rage.perform_action()
         self.assertTrue(self.barb.has_effect("Rage"))
         self.barb.hit(10, DamageType.PIERCING, self.orc, False, "Test")
@@ -219,6 +225,7 @@ class TestBarbarianRage(unittest.TestCase):
         self.assertEqual(self.barb.hp, self.barb.max_hp - 5 - 10)
 
         axe = self.barb.pick_action_by_name("Greataxe")
+        assert axe is not None
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19  # Hit target
             with patch.object(dice, "roll") as mock_dice:

@@ -1,7 +1,9 @@
 """https://www.dndbeyond.com/spells/shield-of-faith"""
 
+from typing import Any, Optional
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.spell import SpellAction
 
@@ -15,9 +17,9 @@ class ShieldOfFaith(SpellAction):
     """
 
     ###########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Shield of Faith"
-        self._target = None
+        self._target: Optional[Creature]
         kwargs.update(
             {
                 "category": ActionCategory.BONUS,
@@ -30,9 +32,11 @@ class ShieldOfFaith(SpellAction):
         super().__init__(name, **kwargs)
 
     ###########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         friend = self.pick_target()
+        if friend is None:
+            return False
         if self.owner.distance(friend) > self.range()[0]:
             return False
         friend.add_effect(ShieldOfFaithEffect(cause=self.owner))
@@ -40,7 +44,7 @@ class ShieldOfFaith(SpellAction):
         return True
 
     ###########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who gets the spell - person with the lowest AC"""
         targets = []
         for friend in self.owner.arena.my_side(self.owner.side):
@@ -55,15 +59,17 @@ class ShieldOfFaith(SpellAction):
         return targets[0][-1]
 
     ###########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if self.pick_target():
             return 5
         return 0
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
+        if self._target is None:
+            return
         self._target.remove_effect("Shield of Faith")
 
 
@@ -74,12 +80,12 @@ class ShieldOfFaithEffect(Effect):
     """Effect of the Shield of Faith spell"""
 
     ###########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Shield of Faith", **kwargs)
 
     ###########################################################################
-    def hook_ac_modifier(self, target):
+    def hook_ac_modifier(self, target: Creature) -> int:
         eff = super().hook_ac_modifier(target)
         eff += 2
         return eff
@@ -92,7 +98,7 @@ class TestShieldOfFaith(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Test setup"""
         super().setUp()
         self.caster.options_this_turn = [ActionCategory.BONUS]
@@ -101,7 +107,7 @@ class TestShieldOfFaith(SpellTest):
         self.caster.speed = 90  # Ensure we can get to friend
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.assertEqual(self.friend.ac, 10)
         self.caster.do_stuff(categ=ActionCategory.BONUS, moveto=True)
@@ -109,7 +115,7 @@ class TestShieldOfFaith(SpellTest):
         self.assertEqual(self.friend.ac, 12)
 
     ##########################################################################
-    def test_concentration(self):
+    def test_concentration(self) -> None:
         """What happens when we lose concentration"""
         self.caster.do_stuff(categ=ActionCategory.BONUS, moveto=True)
         self.assertTrue(self.friend.has_effect("Shield of Faith"))

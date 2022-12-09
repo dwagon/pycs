@@ -1,5 +1,6 @@
 """ https://www.dndbeyond.com/monsters/young-white-dragon"""
 from collections import namedtuple
+from typing import Any, Optional
 import colors
 import dice
 from pycs.action import Action
@@ -8,6 +9,7 @@ from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
+from pycs.creature import Creature
 from pycs.monster import Monster
 
 
@@ -16,8 +18,8 @@ class YoungWhiteDragon(Monster):
     """Young White Dragon"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
-        self.immune_fp = set()
+    def __init__(self, **kwargs: Any):
+        self.immune_fp: set[Creature] = set()
         self.breath = True
         kwargs.update(
             {
@@ -40,7 +42,7 @@ class YoungWhiteDragon(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Recharge breath weapon on 5/6"""
         if not self.breath:
             if int(dice.roll("d6")) in (5, 6):
@@ -48,13 +50,13 @@ class YoungWhiteDragon(Monster):
                 self.breath = True
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Creature Report"""
         super().report()
         print(f"|  Breath Weapon: {self.breath}")
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.blue("D", bg="yellow")
@@ -71,15 +73,15 @@ class DragonBreath(Attack):
     a failed save, or half as much damage on a successful one."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Cold Breath", **kwargs)
 
     ##########################################################################
-    def atk_modifier(self, attacker):
+    def atk_modifier(self, attacker: Creature) -> int:
         return 0
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this attack"""
         target = self.pick_target()
         if not target:
@@ -87,14 +89,14 @@ class DragonBreath(Attack):
         return min(target.hp, 45)
 
     ##########################################################################
-    def is_available(self):
+    def is_available(self) -> bool:
         """Is breath weapon available"""
         return self.owner.breath
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Pick on the strongest enemy"""
-        result = namedtuple("Result", "health id target")
+        result = namedtuple("result", "health id target")
         targets = [
             result(_.hp, id(_), _)
             for _ in self.owner.pick_closest_enemy()
@@ -106,16 +108,19 @@ class DragonBreath(Attack):
         return targets[-1].target
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the breath weapon - need to do cone"""
         target = self.pick_target()
+        if target is None:
+            return False
         dmg = int(dice.roll("10d8"))
         svth = target.saving_throw(Stat.CON, 15)
         if not svth:
             target.hit(dmg, DamageType.COLD, self.owner, False, "Cold Breath")
         else:
-            target.hit(dmg / 2, DamageType.COLD, self.owner, False, "Cold Breath")
+            target.hit(dmg // 2, DamageType.COLD, self.owner, False, "Cold Breath")
         self.owner.breath = False
+        return True
 
 
 ##############################################################################
@@ -126,16 +131,16 @@ class DragonMultiAttack(Action):
     bite and two with its claws."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the attack"""
         return 1
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
         bite = MeleeAttack(
             "Bite",
@@ -154,6 +159,7 @@ class DragonMultiAttack(Action):
         bite.do_attack()
         claw.do_attack()
         claw.do_attack()
+        return True
 
 
 # EOF

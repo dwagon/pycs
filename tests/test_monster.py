@@ -18,7 +18,7 @@ class TestMonster(unittest.TestCase):
     """Tests for `monster` class."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         kwargs = {
             "str": 6,
@@ -38,11 +38,11 @@ class TestMonster(unittest.TestCase):
         self.arena.add_combatant(self.creat)
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_is_alive(self):
+    def test_is_alive(self) -> None:
         """is_alive testing"""
         self.creat.hp = 10
         self.assertTrue(self.creat.is_alive())
@@ -56,7 +56,7 @@ class TestMonster(unittest.TestCase):
         self.assertFalse(self.creat.is_alive())
 
     ########################################################################
-    def test_dieing(self):
+    def test_dieing(self) -> None:
         """Test death"""
         self.creat.hp = 10
         self.creat.hit(

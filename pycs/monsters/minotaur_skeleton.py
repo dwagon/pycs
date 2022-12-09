@@ -1,4 +1,5 @@
 """ Minotaur Skeleton Monster Class """
+from typing import Any
 import colors
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
@@ -12,7 +13,7 @@ class MinotaurSkeleton(Monster):
     """Minotaur Skeleton - https://www.dndbeyond.com/monsters/minotaur-skeleton"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "9d10+18",
@@ -36,16 +37,14 @@ class MinotaurSkeleton(Monster):
                         dmg=("2d12", 0),
                         dmg_type=DamageType.SLASHING,
                     ),
-                    MeleeAttack(
-                        "Gore", reach=5, dmg=("2d8", 0), dmg_type=DamageType.PIERCING
-                    ),
+                    MeleeAttack("Gore", reach=5, dmg=("2d8", 0), dmg_type=DamageType.PIERCING),
                 ],
             }
         )
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a minotaur skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("M")

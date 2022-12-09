@@ -3,6 +3,7 @@
 """Tests for `actions`"""
 
 
+from typing import Any, Optional
 import unittest
 from unittest.mock import patch, call
 from pycs.action import Action
@@ -22,7 +23,7 @@ class TestAction(unittest.TestCase):
     """Tests for `actions` package."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         self.arena = Arena(max_x=21, max_y=21)
         kwargs = {
@@ -54,11 +55,11 @@ class TestAction(unittest.TestCase):
         self.arena.add_combatant(self.beta)
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_check_criticals(self):
+    def test_check_criticals(self) -> None:
         """Test check_criticals"""
         act = DummyAction()
         self.beta.add_action(act)
@@ -67,7 +68,7 @@ class TestAction(unittest.TestCase):
         self.assertEqual(act.check_criticals(20), (True, False))
 
     ########################################################################
-    def test_roll_to_hit(self):
+    def test_roll_to_hit(self) -> None:
         """test roll_to_hit()"""
         act = DummyAction()
         self.beta.add_action(act)
@@ -80,7 +81,7 @@ class TestAction(unittest.TestCase):
         self.assertFalse(crit_miss)
 
     ########################################################################
-    def test_calculate_to_hit(self):
+    def test_calculate_to_hit(self) -> None:
         """Test calculate_to_hit()"""
         self.beta.add_effect(DummyEffect())
         act = DummyAction()
@@ -91,7 +92,7 @@ class TestAction(unittest.TestCase):
         self.assertEqual(msg, "+5 (modifier), +2 (prof bonus), +3 from Dummy Effect")
 
     ########################################################################
-    def test_buff_attack_damage(self):
+    def test_buff_attack_damage(self) -> None:
         """Test buff_attack_damage()"""
         act = DummyAction()
         self.beta.add_action(act)
@@ -127,16 +128,20 @@ class TestAction(unittest.TestCase):
 class DummyEffect(Effect):
     """Test effect"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Dummy Effect", **kwargs)
 
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         return ("", 2, DamageType.FIRE)
 
-    def hook_target_additional_damage(self, attack, source, target):
+    def hook_target_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         return ("", 4, DamageType.ACID)
 
-    def hook_attack_to_hit(self, **kwargs):
+    def hook_attack_to_hit(self, **kwargs: Any) -> int:
         return 3
 
 
@@ -146,16 +151,17 @@ class DummyEffect(Effect):
 class DummyAction(Action):
     """Test action"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Dummy Action", **kwargs)
 
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Required"""
+        return False
 
-    def atk_modifier(self, _):
+    def atk_modifier(self, _: Any) -> int:
         return 5
 
-    def heuristic(self):
+    def heuristic(self) -> int:
         return 1
 
 
@@ -163,7 +169,7 @@ class DummyAction(Action):
 class DummyGear(Equipment):
     """Test gear"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Dummy Gear", **kwargs)
 
 

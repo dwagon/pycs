@@ -1,5 +1,9 @@
 [MASTER]
-disable=fixme, no-self-use, too-few-public-methods
+disable=fixme, too-few-public-methods
 
 [SIMILARITIES]
-min-similarity-lines=10
+min-similarity-lines=15
+
+[FORMAT]
+max-line-length=120
+

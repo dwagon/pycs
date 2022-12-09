@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/burning-hands"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import SpellType
@@ -22,7 +23,7 @@ class BurningHands(AttackSpell):
     above 1st."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Burning Hands"
         kwargs.update(
             {

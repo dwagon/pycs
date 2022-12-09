@@ -1,12 +1,14 @@
 """ Parent class for all creatures """
 # pylint: disable=too-many-public-methods
+from __future__ import annotations
+
 import random
 from collections import defaultdict
 from collections import namedtuple
-from typing import Optional
+from typing import Optional, Any, TYPE_CHECKING
+
 import dice
 from pycs.action import Action
-from pycs.attack import Attack
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
@@ -16,9 +18,15 @@ from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.constant import Statistics
-from pycs.equipment import Armour
-from pycs.spell import SpellAction
 from pycs.util import check_args
+from pycs.equipment import Armour, Equipment
+from pycs.attack import Attack
+from pycs.spell import SpellAction
+
+
+if TYPE_CHECKING:
+    from pycs.effect import Effect
+    from pycs.arena import Arena
 
 
 ##############################################################################
@@ -28,9 +36,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     """Parent class for all creatures - monsters and characters"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         check_args(self._valid_args(), self.__class__.__name__, kwargs)
-        self.arena = None  # Set by adding to arena
+        self.arena: "Arena"  # Set by adding to arena
         self.name = kwargs.get("name", self.__class__.__name__)
         self._ac = kwargs.get("ac", None)
         self.speed = int(kwargs.get("speed", 30) / 5)
@@ -49,10 +57,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             Stat.CHA: kwargs["cha"],
         }
         self.stat_prof = kwargs.get("stat_prof", [])
-        self.spellcast_bonus_stat = kwargs.get("spellcast_bonus_stat")
-        self.action_preference = kwargs.get(
-            "action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4}
-        )
+        self.spellcast_bonus_stat: Stat = kwargs.get("spellcast_bonus_stat", Stat.INT)
+        self.action_preference = kwargs.get("action_preference", {ActionType.MELEE: 1, ActionType.RANGED: 4})
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.vulnerable = kwargs.get("vulnerable", [])
         self.resistant = kwargs.get("resistant", [])
@@ -60,13 +66,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.cond_immunity = kwargs.get("cond_immunity", [])
         self.hp = kwargs["hp"]  # pylint: disable=invalid-name
         self.max_hp = self.hp
-        self.has_grappled = None
-        self.grappled_by = None
+        self.has_grappled: Optional[Creature] = None
+        self.grappled_by: Optional[Creature] = None
         self.escape_grapple_dc = 0
         self.death_saves = 0
-        self.bonus_actions = []
-        self.reactions = []
-        self.actions = []
+        self.bonus_actions: list[Action] = []
+        self.reactions: list[Action] = []
+        self.actions: list[Action] = []
         for act in kwargs.get("actions", []):
             self.add_action(act)
 
@@ -77,20 +83,20 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             effect.owner = self
             self.effects[effect.name] = effect
 
-        self.target = None
-        self.coords = None
-        self.statistics = []
-        self.options_this_turn = []
-        self.concentration = None
-        self.damage_this_turn = []
-        self.damage_last_turn = []
+        self.target: Optional[Creature] = None
+        self.coords: tuple[int, int]
+        self.statistics: list[Statistics] = []
+        self.options_this_turn: list[ActionCategory] = []
+        self.concentration: Optional["SpellAction"] = None
+        self.damage_this_turn: list[Damage] = []
+        self.damage_last_turn: list[Damage] = []
 
-        self.gear = []
+        self.gear: list[Equipment] = []
         for gear in kwargs.get("gear", []):
             self.add_gear(gear)
 
     ##########################################################################
-    def _valid_args(self):  # pylint: disable=no-self-use
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return {
             "name",
@@ -123,7 +129,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     @property
-    def spellcast_save(self):
+    def spellcast_save(self) -> int:
         """Saving throw DC vs spells from this creature"""
         if self.spellcast_bonus_stat is None:
             return 0
@@ -131,7 +137,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     @property
-    def ac(self):  # pylint: disable=invalid-name
+    def ac(self) -> int:  # pylint: disable=invalid-name
         """The armour class"""
         if self._ac is None:
             tmp = 0
@@ -139,10 +145,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             max_db = 999  # Max Dex bonus
             for geah in self.gear:
                 if issubclass(geah.__class__, Armour):
-                    tmp += geah.ac + geah.ac_bonus + geah.magic_bonus
-                    if not geah.dex_bonus:
+                    tmp += geah.ac + geah.ac_bonus + geah.magic_bonus  # type: ignore
+                    if not geah.dex_bonus:  # type: ignore
                         dbon = False
-                    max_db = min(max_db, geah.max_dex_bonus)
+                    max_db = min(max_db, geah.max_dex_bonus)  # type: ignore
             if tmp == 0:  # No armour so default to 10
                 tmp = 10
             if dbon:
@@ -156,7 +162,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return tmp
 
     ##########################################################################
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.name}"
 
     ##########################################################################
@@ -182,7 +188,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return chp
 
     ##########################################################################
-    def grapple(self, enemy, escape_dc=0) -> bool:
+    def grapple(self, enemy: Creature, escape_dc: int = 0) -> bool:
         """Grapple an enemy"""
         grap = self.rolld20("grapple")
         grap += self.stat_bonus(Stat.STR)
@@ -203,9 +209,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def ungrapple(self):
+    def ungrapple(self) -> None:
         """Remove a grapple"""
         victim = self.has_grappled
+        if victim is None:
+            return
         victim.escape_grapple_dc = 0
         victim.grappled_by = None
         victim.remove_condition(Condition.GRAPPLED)
@@ -213,7 +221,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         print(f"{self} is no longer grappling {victim}")
 
     ##########################################################################
-    def pick_closest_enemy(self) -> list:
+    def pick_closest_enemy(self) -> list[Creature]:
         """Which enemy is the closest"""
         return self.arena.pick_closest_enemy(self)
 
@@ -223,14 +231,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return self.arena.pick_closest_friends(self)
 
     ##########################################################################
-    def saving_throw(  # pylint: disable=invalid-name
-        self, stat: Stat, dc: int, **kwargs
-    ) -> bool:
+    def saving_throw(self, stat: Stat, dc: int, **kwargs: Any) -> bool:  # pylint: disable=invalid-name
         """Make a saving throw against a stat"""
         if self.has_condition(Condition.UNCONSCIOUS) and stat in (Stat.STR, Stat.DEX):
-            print(
-                f"{self} automatically failed {stat.value} saving throw as unconscious"
-            )
+            print(f"{self} automatically failed {stat.value} saving throw as unconscious")
             return False
         effct = {"bonus": 0}
         for _, eff in self.effects.items():
@@ -264,7 +268,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return init
 
     ##########################################################################
-    def move_to_target(self, target, rnge) -> None:
+    def move_to_target(self, target: Creature, rnge: Optional[int]) -> None:
         """Move closer to the target - until we are in range of our action"""
         if self.has_condition(Condition.GRAPPLED):
             print(f"{self} is grappled - not moving")
@@ -287,14 +291,14 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                         eff.hook_start_in_range(comb)
 
             old_coords = self.coords
-            self.coords = self.arena.move_towards(self, self.target.coords)
+            self.coords = self.arena.move_towards(self, target.coords)
             if old_coords == self.coords:
                 break
             self.moves -= 1
             print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
-    def pick_action_by_name(self, name: str) -> Optional[Attack]:
+    def pick_action_by_name(self, name: str) -> Optional[Action]:
         """Pick the attack by name"""
         for atk in self.actions:
             if atk.name == name:
@@ -310,7 +314,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def hit(  # pylint: disable=too-many-arguments
-        self, dmg: int, dmg_type: DamageType, source, critical: bool, atkname: str
+        self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool, atkname: str
     ) -> None:
         """We've been hit by source- take damage"""
         dmg = self._react_predmg(dmg, dmg_type, source, critical)
@@ -322,7 +326,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             dmg = 0
         if dmg_type in self.resistant:
             print(f"{self} is resistant to {dmg_type.value}")
-            dmg /= 2
+            dmg //= 2
         for eff in self.effects.values():
             dmg = eff.hook_being_hit(dmg, dmg_type)
         dmg = int(dmg)
@@ -344,36 +348,30 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self._react_postdmg(source)
 
     ##########################################################################
-    def _react_predmg(self, dmg: int, dmg_type: DamageType, source, critical: bool):
+    def _react_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
         """About to take damage - do we have a reaction that can alter the damage"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return dmg
-        react = self._pick_action(
-            typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg"
-        )
+        react = self._pick_action(typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg")
         if react is not None:
             print(f"{self} reacts against {source}")
-            dmg = react.hook_predmg(
-                dmg=dmg, dmg_type=dmg_type, source=source, critical=critical
-            )
+            dmg = react.hook_predmg(dmg=dmg, dmg_type=dmg_type, source=source, critical=critical)
             self.options_this_turn.remove(ActionCategory.REACTION)
         return dmg
 
     ##########################################################################
-    def _react_postdmg(self, source) -> None:
+    def _react_postdmg(self, source: Creature) -> None:
         """React to an incoming attack with a reaction"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return
-        react = self._pick_action(
-            typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg"
-        )
+        react = self._pick_action(typ=ActionCategory.REACTION, target=source, need_hook="hook_postdmg")
         if react is not None:
             print(f"{self} reacts against {source}")
             react.hook_postdmg()
             self.options_this_turn.remove(ActionCategory.REACTION)
 
     ##########################################################################
-    def has_condition(self, *conditions: list) -> bool:
+    def has_condition(self, *conditions: Condition) -> bool:
         """Do we have a condition"""
         for cond in conditions:
             if cond in self.conditions:
@@ -381,13 +379,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def remove_condition(self, cond) -> None:
+    def remove_condition(self, cond: Condition) -> None:
         """Remove a condition"""
         if self.has_condition(cond):
             self.conditions.remove(cond)
 
     ##########################################################################
-    def add_condition(self, cond: Condition, source=None) -> None:
+    def add_condition(self, cond: Condition, source: Optional[Creature] = None) -> None:
         """Add a condition - inflicted by source"""
         if cond not in self.cond_immunity:
             if source:
@@ -397,7 +395,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.conditions.add(cond)
 
     ##########################################################################
-    def add_gear(self, gear):
+    def add_gear(self, gear: Equipment) -> None:
         """Add something to the equipment list"""
         self.gear.append(gear)
         gear.owner = self
@@ -419,21 +417,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def is_alive(self) -> bool:
         """return True if the creature is alive and conscious"""
-        if self.has_condition(Condition.DEAD) or self.has_condition(
-            Condition.UNCONSCIOUS
-        ):
+        if self.has_condition(Condition.DEAD) or self.has_condition(Condition.UNCONSCIOUS):
             return False
         return True
 
     ##########################################################################
-    def shortrepr(self):  # pylint: disable=no-self-use
+    def shortrepr(self) -> str:
         """What it looks like on the arena"""
         return "?"
 
     ##########################################################################
-    def fallen_unconscious(
-        self, dmg: int, dmg_type: DamageType, critical: bool
-    ) -> None:
+    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
         """Creature has fallen unconscious"""
         keep_going = True
         for _, eff in self.effects.items():
@@ -451,25 +445,21 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.creature_fallen_unconscious(dmg, dmg_type, critical)
 
     ##########################################################################
-    def creature_fallen_unconscious(
-        self, dmg: int, dmg_type: DamageType, critical: bool
-    ) -> None:
+    def creature_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
         """How you actually fall unconscious depends on what you are"""
-        raise NotImplementedError(
-            f"{self.__class__.__name__} needs a creature_fallen_unconscious()"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} needs a creature_fallen_unconscious()")
 
     ##########################################################################
-    def hook_see_someone_die(self, creat):
+    def hook_see_someone_die(self, creat: Creature) -> None:
         """Someone has died - react"""
 
     ##########################################################################
-    def is_type(self, typ) -> bool:
+    def is_type(self, typ: MonsterType) -> bool:
         """Are we an instance of typ"""
         return self.type == typ
 
     ##########################################################################
-    def end_turn(self, draw=True):
+    def end_turn(self, draw: bool = True) -> None:
         """Are the any effects for the end of the turn"""
         for name, effect in self.effects.copy().items():
             remove = effect.removal_end_of_its_turn(self)
@@ -479,25 +469,25 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(self.arena)
 
     ##########################################################################
-    def remove_effect(self, name):
+    def remove_effect(self, name: str) -> None:
         """Remove an effect"""
         self.effects[name].finish(self)
         del self.effects[name]
 
     ##########################################################################
-    def has_effect(self, name) -> bool:
+    def has_effect(self, name: str) -> bool:
         """Do we have an effect"""
         return name in self.effects
 
     ##########################################################################
-    def add_effect(self, effect):
+    def add_effect(self, effect: "Effect") -> None:
         """Add an effect"""
         self.effects[effect.name] = effect
         effect.owner = self
         effect.initial(self)
 
     ##########################################################################
-    def dump_statistics(self) -> dict:
+    def dump_statistics(self) -> dict[str, dict[str, int]]:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
         for name, dmg, _, crit in self.statistics:
@@ -513,7 +503,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return tmp
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Short report on the character"""
         print(f"| {self.name} @ {self.coords}")
         print(f"|  HP: {self.hp} / {self.max_hp}")
@@ -537,11 +527,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"|  {act} Ammo: {act.ammo}")
 
     ##########################################################################
-    def damage_summary(self, dmglist):  # pylint: disable=no-self-use
+    def damage_summary(self, dmglist: list[Damage]) -> str:
         """Summarise damage"""
         if not dmglist:
             return "None"
-        taken = defaultdict(int)
+        taken: defaultdict[DamageType, int] = defaultdict(int)
         for tkn in dmglist:
             if tkn.hp:
                 taken[tkn.type] += tkn.hp
@@ -552,12 +542,12 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return ", ".join(output)
 
     ##########################################################################
-    def distance(self, target) -> int:
+    def distance(self, target: Creature) -> int:
         """Distance from us to target"""
         return self.arena.distance(self, target)
 
     ##########################################################################
-    def _possible_actions(self, typ=ActionCategory.ACTION) -> list:
+    def _possible_actions(self, typ: ActionCategory = ActionCategory.ACTION) -> list:
         """What are all the things we can do this turn and how good do they
         feel about happening"""
         possible_acts = []
@@ -576,16 +566,17 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return possible_acts
 
     ##########################################################################
-    def spell_available(  # pylint: disable=no-self-use
-        self, spell  # pylint: disable=unused-argument
-    ) -> bool:
+    def spell_available(self, spell: "SpellAction") -> bool:  # pylint: disable=unused-argument
         """Spell casters should redefine this"""
         return False
 
     ##########################################################################
     def _pick_action(
-        self, typ=ActionCategory.ACTION, target=None, need_hook=None
-    ) -> Action:
+        self,
+        typ: ActionCategory = ActionCategory.ACTION,
+        target: Optional[Creature] = None,
+        need_hook: Optional[str] = None,
+    ) -> Optional[Action]:
         """What are we going to do this turn based on individual action_preference
         If {need_hook} is set then the action must define that hook to be in contention
         """
@@ -614,7 +605,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if not actions:
             return None
 
-        action = actions[0].act
+        action: Action = actions[0].act
         if target is None:
             self.target = action.pick_target()
         else:
@@ -622,7 +613,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return action
 
     ##########################################################################
-    def _make_death_save(self):
+    def _make_death_save(self) -> None:
         """Death Saves - going to ignore stabilising"""
         roll = int(dice.roll("d20"))
         print(f"{self} rolled {roll} on death saving throw")
@@ -642,10 +633,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.died()
 
     ##########################################################################
-    def died(self):
+    def died(self) -> None:
         """Creature has died"""
         self.hp = 0
-        if self.has_condition(Condition.GRAPPLED):
+        if self.has_condition(Condition.GRAPPLED) and self.grappled_by is not None:
             self.grappled_by.ungrapple()
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
@@ -653,7 +644,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.arena.remove_combatant(self)
 
     ##########################################################################
-    def start_turn(self):
+    def start_turn(self) -> None:
         """Start the turn"""
         # These are all the things we can do this turn
         self.damage_last_turn = self.damage_this_turn
@@ -692,15 +683,15 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             creat.start_others_turn(self)
 
     ##########################################################################
-    def start_others_turn(self, creat):
+    def start_others_turn(self, creat: Creature) -> None:
         """Hook for another creature starting a turn near me"""
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Hook for us starting a turn"""
 
     ##########################################################################
-    def move_away(self, cause):
+    def move_away(self, cause: Creature) -> None:
         """Move away from the {cause}"""
         if cause.coords is None:  # Cause is dead?
             return
@@ -710,9 +701,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
-    def move(self, act: Action) -> None:
+    def move(self, act: Optional[Action]) -> None:
         """Do a move"""
-        if self.target and self.moves:
+        if self.target is not None and self.moves:
             if act:
                 rnge, _ = act.range()
             else:
@@ -722,7 +713,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def do_action(self, act: Action) -> bool:
         """Have an action"""
-        if act and self.target:
+        if act and self.target is not None:
             assert act.owner is not None
             act.ammo_usage()
             did_act = act.perform_action()
@@ -734,18 +725,18 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dash(self) -> None:
         """Do a dash action"""
         # Dash if we aren't in range yet
-        if not self.target:
+        if self.target is None:
             enemies = self.pick_closest_enemy()
             if enemies:
                 self.target = enemies[0]
-        if self.target:
+        if self.target is not None:
             print(f"{self} dashing")
             self.moves = self.speed
             self.options_this_turn.remove(ActionCategory.ACTION)
             self.move_to_target(self.target, None)
 
     ##########################################################################
-    def do_stuff(self, categ: ActionCategory, moveto=False) -> None:
+    def do_stuff(self, categ: ActionCategory, moveto: bool = False) -> None:
         """All the doing bits"""
         if categ not in self.options_this_turn:
             return
@@ -774,7 +765,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 self.options_this_turn.remove(categ)
 
     ##########################################################################
-    def add_concentration(self, spell):
+    def add_concentration(self, spell: "SpellAction") -> None:
         """Start a new concentration spell"""
         if self.concentration:
             print(f"{self} removing {self.concentration} as casting {spell}")
@@ -782,7 +773,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.concentration = spell
 
     ##########################################################################
-    def remove_concentration(self):
+    def remove_concentration(self) -> None:
         """Stop concentrating on a  spell"""
         if not self.concentration:
             return
@@ -790,7 +781,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.concentration = None
 
     ##########################################################################
-    def rolld20(self, reason):
+    def rolld20(self, reason: str) -> int:
         """Roll a d20"""
         d20 = int(dice.roll("d20"))
         for _, eff in self.effects.items():
@@ -798,7 +789,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return d20
 
     ##########################################################################
-    def flee(self):
+    def flee(self) -> bool:
         """Forced to flee?"""
         for name, eff in self.effects.items():
             if (flee_from := eff.flee()) is not None:
@@ -808,7 +799,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return False
 
     ##########################################################################
-    def turn(self):
+    def turn(self) -> None:
         """Have a go"""
         if self.has_condition(Condition.DEAD):
             return
@@ -826,43 +817,44 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
 
 ##############################################################################
+##############################################################################
+##############################################################################
 class BreakGrapple(Action):
     """Try and break the grapple"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Break Grapple", **kwargs)
         self.category = ActionCategory.ACTION
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         return 0
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do this"""
         enemy = self.owner.grappled_by
         if self.owner.stats[Stat.STR] > self.owner.stats[Stat.DEX]:
-            targ = self.owner.rolld20("str")
+            targ = self.owner.rolld20(Stat.STR)
             targ += self.owner.stat_bonus(Stat.STR)
         else:
-            targ = self.owner.rolld20("dex")
+            targ = self.owner.rolld20(Stat.DEX)
             targ += self.owner.stat_bonus(Stat.DEX)
 
         if self.owner.escape_grapple_dc:
             escape = self.owner.escape_grapple_dc
         else:
-            escape = enemy.rolld20("str")
+            escape = enemy.rolld20(Stat.STR)
             escape += enemy.stat_bonus(Stat.STR)
 
         if targ > escape:
             print(f"{self.owner} has broken grapple of {enemy} ({targ} > {escape})")
             self.owner.grappled_by.ungrapple()
         else:
-            print(
-                f"{self.owner} failed to break grapple of {enemy} ({targ} < {escape})"
-            )
+            print(f"{self.owner} failed to break grapple of {enemy} ({targ} < {escape})")
+        return True
 
 
 # EOF

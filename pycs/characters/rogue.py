@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/classes/rogue """
+from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
@@ -6,7 +7,7 @@ import dice
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.character import Character
-from pycs.constant import ActionCategory
+from pycs.constant import ActionCategory, DamageType
 from pycs.constant import Condition
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -21,7 +22,7 @@ from pycs.monsters import Orc
 class Rogue(Character):
     """Rogue class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "str": 12,
@@ -59,7 +60,7 @@ class Rogue(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a rogue looks like in the arena"""
         if self.is_alive():
             return colors.black("R", bg="green")
@@ -75,26 +76,27 @@ class UncannyDodge(Action):
     you."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Uncanny Dodge", **kwargs)
         self.category = ActionCategory.REACTION
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this - prob could be smarter, but at the moment
         just do it for the first attack"""
         return 1
 
     ##########################################################################
-    def hook_predmg(self, **kwargs):
+    def hook_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
         """Half damage"""
         print("Using uncanny dodge to reduce damage")
-        return int(kwargs.get("dmg") / 2)
+        return dmg // 2
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Need to define but nothing to do"""
+        return False
 
 
 ##############################################################################
@@ -105,20 +107,21 @@ class CunningAction(Action):
     Dash, Disengage, or Hide action."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Cunning Action", **kwargs)
         self.category = ActionCategory.BONUS
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         return 0
         # Don't know how to implement this yet
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Not implemented yet"""
+        return False
 
 
 ##############################################################################
@@ -126,30 +129,32 @@ class CunningAction(Action):
 ##############################################################################
 class SneakAttack(Effect):
     """Beginning at 1st level, you know how to strike subtly and exploit
-    a foe’s distraction. Once per turn, you can deal an extra 1d6 damage
+    a foe's distraction. Once per turn, you can deal an extra 1d6 damage
     to one creature you hit with an attack if you have advantage on the
     attack roll. The attack must use a finesse or a ranged weapon.
 
-    You don’t need advantage on the attack roll if another enemy of the
-    target is within 5 feet of it, that enemy isn’t incapacitated, and
-    you don’t have disadvantage on the attack roll.
+    You don't need advantage on the attack roll if another enemy of the
+    target is within 5 feet of it, that enemy isn't incapacitated, and
+    you don't have disadvantage on the attack roll.
 
     The amount of the extra damage increases as you gain levels in this
     class, as shown in the Sneak Attack column of the Rogue table."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Sneak Attack", **kwargs)
         self._used_this_turn = False
 
     ########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Start the turn"""
         self._used_this_turn = False
 
     ########################################################################
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """Do the sneak attack"""
         if self._used_this_turn:
             return ("", 0, None)
@@ -174,7 +179,7 @@ class SneakAttack(Effect):
                 return ("", 0, None)
             print("We have advantage on attack")
         self._used_this_turn = True
-        return (self.owner.sneak_attack_dmg, 0, None)
+        return self.owner.sneak_attack_dmg, 0, None  # type: ignore
 
 
 ##############################################################################
@@ -184,7 +189,7 @@ class TestSneakAttack(unittest.TestCase):
     """Test SneakAttack"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.rogue = Rogue(name="Rufus", side="a", level=2, gear=[Shortsword()])
         self.arena.add_combatant(self.rogue, coords=(1, 1))
@@ -192,10 +197,11 @@ class TestSneakAttack(unittest.TestCase):
         self.arena.add_combatant(self.orc, coords=(2, 2))
 
     ########################################################################
-    def test_no_sneak(self):
+    def test_no_sneak(self) -> None:
         """Make sure not everything is a sneak attack"""
         self.assertTrue(self.rogue.has_effect("Sneak Attack"))
         act = self.rogue.pick_action_by_name("Shortsword")
+        assert act is not None
         self.rogue.target = self.orc
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19  # Hit target
@@ -205,10 +211,11 @@ class TestSneakAttack(unittest.TestCase):
         self.assertEqual(self.orc.hp, self.orc.max_hp - 6)  # 3 for dmg, 3 for stat
 
     ########################################################################
-    def test_sneak(self):
+    def test_sneak(self) -> None:
         """Do a sneak attack"""
         self.assertTrue(self.rogue.has_effect("Sneak Attack"))
         act = self.rogue.pick_action_by_name("Shortsword")
+        assert act is not None
         friend = Orc(side="a")
         self.arena.add_combatant(friend, coords=(2, 3))
         self.rogue.target = self.orc

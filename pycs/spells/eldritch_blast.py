@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/eldritch-blast"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import DamageType
@@ -9,7 +10,7 @@ from pycs.constant import DamageType
 class EldritchBlast(AttackSpell):
     """Spell"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Eldritch Blast"
         kwargs.update(
             {

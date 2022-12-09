@@ -1,4 +1,5 @@
 """https://www.dndbeyond.com/monsters/ghoul"""
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
@@ -20,7 +21,7 @@ class Ghoul(Monster):
     """Ghoul Monster Class"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "5d8",
@@ -57,7 +58,7 @@ class Ghoul(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def se_ghoul_claws(self, source, target, dmg):
+    def se_ghoul_claws(self, source: Creature, target: Creature, dmg: int) -> None:
         """Implement Side Effect of Ghoul Claws"""
         svth = target.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if not svth:
@@ -67,21 +68,22 @@ class Ghoul(Monster):
             print(f"{target} resisted Ghoul claws")
 
     ##########################################################################
-    def heuristic_ghoul_bite(self):
+    def heuristic_ghoul_bite(self) -> int:
         """When is Ghoul bite good"""
-        if self.target and self.target.has_condition(Condition.PARALYZED):
-            return 2
+        if self.target is not None:
+            if self.target.has_condition(Condition.PARALYZED):
+                return 2
         return 1
 
     ##########################################################################
-    def heuristic_ghoul_claw(self):
+    def heuristic_ghoul_claw(self) -> int:
         """When is Ghoul claw good"""
         if self.target and not self.target.has_condition(Condition.PARALYZED):
             return 2
         return 1
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("G", style="bold")
@@ -98,16 +100,16 @@ class GhoulClawEffect(Effect):
     of its turns, ending the effect on itself on a success."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Ghoul Claws", **kwargs)
 
     ##########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """First effect"""
         target.add_condition(Condition.PARALYZED)
 
     ##########################################################################
-    def removal_end_of_its_turn(self, victim):
+    def removal_end_of_its_turn(self, victim: Creature) -> bool:
         """Do we rmove the effect"""
         svth = victim.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if svth:
@@ -124,20 +126,19 @@ class TestGhoul(unittest.TestCase):
     """Test Ghoul"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the crypt"""
         self.arena = Arena()
         self.beast = Ghoul(side="a")
         self.arena.add_combatant(self.beast, coords=(1, 1))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_claws(self):
+    def test_claws(self) -> None:
         """Test claws"""
         claws = self.beast.pick_action_by_name("Claw")
+        assert claws is not None
         self.beast.target = self.victim
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [20, 1]

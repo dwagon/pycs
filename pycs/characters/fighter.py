@@ -1,4 +1,5 @@
 """ Fighter """
+from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
@@ -7,7 +8,7 @@ from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.character import Character
-from pycs.constant import ActionCategory
+from pycs.constant import ActionCategory, DamageType
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -23,7 +24,7 @@ from pycs.monsters import Orc
 class Fighter(Character):
     """Fighter class"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.second_wind = 1
         self.action_surge = 1
         kwargs.update(
@@ -62,7 +63,7 @@ class Fighter(Character):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a fighter looks like in the arena"""
         if self.is_alive():
             return colors.blue("F", bg="green")
@@ -80,26 +81,27 @@ class SecondWind(Action):
     use it again."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """initialise"""
         super().__init__("Second Wind", **kwargs)
         self.type = ActionType.HEALING
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
         self.owner.second_wind = 0
         self.owner.heal("d10", self.owner.level)
+        return True
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         if not self.owner.second_wind:
             return 0
         return self.owner.max_hp - self.owner.hp
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Creature:
         """Only applies to self"""
         return self.owner
 
@@ -113,27 +115,28 @@ class ActionSurge(Action):
     action on top of your regular action and a possible bonus action."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """initialise"""
         kwargs["action_cost"] = 0
         super().__init__("Action Surge", **kwargs)
         self.type = ActionType.BUFF
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the action"""
         self.owner.action_surge = 0
         self.owner.options_this_turn.append(ActionCategory.ACTION)
+        return True
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do this"""
         if not self.owner.action_surge:
             return 0
         return 0  # Doesn't work yet
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Creature:
         """Only applies to self"""
         return self.owner
 
@@ -146,12 +149,14 @@ class DuelingFightingStyle(Effect):
     weapons, you gain a +2 bonus to damage rolls with that weapon."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Dueling Fighting Style", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """2 more damage"""
         if issubclass(attack.__class__, MeleeAttack):
             return ("", 2, None)
@@ -165,20 +170,19 @@ class TestDuelingFightingStyle(unittest.TestCase):
     """Test DuelingFightingStyle"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
-        self.fighter = Fighter(
-            name="Freya", side="a", level=2, gear=[Mace(), LightCrossbow()]
-        )
+        self.fighter = Fighter(name="Freya", side="a", level=2, gear=[Mace(), LightCrossbow()])
         self.arena.add_combatant(self.fighter, coords=(1, 1))
         self.orc = Orc(side="b", hp=20)
         self.arena.add_combatant(self.orc, coords=(2, 2))
 
     ########################################################################
-    def test_dfs_melee(self):
+    def test_dfs_melee(self) -> None:
         """Test damage bonus"""
         self.assertTrue(self.fighter.has_effect("Dueling Fighting Style"))
         act = self.fighter.pick_action_by_name("Mace")
+        assert act is not None
         self.fighter.target = self.orc
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19
@@ -189,10 +193,11 @@ class TestDuelingFightingStyle(unittest.TestCase):
         self.assertEqual(self.orc.hp, self.orc.max_hp - 1 - 3 - 2)
 
     ########################################################################
-    def test_dfs_ranged(self):
+    def test_dfs_ranged(self) -> None:
         """Test damage bonus doesn't apply to ranged"""
         self.assertTrue(self.fighter.has_effect("Dueling Fighting Style"))
         act = self.fighter.pick_action_by_name("Light Crossbow")
+        assert act is not None
         self.fighter.target = self.orc
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 19
@@ -210,15 +215,16 @@ class TestSecondWind(unittest.TestCase):
     """Test SecondWind"""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena()
         self.fighter = Fighter(name="Freya", side="a", level=5)
         self.arena.add_combatant(self.fighter, coords=(1, 1))
 
     ########################################################################
-    def test_second_wind(self):
+    def test_second_wind(self) -> None:
         """Test Second Wind"""
         act = self.fighter.pick_action_by_name("Second Wind")
+        assert act is not None
         self.assertTrue(act is not None)
         self.assertEqual(act.pick_target(), self.fighter)
         before = act.heuristic()

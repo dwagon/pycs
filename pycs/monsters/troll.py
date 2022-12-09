@@ -1,4 +1,5 @@
 """ Troll Monster Class """
+from typing import Any
 import unittest
 import colors
 from pycs.action import Action
@@ -18,7 +19,7 @@ class Troll(Monster):
     """Troll - https://www.dndbeyond.com/monsters/troll"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self._regen = 5
         kwargs.update(
             {
@@ -40,7 +41,7 @@ class Troll(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Regeneration. The troll regains 10 hit points at the start of
         its turn. If the troll takes acid or fire damage, this trait doesn't
         function at the start of the troll's next turn. The troll dies only
@@ -60,7 +61,7 @@ class Troll(Monster):
             self.heal("", 10)
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("T")
@@ -74,11 +75,11 @@ class TrollMultiAttack(Action):
     """Handle a multi attack of Bite, Claw, Claw"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Multiattack", **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the action"""
         enemy = self.owner.pick_closest_enemy()
         if enemy and self.owner.distance(enemy[0]) <= 1:
@@ -86,20 +87,15 @@ class TrollMultiAttack(Action):
         return 0
 
     ##########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
-        bite = MeleeAttack(
-            "Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner
-        )
-        claw1 = MeleeAttack(
-            "Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner
-        )
-        claw2 = MeleeAttack(
-            "Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner
-        )
+        bite = MeleeAttack("Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner)
+        claw1 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner)
+        claw2 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner)
         bite.do_attack()
         claw1.do_attack()
         claw2.do_attack()
+        return True
 
 
 ##############################################################################
@@ -109,21 +105,21 @@ class TestTroll(unittest.TestCase):
     """Test Troll"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the bridge"""
         self.arena = Arena()
         self.troll = Troll(side="a")
         self.arena.add_combatant(self.troll)
 
     ##########################################################################
-    def test_regen(self):
+    def test_regen(self) -> None:
         """Test the regeneration"""
         self.troll.hp = 20
         self.troll.start_turn()
         self.assertEqual(self.troll.hp, 30)
 
     ##########################################################################
-    def test_noregen(self):
+    def test_noregen(self) -> None:
         """Test the regeneration with acid attak"""
         self.troll.hp = 20
         self.troll.damage_this_turn.append(Damage(1, DamageType.FIRE))

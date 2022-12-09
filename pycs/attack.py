@@ -1,9 +1,13 @@
 """ Handle Attacks """
+from typing import Any, TYPE_CHECKING
 import dice
 from pycs.action import Action
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.util import check_args
+
+if TYPE_CHECKING:
+    from pycs.creature import Creature
 
 
 ##############################################################################
@@ -13,26 +17,24 @@ class Attack(Action):
     """generic attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         self.finesse = kwargs.get("finesse", False)
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {"finesse"}
 
     ########################################################################
-    def perform_action(self):
+    def perform_action(self) -> bool:
         """Do the attack"""
         assert self.owner is not None
         response = False
         apa = self.owner.attacks_per_action
         if isinstance(self.attacks_per_action, tuple):
-            apa *= (
-                int(dice.roll(self.attacks_per_action[0])) + self.attacks_per_action[1]
-            )
+            apa *= int(dice.roll(self.attacks_per_action[0])) + self.attacks_per_action[1]
         elif isinstance(self.attacks_per_action, int):
             apa = self.owner.attacks_per_action
         if apa != 1:
@@ -44,22 +46,20 @@ class Attack(Action):
         return response
 
     ########################################################################
-    def atk_modifier(self, attacker):
+    def atk_modifier(self, attacker: "Creature") -> int:
         """The ranged attack modifier"""
         if self.attack_modifier:
             return self.attack_modifier
         return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def dmg_modifier(self, attacker):
+    def dmg_modifier(self, attacker: "Creature") -> int:
         """The ranged damage modifier"""
         return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def heuristic(self):
-        raise NotImplementedError(
-            f"{self.__class__.__name__} hasn't implemented heuristic()"
-        )
+    def heuristic(self) -> int:
+        raise NotImplementedError(f"{self.__class__.__name__} hasn't implemented heuristic()")
 
 
 ##############################################################################
@@ -69,7 +69,7 @@ class MeleeAttack(Attack):
     """A melee attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.reach = int(kwargs.get("reach", 5) / 5)
@@ -77,22 +77,22 @@ class MeleeAttack(Attack):
         self.type = ActionType.MELEE
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {"reach"}
 
     ########################################################################
-    def range(self):
+    def range(self) -> tuple[int, int]:
         """Return the range of the attack"""
         return self.reach, self.reach
 
     ########################################################################
-    def is_available(self):
+    def is_available(self) -> bool:
         """Is this action available?"""
         return self.available
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we perform this attack - yes if adjacent"""
         enemy = self.owner.pick_closest_enemy()
         if not enemy:
@@ -109,7 +109,7 @@ class RangedAttack(Attack):
     """A ranged attack"""
 
     ########################################################################
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any):
         check_args(self._valid_args(), name, kwargs)
         super().__init__(name, **kwargs)
         self.s_range = int(kwargs.get("s_range", 999) / 5)
@@ -118,12 +118,12 @@ class RangedAttack(Attack):
         self.type = ActionType.RANGED
 
     ##########################################################################
-    def _valid_args(self):
+    def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {"s_range", "l_range"}
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we perform this attack - no if adjacent,
         yes if in range, middling if at long range"""
         enemy = self.owner.pick_closest_enemy()
@@ -137,12 +137,12 @@ class RangedAttack(Attack):
         return self.max_dmg()
 
     ########################################################################
-    def range(self):
+    def range(self) -> tuple[int, int]:
         """Return the range of the attack"""
         return self.s_range, self.l_range
 
     ########################################################################
-    def has_disadvantage(self, target, rnge):
+    def has_disadvantage(self, target: "Creature", rnge: int) -> bool:
         """Does this attack have disadvantage at this range"""
         if rnge == 1:
             return True

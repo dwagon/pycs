@@ -23,7 +23,7 @@ class TestEquipment(unittest.TestCase):
     """Tests for `equipment` package."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         self.arena = Mock(max_x=21, max_y=21)
         kwargs = {
@@ -41,11 +41,11 @@ class TestEquipment(unittest.TestCase):
         self.creat = Creature(**kwargs)
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_weapon(self):
+    def test_weapon(self) -> None:
         """Test adding weapons"""
         self.assertEqual(len(self.creat.actions), 0)
         self.creat.add_gear(Javelin(ammo=3))
@@ -55,10 +55,11 @@ class TestEquipment(unittest.TestCase):
         self.assertEqual(jav_action.ammo, 3)
 
     ########################################################################
-    def test_finesse_weapon(self):
+    def test_finesse_weapon(self) -> None:
         """Test weapons with finesse"""
         self.creat.add_gear(Dagger())
         att = self.creat.pick_action_by_name("Dagger")
+        assert att is not None
         self.creat.stats[Stat.STR] = 9
         self.creat.stats[Stat.DEX] = 19
         self.assertEqual(att.use_stat, Stat.DEX)
@@ -67,7 +68,7 @@ class TestEquipment(unittest.TestCase):
         self.assertEqual(att.use_stat, Stat.STR)
 
     ########################################################################
-    def test_potion(self):
+    def test_potion(self) -> None:
         """Test adding potion"""
         self.assertEqual(len(self.creat.bonus_actions), 0)
         self.creat.add_gear(PotionHealing(ammo=1))
@@ -82,21 +83,21 @@ class TestEquipment(unittest.TestCase):
         self.assertGreater(self.creat.hp, 10)
 
     ########################################################################
-    def test_armour(self):
+    def test_armour(self) -> None:
         """Test adding armour"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_gear(Leather())
         self.assertEqual(self.creat.ac, 12)
 
     ########################################################################
-    def test_heavy_armour(self):
+    def test_heavy_armour(self) -> None:
         """Test adding heavy armour"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_gear(Splint())
         self.assertEqual(self.creat.ac, 17)
 
     ########################################################################
-    def test_armour_shield(self):
+    def test_armour_shield(self) -> None:
         """Test armour and shield combo"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_gear(Leather())
@@ -105,7 +106,7 @@ class TestEquipment(unittest.TestCase):
         self.assertEqual(self.creat.ac, 14)
 
     ########################################################################
-    def test_magic_armour_shield(self):
+    def test_magic_armour_shield(self) -> None:
         """Test magic armour and shield combo"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_gear(Leather(magic_bonus=1))

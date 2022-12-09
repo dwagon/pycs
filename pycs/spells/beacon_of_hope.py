@@ -1,6 +1,8 @@
 """https://www.dndbeyond.com/spells/beacon-of-hope"""
 
+from typing import Any, Optional
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 
 
@@ -14,7 +16,7 @@ class BeaconOfHope(SpellAction):
     maximum number of hit points possible from any healing."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Beacon of Hope"
         kwargs.update(
             {
@@ -27,7 +29,7 @@ class BeaconOfHope(SpellAction):
         super().__init__(name, **kwargs)
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell
         the more people it can effect the more we should do it"""
         if not self.owner.spell_available(self):
@@ -35,17 +37,17 @@ class BeaconOfHope(SpellAction):
         return 0
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         return self.owner
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         return True
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
 
 

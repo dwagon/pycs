@@ -1,4 +1,5 @@
 """ Triceratops MM p80"""
+from typing import Any
 import unittest
 import colors
 from pycs.arena import Arena
@@ -13,7 +14,7 @@ class Triceratops(Monster):
     """Triceratops"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "10d12+30",
@@ -27,9 +28,7 @@ class Triceratops(Monster):
                 "wis": 11,
                 "cha": 5,
                 "actions": [
-                    MeleeAttack(
-                        "Gore", reach=5, dmg=("4d8", 0), dmg_type=DamageType.PIERCING
-                    ),
+                    MeleeAttack("Gore", reach=5, dmg=("4d8", 0), dmg_type=DamageType.PIERCING),
                     MeleeAttack(
                         "Stomp",
                         reach=5,
@@ -43,7 +42,7 @@ class Triceratops(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a triceratop looks like on the arena"""
         if self.is_alive():
             return colors.blue("T")
@@ -57,14 +56,14 @@ class TestTriceratops(unittest.TestCase):
     """Test Triceratops"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = Triceratops(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC exists"""
         self.assertEqual(self.beast.ac, 13)
 

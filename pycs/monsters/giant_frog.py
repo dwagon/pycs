@@ -1,4 +1,5 @@
 """ Giant Frog Monster Class """
+from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
@@ -18,7 +19,7 @@ class GiantFrog(Monster):
     """Giant Frog - https://www.dndbeyond.com/monsters/giant-frog"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "4d8",
@@ -44,10 +45,10 @@ class GiantFrog(Monster):
             }
         )
         super().__init__(**kwargs)
-        self._swallowed = None
+        self._swallowed: Optional[Creature] = None
 
     ##########################################################################
-    def bite_swallow(self, source, target, dmg):  # pylint: disable=unused-argument
+    def bite_swallow(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """Swallow. The frog makes one bite attack against a Small or smaller target
         it is grappling. If the attack hits, the target is swallowed, and the grapple
         ends. The swallowed target is blinded and restrained, it has total cover
@@ -56,7 +57,6 @@ class GiantFrog(Monster):
         one target swallowed at a time. If the frog dies, a swallowed creature is
         no longer restrained by it and can escape from the corpse using 5 feet
         of movement, exiting prone."""
-        target = self.target
         if self.has_grappled == target and self._swallowed is None:
             print(f"{self} swallowed {target}")
             target.add_effect(GiantFrogSwallowEffect(source=self))
@@ -67,19 +67,19 @@ class GiantFrog(Monster):
         self.grapple(target, escape_dc=11)
 
     ##########################################################################
-    def report(self):
+    def report(self) -> None:
         """Additional reporting"""
         super().report()
         if self._swallowed:
             print(f"| Swallowed: {self._swallowed}")
 
     ##########################################################################
-    def frog_bite(self):
+    def frog_bite(self) -> int:
         """When is it good to bite"""
         return 1
 
     ##########################################################################
-    def fallen_unconscious(self, dmg, dmg_type, critical):
+    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
         """Frog has died"""
         if self._swallowed:
             self._swallowed.remove_condition(Condition.RESTRAINED)
@@ -90,7 +90,7 @@ class GiantFrog(Monster):
         super().fallen_unconscious(dmg, dmg_type, critical)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What it looks like on the arena"""
         if self.is_alive():
             return colors.green("F")
@@ -112,19 +112,20 @@ class GiantFrogSwallowEffect(Effect):
     prone."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Giant Frog Swallow", **kwargs)
         self.target = None
 
     ##########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """Initial effect"""
         target.add_condition(Condition.RESTRAINED)
         target.add_condition(Condition.BLINDED)
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         dmg = int(dice.roll("2d4"))
+        assert self.target is not None
         self.target.hit(
             dmg=dmg,
             dmg_type=DamageType.ACID,
@@ -142,7 +143,7 @@ class TestGiantFrog(unittest.TestCase):
     """Test Giant Frog"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the swamp"""
         self.arena = Arena()
         self.beast = GiantFrog(side="a")
@@ -161,9 +162,10 @@ class TestGiantFrog(unittest.TestCase):
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_bite(self):
+    def test_bite(self) -> None:
         """Test a frog nibble"""
         att = self.beast.pick_action_by_name("Bite")
+        assert att is not None
         self.beast.target = self.victim
         # Bite the victim to grapple
         with patch.object(Creature, "rolld20") as mock:
@@ -171,20 +173,16 @@ class TestGiantFrog(unittest.TestCase):
             att.perform_action()
         self.assertEqual(self.beast.has_grappled, self.victim)
 
-        print("X")
-
         # Bite again to swallow
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [17, 16]  # To hit
             att.perform_action()
-        self.assertEqual(
-            self.beast._swallowed, self.victim  # pylint: disable=protected-access
-        )
+        self.assertEqual(self.beast._swallowed, self.victim)  # pylint: disable=protected-access
         self.assertTrue(self.victim.has_effect("Giant Frog Swallow"))
         self.assertIsNone(self.beast.has_grappled)
-        self.assertFalse(self.victim.has_effect(Condition.GRAPPLED))
-        # self.assertTrue(self.victim.has_effect(Condition.RESTRAINED))
-        # self.assertTrue(self.victim.has_effect(Condition.BLINDED))
+        self.assertFalse(self.victim.has_condition(Condition.GRAPPLED))
+        self.assertTrue(self.victim.has_condition(Condition.RESTRAINED))
+        self.assertTrue(self.victim.has_condition(Condition.BLINDED))
 
 
 # EOF

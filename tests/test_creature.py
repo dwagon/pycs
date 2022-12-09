@@ -24,7 +24,7 @@ class TestCreature(unittest.TestCase):
     """Tests for `creature` package."""
 
     ########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures, if any."""
         kwargs = {
             "str": 6,
@@ -45,17 +45,17 @@ class TestCreature(unittest.TestCase):
         self.arena.add_combatant(self.creat)
 
     ########################################################################
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test fixtures, if any."""
 
     ########################################################################
-    def test_stat(self):  # NFI why this doesn't work
+    def test_stat(self) -> None:  # NFI why this doesn't work
         """Test stats"""
         self.assertEqual(self.creat.stats[Stat.CON], 11)
         self.assertEqual(self.creat.stat_bonus(Stat.STR), -2)
 
     ########################################################################
-    def test_condition(self):
+    def test_condition(self) -> None:
         """Test conditions"""
         self.assertFalse(self.creat.has_condition(Condition.PRONE, Condition.BLINDED))
         self.creat.add_condition(Condition.PRONE)
@@ -64,19 +64,19 @@ class TestCreature(unittest.TestCase):
         self.assertFalse(self.creat.has_condition(Condition.PRONE))
 
     ######################################################################
-    def test_type(self):
+    def test_type(self) -> None:
         """Test monster type"""
         self.assertTrue(self.creat.is_type(MonsterType.UNDEAD))
         self.assertFalse(self.creat.is_type(MonsterType.HUMANOID))
 
     ########################################################################
-    def test_spellcast_details(self):
+    def test_spellcast_details(self) -> None:
         """Spell cast details"""
         self.assertEqual(self.creat.spellcast_bonus_stat, Stat.WIS)
         self.assertEqual(self.creat.spellcast_save, 14)
 
     ########################################################################
-    def test_pick_action_by_name(self):
+    def test_pick_action_by_name(self) -> None:
         """Test pick_action_by_name()"""
         alpha = MeleeAttack("alpha")
         beta = RangedAttack("beta")
@@ -90,7 +90,7 @@ class TestCreature(unittest.TestCase):
         self.assertIsNone(atk3)
 
     ########################################################################
-    def test_add_gear(self):
+    def test_add_gear(self) -> None:
         """Test add_gear()"""
         self.assertEqual(self.creat.gear, [])
         self.assertEqual(self.creat.actions, [])
@@ -100,7 +100,7 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(self.creat.actions[0].name, "Scimitar")
 
     ########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test AC calculations"""
         self.assertEqual(self.creat.ac, 11)
         self.creat.add_effect(MockACEffect("AC Effect"))
@@ -110,7 +110,7 @@ class TestCreature(unittest.TestCase):
         self.assertFalse(self.creat.has_effect("AC Effect"))
 
     ########################################################################
-    def test_heal(self):
+    def test_heal(self) -> None:
         """Test creature healing"""
         self.assertEqual(self.creat.max_hp, 30)
         self.assertEqual(self.creat.hp, 30)
@@ -126,17 +126,18 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(self.creat.hp, self.creat.max_hp)
 
     ########################################################################
-    def test_add_action(self):
+    def test_add_action(self) -> None:
         """test add_action"""
         self.creat.add_action(MeleeAttack("alpha"))
         self.creat.add_action(MeleeAttack("beta"))
         act = self.creat.pick_action_by_name("alpha")
+        assert act is not None
         self.assertEqual(act.name, "alpha")
         act = self.creat.pick_action_by_name("foo")
         self.assertIsNone(act)
 
     ########################################################################
-    def test_saving_throw(self):
+    def test_saving_throw(self) -> None:
         """Test saving_throw"""
         # If unconscious - auto fail STR saves
         self.creat.add_condition(Condition.UNCONSCIOUS)
@@ -163,7 +164,7 @@ class TestCreature(unittest.TestCase):
             self.assertTrue(res)
 
     ########################################################################
-    def test_grapple(self):
+    def test_grapple(self) -> None:
         """Test grappling"""
         kwargs = {
             "str": 6,
@@ -190,7 +191,7 @@ class TestCreature(unittest.TestCase):
         self.assertEqual(victim.escape_grapple_dc, 9)
 
     ########################################################################
-    def test_roll_initiative(self):
+    def test_roll_initiative(self) -> None:
         """Test rolling initiative"""
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 10
@@ -198,12 +199,10 @@ class TestCreature(unittest.TestCase):
             self.assertEqual(init, 9)  # Dex -1
 
     ########################################################################
-    def test_hit(self):
+    def test_hit(self) -> None:
         """Test creature hurting"""
         self.creat.hp = 30
-        self.creat.hit(
-            5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack"
-        )
+        self.creat.hit(5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack")
         self.assertEqual(self.creat.hp, 25)
         # Vulnerable = twice damaage
         self.creat.vulnerable.append(DamageType.PIERCING)
@@ -241,7 +240,7 @@ class TestCreature(unittest.TestCase):
 class MockACEffect(Effect):
     """Test AC modification"""
 
-    def hook_ac_modifier(self, target):
+    def hook_ac_modifier(self, target: Creature) -> int:
         return -2
 
 

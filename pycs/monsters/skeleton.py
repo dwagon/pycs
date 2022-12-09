@@ -1,4 +1,5 @@
 """ Skeleton Monster Class """
+from typing import Any
 import colors
 from pycs.gear import Shortsword
 from pycs.gear import Shortbow
@@ -12,7 +13,7 @@ class Skeleton(Monster):
     """Skeleton - https://www.dndbeyond.com/monsters/skeleton"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "2d8+4",
@@ -33,7 +34,7 @@ class Skeleton(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a skeleton looks like on the arena"""
         if self.is_alive():
             return colors.green("S")

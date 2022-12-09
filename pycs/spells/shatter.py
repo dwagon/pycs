@@ -1,5 +1,6 @@
 """https://www.dndbeyond.com/spells/shatter"""
 
+from typing import Any
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import DamageType
@@ -17,7 +18,7 @@ class Shatter(AttackSpell):
     saving throw."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Shatter"
         kwargs.update(
             {

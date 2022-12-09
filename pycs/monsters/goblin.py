@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/monsters/goblin"""
+from typing import Any
 import unittest
 import colors
 from pycs.arena import Arena
@@ -15,7 +16,7 @@ class Goblin(Monster):
     """Goblin"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "2d6",
@@ -33,7 +34,7 @@ class Goblin(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a goblin looks like on the arena"""
         if self.is_alive():
             return colors.green("g")
@@ -47,14 +48,14 @@ class TestGoblin(unittest.TestCase):
     """Test oblin"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the lair"""
         self.arena = Arena()
         self.beast = Goblin(side="a")
         self.arena.add_combatant(self.beast, coords=(5, 5))
 
     ##########################################################################
-    def test_ac(self):
+    def test_ac(self) -> None:
         """Test that the AC matches equipment"""
         self.assertEqual(self.beast.ac, 15)
 

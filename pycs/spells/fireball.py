@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/spells/fireball"""
 
 from collections import defaultdict, namedtuple
+from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.spell import AttackSpell
@@ -29,7 +30,7 @@ class Fireball(AttackSpell):
     above 3rd."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Fireball"
         kwargs.update(
             {
@@ -47,15 +48,16 @@ class Fireball(AttackSpell):
         self._num_friend = 0
 
     ##########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         for per in self.owner.arena.pick_alive():
             if per.distance(self.owner.target) <= 20 / 5:
                 dmg = self.roll_dmg(victim=per)
                 per.hit(dmg, self.dmg_type, self.owner, False, self.name)
+        return True
 
     ##########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         targets = []
         result = namedtuple("result", "enemies friends id target")
@@ -63,7 +65,7 @@ class Fireball(AttackSpell):
         for enemy in self.owner.pick_closest_enemy():
             if self.owner.distance(enemy) > self.range()[0]:
                 continue
-            sides = defaultdict(int)
+            sides: defaultdict[str, int] = defaultdict(int)
             selfhit = False
 
             # Who we will hit
@@ -85,19 +87,15 @@ class Fireball(AttackSpell):
         if targets:
             self._num_enemy = targets[0].enemies
             self._num_friend = -targets[0].friends + 999
-            self.target = targets[0].target
             targets.sort(reverse=True)
             return targets[0].target
         return None
 
     ##########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if self.pick_target():
-            val = (
-                int(dice.roll_max("8d6")) * self._num_enemy
-                - int(1.5 * int(dice.roll_max("8d6"))) * self._num_friend
-            )
+            val = int(dice.roll_max("8d6")) * self._num_enemy - int(1.5 * int(dice.roll_max("8d6"))) * self._num_friend
             return val
         return 0
 
@@ -109,12 +107,12 @@ class TestFireball(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.caster.add_action(Fireball())
 
     ##########################################################################
-    def test_cast_saved(self):
+    def test_cast_saved(self) -> None:
         """test casting where victim makes saving throw"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(dice, "roll") as mock_dice:
@@ -126,7 +124,7 @@ class TestFireball(SpellTest):
         self.assertEqual(self.enemy.hp, self.enemy.max_hp - 10)
 
     ##########################################################################
-    def test_cast_hit(self):
+    def test_cast_hit(self) -> None:
         """test casting where victim fails saving throw"""
         self.assertEqual(self.enemy.hp, self.enemy.max_hp)
         with patch.object(dice, "roll") as mock_dice:

@@ -1,5 +1,8 @@
 """https://www.dndbeyond.com/spells/branding-smite"""
 
+from typing import Any, Optional
+from pycs.action import Action
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
@@ -19,7 +22,7 @@ class BrandingSmite(SpellAction):
     ends."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Branding Smite"
         kwargs.update(
             {
@@ -33,18 +36,18 @@ class BrandingSmite(SpellAction):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self.owner.add_effect(BrandingSmiteEffect(cause=self.owner))
         return True
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we do the spell to"""
         return self.owner
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we do the spell"""
         if not self.owner.spell_available(self):
             return 0
@@ -53,7 +56,7 @@ class BrandingSmite(SpellAction):
         return 12  # 2d6
 
     ##########################################################################
-    def end_concentration(self):
+    def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
         self.owner.remove_effect("Branding Smite")
 
@@ -65,14 +68,16 @@ class BrandingSmiteEffect(Effect):
     """Branding Smite"""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         """Initialise"""
         super().__init__("Branding Smite", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(self, attack, source, target):
+    def hook_source_additional_damage(
+        self, attack: Action, source: Creature, target: Creature
+    ) -> tuple[str, int, Optional[DamageType]]:
         """More damage"""
-        return ("2d6", 0, DamageType.RADIANT)
+        return "2d6", 0, DamageType.RADIANT
 
 
 # EOF

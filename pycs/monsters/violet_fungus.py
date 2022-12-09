@@ -1,4 +1,5 @@
 """ https://www.dndbeyond.com/monsters/violet-fungus """
+from typing import Any
 import colors
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
@@ -12,7 +13,7 @@ class VioletFungus(Monster):
     """Violet Fungus"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "4d8",
@@ -46,7 +47,7 @@ class VioletFungus(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def shortrepr(self):
+    def shortrepr(self) -> str:
         """What a violet fungus looks like on the arena"""
         if self.is_alive():
             return colors.magenta("v")

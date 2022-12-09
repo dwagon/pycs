@@ -1,4 +1,5 @@
 """ A spear """
+from typing import Any
 from pycs.constant import DamageType
 from pycs.equipment import RangedWeapon
 
@@ -9,7 +10,7 @@ from pycs.equipment import RangedWeapon
 class Spear(RangedWeapon):
     """Long and Pointy"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs["s_range"] = 20
         kwargs["l_range"] = 60
         kwargs["dmg"] = ("1d6", 0)

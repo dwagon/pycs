@@ -15,7 +15,7 @@ from pycs.constant import Stat
 class SpellTest(unittest.TestCase):
     """Test Framework for Spell"""
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.arena = Arena(max_x=10, max_y=10)
         kwargs = {
             "str": 6,
@@ -30,8 +30,8 @@ class SpellTest(unittest.TestCase):
         }
         self.caster = Creature(name="caster", side="a", **kwargs)
         self.arena.add_combatant(self.caster)
-        self.caster.spell_available = Mock(return_value=True)
-        self.caster.cast = Mock(return_value=True)
+        self.caster.spell_available = Mock(return_value=True)  # type: ignore
+        self.caster.cast = Mock(return_value=True)  # type: ignore
 
         self.friend = Creature(name="friend", side="a", **kwargs)
         self.arena.add_combatant(self.friend)

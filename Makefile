@@ -48,7 +48,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 clean-venv:  ## Remove venv
-	rm -rf venv
+	rm -rf .venv
 
 lint: ## check style with flake8
 	flake8 pycs tests
@@ -89,9 +89,9 @@ install: clean ## install the package to the active Python's site-packages
 	python setup.py install
 
 venv:
-	python3 -m venv venv
-	venv/bin/pip install -r requirements_dev.txt
-	venv/bin/pip install -r requirements.txt
+	python3 -m venv .venv
+	.venv/bin/pip install -r requirements_dev.txt
+	.venv/bin/pip install -r requirements.txt
 
 pex:
-	./venv/bin/python3 ./setup.py bdist_pex --pex-args '-vv'
+	./.venv/bin/python3 ./setup.py bdist_pex --pex-args '-vv'

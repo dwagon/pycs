@@ -1,7 +1,9 @@
 """https://www.dndbeyond.com/monsters/ghast"""
+from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
+from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
@@ -20,7 +22,7 @@ class Ghast(Monster):
     """Ghast Monster Class"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         kwargs.update(
             {
                 "hitdice": "8d8",
@@ -61,7 +63,7 @@ class Ghast(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def start_others_turn(self, creat):
+    def start_others_turn(self, creat: Creature) -> None:
         # Stench. Any creature that starts its turn within 5 feet of the
         # ghast must succeed on a DC 10 Constitution saving throw or be
         # poisoned until the start of its next turn. On a successful saving
@@ -69,15 +71,11 @@ class Ghast(Monster):
         if creat.side == self.side:
             return
         dist = self.arena.distance(self, creat)
-        if (
-            dist <= 1
-            and Condition.POISONED not in creat.immunity
-            and not creat.has_effect("Ghast Stench")
-        ):
+        if dist <= 1 and Condition.POISONED not in creat.immunity and not creat.has_effect("Ghast Stench"):
             creat.add_effect(GhastStenchEffect(cause=self))
 
     ##########################################################################
-    def ghast_claws(self, source, target, dmg):  # pylint: disable=unused-argument
+    def ghast_claws(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
         """If the target is a creature other than an undead, it must
         succeed on a DC 10 Constitution saving throw or be paralyzed for 1
         minute. The target can repeat the saving throw at the end of each
@@ -85,14 +83,15 @@ class Ghast(Monster):
         target.add_effect(GhastClawEffect(cause=self))
 
     ##########################################################################
-    def pick_best_attack(self):
+    def pick_best_attack(self) -> Optional[Action]:
         """Pick the claw attack more often than damage would indicate"""
+        assert self.target is not None
         if self.target.has_condition(Condition.PARALYZED):
             return self.pick_action_by_name("Bite")
         return self.pick_action_by_name("Claw")
 
     ##########################################################################
-    def shortrepr(self):  # pragma: no cover
+    def shortrepr(self) -> str:  # pragma: no cover
         """What it looks like on the arena"""
         if self.is_alive():
             return colors.yellow("G", style="bold")
@@ -106,13 +105,13 @@ class GhastStenchEffect(Effect):
     """Effect of Ghast Stench"""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         self.immune = False
-        self.target = None
+        self.target: Optional[Creature]
         super().__init__("Ghast Stench", **kwargs)
 
     ##########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         """Use the effect to store the immunity"""
         self.target = target
         if self.immune:
@@ -127,8 +126,10 @@ class GhastStenchEffect(Effect):
             self.immune = True
 
     ##########################################################################
-    def hook_start_turn(self):
+    def hook_start_turn(self) -> None:
         """Start turn"""
+        if self.target is None:
+            return
         if not self.immune:
             svth = self.target.saving_throw(Stat.CON, 10, effect=Condition.POISONED)
             if svth:
@@ -149,18 +150,18 @@ class GhastClawEffect(Effect):
     success."""
 
     ##########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__("Ghast Claws", **kwargs)
 
     ##########################################################################
-    def initial(self, target):
+    def initial(self, target: Creature) -> None:
         svth = target.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if not svth:
             target.add_condition(Condition.PARALYZED)
             print(f"{target} paralyzed by Ghast Claws")
 
     ##########################################################################
-    def removal_end_of_its_turn(self, victim):
+    def removal_end_of_its_turn(self, victim: Creature) -> bool:
         """Check to see if victim can recover from claws"""
         svth = victim.saving_throw(Stat.CON, 10, effect=Condition.PARALYZED)
         if svth:
@@ -177,18 +178,16 @@ class TestGhast(unittest.TestCase):
     """Test Ghast"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the crypt"""
         self.arena = Arena()
         self.beast = Ghast(side="a")
         self.arena.add_combatant(self.beast, coords=(1, 1))
-        self.victim = Monster(
-            str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b"
-        )
+        self.victim = Monster(str=11, int=11, dex=11, wis=11, con=11, cha=11, hp=50, side="b")
         self.arena.add_combatant(self.victim, coords=(1, 2))
 
     ##########################################################################
-    def test_stench(self):
+    def test_stench(self) -> None:
         """Test the stench"""
         # Fail saving throw to get it
         with patch.object(Creature, "rolld20") as mock:
@@ -212,9 +211,10 @@ class TestGhast(unittest.TestCase):
             self.assertTrue(self.victim.effects["Ghast Stench"].immune)
 
     ##########################################################################
-    def test_claws(self):
+    def test_claws(self) -> None:
         """Test claws"""
         claws = self.beast.pick_action_by_name("Claw")
+        assert claws is not None
         self.beast.target = self.victim
         with patch.object(Creature, "rolld20") as mock:
             mock.side_effect = [20, 1]

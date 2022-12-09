@@ -1,7 +1,9 @@
 """https://www.dndbeyond.com/spells/cure-wounds"""
 
+from typing import Any, Optional
 from pycs.constant import ActionCategory
 from pycs.constant import SpellType
+from pycs.creature import Creature
 from pycs.spell import SpellAction
 from pycs.spell import healing_heuristic
 from pycs.spell import pick_heal_target
@@ -15,7 +17,7 @@ class CureWounds(SpellAction):
     undead or constructs."""
 
     ########################################################################
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         name = "Cure Wounds"
         kwargs.update(
             {
@@ -27,18 +29,18 @@ class CureWounds(SpellAction):
         super().__init__(name, **kwargs)
 
     ########################################################################
-    def cast(self):
+    def cast(self) -> bool:
         """Do the spell"""
         self.owner.target.heal("1d8", self.spell_modifier(self.owner))
         return True
 
     ########################################################################
-    def pick_target(self):
+    def pick_target(self) -> Optional[Creature]:
         """Who should we target"""
         return pick_heal_target(self.owner)
 
     ########################################################################
-    def heuristic(self):
+    def heuristic(self) -> int:
         """Should we cast this"""
         return healing_heuristic(self.owner, self)
 
@@ -50,13 +52,13 @@ class TestCureWounds(SpellTest):
     """Test Spell"""
 
     ##########################################################################
-    def setUp(self):
+    def setUp(self) -> None:
         """setup tests"""
         super().setUp()
         self.caster.add_action(CureWounds())
 
     ##########################################################################
-    def test_cast(self):
+    def test_cast(self) -> None:
         """See what this spell does"""
         self.friend.hp = 5
         self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
