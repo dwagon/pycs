@@ -1,14 +1,15 @@
 """ Fighter """
-from typing import Any, Optional
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
 import dice
 from pycs.action import Action
 from pycs.arena import Arena
+from pycs.damageroll import DamageRoll
 from pycs.attack import MeleeAttack
 from pycs.character import Character
-from pycs.constant import ActionCategory, DamageType
+from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -154,13 +155,11 @@ class DuelingFightingStyle(Effect):
         super().__init__("Dueling Fighting Style", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """2 more damage"""
         if issubclass(attack.__class__, MeleeAttack):
-            return ("", 2, None)
-        return ("", 0, None)
+            return DamageRoll("", 2)
+        return DamageRoll("", 0)
 
 
 ##############################################################################

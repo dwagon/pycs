@@ -10,6 +10,8 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -37,8 +39,7 @@ class Zombie(Monster):
                     MeleeAttack(
                         "Slam",
                         reach=5,
-                        dmg=("1d6", 0),
-                        dmg_type=DamageType.BLUDGEONING,
+                        dmgroll=DamageRoll("1d6", 0, DamageType.BLUDGEONING),
                     )
                 ],
             }
@@ -46,18 +47,18 @@ class Zombie(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Undead Fortitude. If damage reduces the zombie to 0 hit points,
         it must make a Constitution saving throw with a DC of 5 + the damage
         taken, unless the damage is radiant or from a critical hit.
         On a success, the zombie drops to 1 hit point instead."""
-        if not critical and dmg_type != DamageType.RADIANT:
-            save = self.saving_throw(Stat.CON, 5 + dmg)
+        if not critical and dmg.type != DamageType.RADIANT:
+            save = self.saving_throw(Stat.CON, 5 + dmg.hp)
             if save:
                 self.hp = 1
                 print(f"{self} uses Undead Fortitude and stays conscious")
                 return
-        super().fallen_unconscious(dmg, dmg_type, critical)
+        super().fallen_unconscious(dmg, critical)
 
     ##########################################################################
     def shortrepr(self) -> str:  # pragma: no cover
@@ -86,7 +87,7 @@ class TestZombie(unittest.TestCase):
         self.beast.hp = 1
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 20
-            self.beast.hit(6, DamageType.PIERCING, Mock(), False, "DummyAttack")
+            self.beast.hit(Damage(6, DamageType.PIERCING), Mock(), False, "DummyAttack")
             self.assertEqual(self.beast.hp, 1)
 
     ##########################################################################
@@ -95,7 +96,7 @@ class TestZombie(unittest.TestCase):
         self.beast.hp = 1
         with patch.object(Creature, "rolld20") as mock:
             mock.return_value = 20
-            self.beast.hit(6, DamageType.RADIANT, Mock(), False, "DummyAttack")
+            self.beast.hit(Damage(6, DamageType.RADIANT), Mock(), False, "DummyAttack")
             self.assertTrue(self.beast.has_condition(Condition.DEAD))
 
 

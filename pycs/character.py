@@ -2,10 +2,10 @@
 from typing import Any
 from pycs.creature import Creature
 from pycs.spell import SpellAction
+from pycs.damage import Damage
 from pycs.races import Human
 from pycs.util import check_args
 from pycs.constant import Condition
-from pycs.constant import DamageType
 
 
 ##############################################################################
@@ -38,7 +38,7 @@ class Character(Creature):
         return [_ for _ in self.actions if issubclass(_.__class__, SpellAction)]
 
     ##########################################################################
-    def creature_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def creature_fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Character has fallen unconscious"""
         self.hp = 0
         if self.has_condition(Condition.UNCONSCIOUS):

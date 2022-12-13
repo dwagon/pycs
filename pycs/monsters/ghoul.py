@@ -10,6 +10,7 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 from pycs.monster import Monster
 
@@ -41,15 +42,13 @@ class Ghoul(Monster):
                         "Bite",
                         reach=5,
                         heuristic=self.heuristic_ghoul_bite,
-                        dmg=("2d6", 0),
-                        dmg_type=DamageType.PIERCING,
+                        dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING),
                     ),
                     MeleeAttack(
                         "Claw",
                         reach=5,
-                        dmg=("2d4", 0),
+                        dmgroll=DamageRoll("2d4", 0, DamageType.SLASHING),
                         heuristic=self.heuristic_ghoul_claw,
-                        dmg_type=DamageType.SLASHING,
                         side_effect=self.se_ghoul_claws,
                     ),
                 ],

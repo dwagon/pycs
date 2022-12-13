@@ -4,6 +4,7 @@ from collections import defaultdict, namedtuple
 from typing import Any, Optional
 from unittest.mock import patch
 import dice
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.creature import Creature
 from pycs.constant import ActionCategory
@@ -39,8 +40,7 @@ class Fireball(AttackSpell):
                 "style": SpellType.SAVE_HALF,
                 "type": SpellType.RANGED,
                 "save_stat": Stat.DEX,
-                "dmg": ("8d6", 0),
-                "dmg_type": DamageType.FIRE,
+                "dmgroll": DamageRoll("8d6", 0, DamageType.FIRE),
             }
         )
         super().__init__(name, **kwargs)
@@ -53,7 +53,7 @@ class Fireball(AttackSpell):
         for per in self.owner.arena.pick_alive():
             if per.distance(self.owner.target) <= 20 / 5:
                 dmg = self.roll_dmg(victim=per)
-                per.hit(dmg, self.dmg_type, self.owner, False, self.name)
+                per.hit(dmg, self.owner, False, self.name)
         return True
 
     ##########################################################################

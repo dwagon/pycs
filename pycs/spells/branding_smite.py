@@ -7,6 +7,7 @@ from pycs.spell import SpellAction
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 
 
@@ -73,11 +74,9 @@ class BrandingSmiteEffect(Effect):
         super().__init__("Branding Smite", **kwargs)
 
     ########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """More damage"""
-        return "2d6", 0, DamageType.RADIANT
+        return DamageRoll("2d6", 0, DamageType.RADIANT)
 
 
 # EOF

@@ -8,6 +8,7 @@ from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.spells.spelltest import SpellTest
 
@@ -29,8 +30,7 @@ class PoisonSpray(AttackSpell):
             {
                 "reach": 10,
                 "level": 0,
-                "dmg": ("1d12", 0),
-                "dmg_type": DamageType.POISON,
+                "dmgroll": DamageRoll("1d12", 0, DamageType.POISON),
                 "style": SpellType.SAVE_NONE,
                 "type": SpellType.RANGED,
                 "save_stat": Stat.CON,

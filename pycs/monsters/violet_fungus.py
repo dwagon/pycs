@@ -3,6 +3,7 @@ from typing import Any
 import colors
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.constant import MonsterType
 from pycs.constant import Condition
 from pycs.monster import Monster
@@ -36,8 +37,7 @@ class VioletFungus(Monster):
                         "Rotting Touch",
                         attacks_per_action=("1d4", 0),
                         reach=10,
-                        dmg=("1d8", 0),
-                        dmg_type=DamageType.NECROTIC,
+                        dmgroll=DamageRoll("1d8", 0, DamageType.NECROTIC),
                         attack_modifier=2,
                         damage_modifier=0,
                     )

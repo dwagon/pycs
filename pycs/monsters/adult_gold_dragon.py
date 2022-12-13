@@ -11,6 +11,7 @@ from pycs.constant import Condition
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 from pycs.monster import Monster
 
@@ -185,12 +186,12 @@ class DragonFireBreath(Attack):
         target = self.pick_target()
         if target is None:
             return False
-        dmg = int(dice.roll("12d10"))
+        dmg = DamageRoll("12d10", 0, DamageType.FIRE).roll()
         svth = target.saving_throw(Stat.DEX, 21)
-        if not svth:
-            target.hit(dmg, DamageType.FIRE, self.owner, False, "Fire Breath")
-        else:
-            target.hit(dmg // 2, DamageType.FIRE, self.owner, False, "Fire Breath")
+        if svth:
+            dmg //= 2
+
+        target.hit(dmg, self.owner, False, "Fire Breath")
         self.owner.breath = False
         return True
 
@@ -217,15 +218,13 @@ class DragonMultiAttack(Action):
         bite = MeleeAttack(
             "Bite",
             reach=10,
-            dmg=("2d10", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d10", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         claw = MeleeAttack(
             "Claw",
             reach=10,
-            dmg=("2d6", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         fright = FrightfulPresenceAttack(owner=self.owner)

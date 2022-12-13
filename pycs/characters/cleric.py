@@ -8,6 +8,7 @@ from pycs.arena import Arena
 from pycs.character import Character
 from pycs.constant import ActionType, DamageType, MonsterType, SpellType, Stat
 from pycs.creature import Creature
+from pycs.damage import Damage
 from pycs.effect import Effect
 from pycs.monsters import Skeleton
 from pycs.spell import SpellAction
@@ -182,7 +183,7 @@ class TurnUndead(Action):
                         continue
                     if und.challenge <= self.owner.destroy_undead:
                         print(f"{und} has been destroyed by {self.owner}")
-                        und.hit(und.hp, DamageType.RADIANT, self.owner, False, "Turn Undead")
+                        und.hit(Damage(und.hp, DamageType.RADIANT), self.owner, False, "Turn Undead")
                     else:
                         print(f"{und} has been turned by {self.owner}")
                         und.add_effect(TurnedUndeadEffect(cause=self.owner))

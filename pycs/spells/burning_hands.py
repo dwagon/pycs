@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/spells/burning-hands"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import SpellType
@@ -29,8 +30,7 @@ class BurningHands(AttackSpell):
             {
                 "reach": 15,
                 "level": 1,
-                "dmg": ("3d6", 0),
-                "dmg_type": DamageType.FIRE,
+                "dmgroll": DamageRoll("3d6", 0, DamageType.FIRE),
                 "style": SpellType.SAVE_HALF,
                 "type": SpellType.RANGED,
                 "save_stat": Stat.DEX,

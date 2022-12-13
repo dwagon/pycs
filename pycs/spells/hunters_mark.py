@@ -4,12 +4,13 @@ from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.action import Action
-from pycs.constant import ActionCategory, DamageType
+from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.gear import Shortbow
 from pycs.spell import SpellAction
+from pycs.damageroll import DamageRoll
 from pycs.spells.spelltest import SpellTest
 
 
@@ -92,13 +93,11 @@ class HuntersMarkEffect(Effect):
         super().__init__("Hunters Mark", **kwargs)
 
     ##########################################################################
-    def hook_target_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """More damage"""
         if source == self.caster:
-            return ("1d6", 0, None)
-        return ("", 0, None)
+            return DamageRoll("1d6")
+        return DamageRoll()
 
 
 ##############################################################################

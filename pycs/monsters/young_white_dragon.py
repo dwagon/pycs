@@ -7,6 +7,7 @@ from pycs.action import Action
 from pycs.attack import Attack
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -113,12 +114,12 @@ class DragonBreath(Attack):
         target = self.pick_target()
         if target is None:
             return False
-        dmg = int(dice.roll("10d8"))
+        dmg = DamageRoll("10d8", 0, DamageType.COLD).roll()
         svth = target.saving_throw(Stat.CON, 15)
-        if not svth:
-            target.hit(dmg, DamageType.COLD, self.owner, False, "Cold Breath")
-        else:
-            target.hit(dmg // 2, DamageType.COLD, self.owner, False, "Cold Breath")
+        if svth:
+            dmg //= 2
+        target.hit(dmg, self.owner, False, "Cold Breath")
+
         self.owner.breath = False
         return True
 
@@ -145,15 +146,13 @@ class DragonMultiAttack(Action):
         bite = MeleeAttack(
             "Bite",
             reach=10,
-            dmg=("2d10", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d10", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         claw = MeleeAttack(
             "Claw",
             reach=10,
-            dmg=("2d6", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         bite.do_attack()

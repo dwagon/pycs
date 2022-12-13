@@ -9,6 +9,7 @@ from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -81,9 +82,9 @@ class BDMeleeAttack(MeleeAttack):
     ##########################################################################
     def perform_action(self) -> bool:
         """Do the attack"""
-        tail = MeleeAttack("Tail", dmg=("2d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner)
-        claw1 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner)
-        claw2 = MeleeAttack("Claw", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner)
+        tail = MeleeAttack("Tail", dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING), owner=self.owner)
+        claw1 = MeleeAttack("Claw", dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING), owner=self.owner)
+        claw2 = MeleeAttack("Claw", dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING), owner=self.owner)
         tail.do_attack()
         claw1.do_attack()
         claw2.do_attack()
@@ -123,10 +124,9 @@ class BDRangedAttack(RangedAttack):
         """Do the attack"""
         flame = RangedAttack(
             "Hurl Flame",
-            dmg=("3d6", 0),
+            dmgroll=DamageRoll("3d6", 0, DamageType.FIRE),
             s_range=150,
             l_range=150,
-            dmg_type=DamageType.FIRE,
             owner=self.owner,
         )
         flame.do_attack()

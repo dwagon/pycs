@@ -9,10 +9,10 @@ from typing import Optional, Any, TYPE_CHECKING
 
 import dice
 from pycs.action import Action
+from pycs.damage import Damage
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
-from pycs.constant import Damage
 from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
@@ -314,48 +314,48 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def hit(  # pylint: disable=too-many-arguments
-        self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool, atkname: str
+        self, dmg: Damage, source: Creature, critical: bool, atkname: str
     ) -> None:
         """We've been hit by source- take damage"""
-        dmg = self._react_predmg(dmg, dmg_type, source, critical)
-        if dmg_type in self.vulnerable:
-            print(f"{self} is vulnerable to {dmg_type.value}")
-            dmg *= 2
-        if dmg_type in self.immunity:
-            print(f"{self} is immune to {dmg_type.value}")
-            dmg = 0
-        if dmg_type in self.resistant:
-            print(f"{self} is resistant to {dmg_type.value}")
-            dmg //= 2
+        dmg = self._react_predmg(dmg, source, critical)
+        if dmg.type in self.vulnerable:
+            print(f"{self} is vulnerable to {dmg.type.value}")
+            dmg.hp *= 2
+        if dmg.type in self.immunity:
+            print(f"{self} is immune to {dmg.type.value}")
+            dmg.hp = 0
+        if dmg.type in self.resistant:
+            print(f"{self} is resistant to {dmg.type.value}")
+            dmg.hp //= 2
         for eff in self.effects.values():
-            dmg = eff.hook_being_hit(dmg, dmg_type)
-        dmg = int(dmg)
-        print(f"{self} has taken {dmg} damage ({dmg_type.value}) from {atkname}")
-        self.hp -= dmg
+            dmg = eff.hook_being_hit(dmg)
+        print(f"{self} has taken {dmg} from {atkname}")
+        self.hp -= dmg.hp
         print(f"{self} now has {self.hp} HP")
         if dmg and self.concentration:
-            svth = self.saving_throw(Stat.CON, max(10, int(dmg / 2)))
+            svth = self.saving_throw(Stat.CON, max(10, dmg.hp // 2))
             if not svth:
                 print(f"{self} failed concentration save on {self.concentration}")
                 self.remove_concentration()
 
-        source.statistics.append(Statistics(atkname, dmg, dmg_type, critical))
-        self.damage_this_turn.append(Damage(dmg, dmg_type))
+        source.statistics.append(Statistics(atkname, dmg, critical))
+        if dmg:
+            self.damage_this_turn.append(dmg)
 
         if self.hp <= 0:
-            self.fallen_unconscious(dmg, dmg_type, critical)
+            self.fallen_unconscious(dmg, critical)
         else:
             self._react_postdmg(source)
 
     ##########################################################################
-    def _react_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
+    def _react_predmg(self, dmg: Damage, source: Creature, critical: bool) -> Damage:
         """About to take damage - do we have a reaction that can alter the damage"""
         if ActionCategory.REACTION not in self.options_this_turn:
             return dmg
         react = self._pick_action(typ=ActionCategory.REACTION, target=source, need_hook="hook_predmg")
         if react is not None:
             print(f"{self} reacts against {source}")
-            dmg = react.hook_predmg(dmg=dmg, dmg_type=dmg_type, source=source, critical=critical)
+            dmg = react.hook_predmg(dmg=dmg, source=source, critical=critical)
             self.options_this_turn.remove(ActionCategory.REACTION)
         return dmg
 
@@ -427,11 +427,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return "?"
 
     ##########################################################################
-    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Creature has fallen unconscious"""
         keep_going = True
         for _, eff in self.effects.items():
-            if not eff.hook_fallen_unconscious(dmg, dmg_type, critical):
+            if not eff.hook_fallen_unconscious(dmg, critical):
                 keep_going = False
         if not keep_going:
             return
@@ -442,10 +442,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if comb == self:
                 continue
             comb.hook_see_someone_die(self)
-        self.creature_fallen_unconscious(dmg, dmg_type, critical)
+        self.creature_fallen_unconscious(dmg, critical)
 
     ##########################################################################
-    def creature_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def creature_fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """How you actually fall unconscious depends on what you are"""
         raise NotImplementedError(f"{self.__class__.__name__} needs a creature_fallen_unconscious()")
 
@@ -490,7 +490,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def dump_statistics(self) -> dict[str, dict[str, int]]:
         """Dump out the attack statistics - make prettier"""
         tmp = {}
-        for name, dmg, _, crit in self.statistics:
+        for name, dmg, crit in self.statistics:
             if name not in tmp:
                 tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
             if dmg == 0:
@@ -638,6 +638,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = 0
         if self.has_condition(Condition.GRAPPLED) and self.grappled_by is not None:
             self.grappled_by.ungrapple()
+        for eff in self.effects.copy():
+            self.remove_effect(eff)
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
         self.remove_condition(Condition.OK)

@@ -2,7 +2,7 @@
 from typing import Any
 import dice
 from pycs.creature import Creature
-from pycs.constant import DamageType
+from pycs.damage import Damage
 from pycs.util import check_args
 
 
@@ -28,7 +28,7 @@ class Monster(Creature):
         return super()._valid_args() | {"hitdice", "challenge"}
 
     ##########################################################################
-    def creature_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def creature_fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Monsters die rather than fall unconscious"""
         self.died()
 

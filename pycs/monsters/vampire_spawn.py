@@ -3,7 +3,6 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
-import dice
 from pycs.attack import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
@@ -11,6 +10,8 @@ from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.creature import Creature
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -125,8 +126,7 @@ class BiteAttack(MeleeAttack):
     def __init__(self, **kwargs: Any):
         super().__init__(
             "Bite",
-            dmg=("1d6", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING),
             side_effect=self.bite_side_effect,
             **kwargs,
         )
@@ -139,13 +139,15 @@ class BiteAttack(MeleeAttack):
         return 0
 
     ##########################################################################
-    def bite_side_effect(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
+    def bite_side_effect(
+        self, source: Creature, target: Creature, dmg: Damage  # pylint: disable=unused-argument
+    ) -> None:
         """Do the side_effect"""
-        necro_dmg = int(dice.roll("2d6"))
-        target.hit(necro_dmg, DamageType.NECROTIC, source, False, "Vampire Spawn Bite")
+        necro_dmg = DamageRoll("2d6", 0, DamageType.NECROTIC).roll()
+        target.hit(necro_dmg, source, False, "Vampire Spawn Bite")
         print(f"Inflicted {necro_dmg} from the bite")
-        source.heal("", necro_dmg)
-        target.max_hp -= necro_dmg
+        source.heal("", necro_dmg.hp)
+        target.max_hp -= necro_dmg.hp
         if target.max_hp <= 0:
             target.died()
 
@@ -161,7 +163,7 @@ class ClawAttack(MeleeAttack):
 
     ##########################################################################
     def __init__(self, **kwargs: Any):
-        super().__init__("Claws", dmg=("2d4", 0), dmg_type=DamageType.SLASHING, **kwargs)
+        super().__init__("Claws", dmgroll=DamageRoll("2d4", 0, DamageType.SLASHING), **kwargs)
 
     ##########################################################################
     def heuristic(self) -> int:

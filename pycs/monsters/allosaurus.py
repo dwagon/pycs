@@ -6,6 +6,7 @@ from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import MonsterType
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -28,8 +29,8 @@ class Allosaurus(Monster):
                 "wis": 12,
                 "cha": 5,
                 "actions": [
-                    MeleeAttack("Bite", reach=5, dmg=("2d10", 0), dmg_type=DamageType.PIERCING),
-                    MeleeAttack("Claw", reach=5, dmg=("1d8", 0), dmg_type=DamageType.SLASHING),
+                    MeleeAttack("Bite", reach=5, dmgroll=DamageRoll("2d10", 0, DamageType.PIERCING)),
+                    MeleeAttack("Claw", reach=5, dmgroll=DamageRoll("1d8", 0, DamageType.SLASHING)),
                 ],
             }
         )

@@ -13,6 +13,7 @@ from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
 from pycs.creature import DamageType
+from pycs.damage import Damage
 from pycs.effect import Effect
 from pycs.gear import Scimitar
 
@@ -202,13 +203,12 @@ class TestCreature(unittest.TestCase):
     def test_hit(self) -> None:
         """Test creature hurting"""
         self.creat.hp = 30
-        self.creat.hit(5, dmg_type=DamageType.ACID, source=Mock(), critical=False, atkname="attack")
+        self.creat.hit(Damage(5, DamageType.ACID), source=Mock(), critical=False, atkname="attack")
         self.assertEqual(self.creat.hp, 25)
         # Vulnerable = twice damaage
         self.creat.vulnerable.append(DamageType.PIERCING)
         self.creat.hit(
-            5,
-            dmg_type=DamageType.PIERCING,
+            Damage(5, DamageType.PIERCING),
             source=Mock(),
             critical=False,
             atkname="attack",
@@ -217,8 +217,7 @@ class TestCreature(unittest.TestCase):
         # Immunity = no damage
         self.creat.immunity.append(DamageType.FIRE)
         self.creat.hit(
-            5,
-            dmg_type=DamageType.FIRE,
+            Damage(5, DamageType.FIRE),
             source=Mock(),
             critical=False,
             atkname="attack",
@@ -227,8 +226,7 @@ class TestCreature(unittest.TestCase):
         # Resistant = half damage
         self.creat.resistant.append(DamageType.NECROTIC)
         self.creat.hit(
-            10,
-            dmg_type=DamageType.NECROTIC,
+            Damage(10, DamageType.NECROTIC),
             source=Mock(),
             critical=False,
             atkname="attack",

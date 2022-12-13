@@ -3,13 +3,14 @@ from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
-import dice
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.creature import Creature
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 from pycs.monster import Monster
 
@@ -36,8 +37,7 @@ class GiantFrog(Monster):
                     MeleeAttack(
                         "Bite",
                         reach=5,
-                        dmg=("1d6", 0),
-                        dmg_type=DamageType.PIERCING,
+                        dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING),
                         heuristic=self.frog_bite,
                         side_effect=self.bite_swallow,
                     )
@@ -48,7 +48,7 @@ class GiantFrog(Monster):
         self._swallowed: Optional[Creature] = None
 
     ##########################################################################
-    def bite_swallow(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
+    def bite_swallow(self, source: Creature, target: Creature, dmg: Damage) -> None:  # pylint: disable=unused-argument
         """Swallow. The frog makes one bite attack against a Small or smaller target
         it is grappling. If the attack hits, the target is swallowed, and the grapple
         ends. The swallowed target is blinded and restrained, it has total cover
@@ -79,7 +79,7 @@ class GiantFrog(Monster):
         return 1
 
     ##########################################################################
-    def fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> None:
+    def fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Frog has died"""
         if self._swallowed:
             self._swallowed.remove_condition(Condition.RESTRAINED)
@@ -87,7 +87,7 @@ class GiantFrog(Monster):
             self._swallowed.remove_effect("Giant Frog Swallow")
             print(f"{self._swallowed} escapes from being swallowed by {self.name}")
             self._swallowed = None
-        super().fallen_unconscious(dmg, dmg_type, critical)
+        super().fallen_unconscious(dmg, critical)
 
     ##########################################################################
     def shortrepr(self) -> str:
@@ -124,11 +124,10 @@ class GiantFrogSwallowEffect(Effect):
 
     ##########################################################################
     def hook_start_turn(self) -> None:
-        dmg = int(dice.roll("2d4"))
+        dmg = DamageRoll("2d4", 0, DamageType.ACID).roll()
         assert self.target is not None
         self.target.hit(
             dmg=dmg,
-            dmg_type=DamageType.ACID,
             source=self.owner,
             critical=False,
             atkname="Frog Acid",

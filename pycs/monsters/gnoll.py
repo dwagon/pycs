@@ -6,6 +6,7 @@ from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
+from pycs.damageroll import DamageRoll
 from pycs.gear import Hide
 from pycs.gear import Longbow
 from pycs.gear import Shield
@@ -33,7 +34,7 @@ class Gnoll(Monster):
                 "wis": 10,
                 "cha": 7,
                 "gear": [Spear(), Longbow(), Hide(), Shield()],
-                "actions": [MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)],
+                "actions": [MeleeAttack("Bite", reach=5, dmgroll=DamageRoll("1d4", 0, DamageType.PIERCING))],
             }
         )
         super().__init__(**kwargs)

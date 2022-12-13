@@ -2,7 +2,6 @@
 from typing import Any
 import unittest
 import colors
-import dice
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
@@ -10,6 +9,8 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.gear import Hide
 from pycs.monster import Monster
 
@@ -63,16 +64,14 @@ class FangMultiAttack(Action):
         bite = MeleeAttack(
             "Bite",
             reach=5,
-            dmg=("1d6", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING),
             side_effect=self.gnoll_bite,
             owner=self.owner,
         )
         claw = MeleeAttack(
             "Claw",
             reach=5,
-            dmg=("1d8", 0),
-            dmg_type=DamageType.SLASHING,
+            dmgroll=DamageRoll("1d8", 0, DamageType.SLASHING),
             owner=self.owner,
         )
         bite.do_attack()
@@ -89,12 +88,12 @@ class FangMultiAttack(Action):
         return 0
 
     ##########################################################################
-    def gnoll_bite(self, source: Creature, target: Creature, dmg: int) -> None:
+    def gnoll_bite(self, source: Creature, target: Creature, dmg: Damage) -> None:
         """Gnoll bites can be pretty nasty"""
         svth = target.saving_throw(Stat.CON, 12)
         if not svth:
-            dmg = int(dice.roll("2d6"))
-            target.hit(dmg, DamageType.POISON, source, False, "Gnoll Fang Bite Poison")
+            dmg = DamageRoll("2d6", 0, DamageType.POISON).roll()
+            target.hit(dmg, source, False, "Gnoll Fang Bite Poison")
 
 
 ##############################################################################

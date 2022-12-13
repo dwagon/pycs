@@ -7,6 +7,7 @@ from pycs.arena import Arena
 from pycs.constant import DamageType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damage import Damage
 from pycs.effect import Effect
 from pycs.race import Race
 
@@ -38,7 +39,7 @@ class RelentlessEndurance(Effect):
         self._relentless_used = False
 
     ########################################################################
-    def hook_fallen_unconscious(self, dmg: int, dmg_type: DamageType, critical: bool) -> bool:
+    def hook_fallen_unconscious(self, dmg: Damage, critical: bool) -> bool:
         """Engage Relentless Attack"""
         if self._relentless_used:
             return True
@@ -79,9 +80,9 @@ class TestRelentlessEndurance(unittest.TestCase):
     def test_go_uncon(self) -> None:
         """Test what happens when we go uncon"""
         self.assertTrue(self.orc.has_effect("Relentless Endurance"))
-        self.orc.hit(40, DamageType.FIRE, self.orc, False, "test")
+        self.orc.hit(Damage(40, DamageType.FIRE), self.orc, False, "test")
         self.assertEqual(self.orc.hp, 1)
-        self.orc.hit(40, DamageType.FIRE, self.orc, False, "test")
+        self.orc.hit(Damage(40, DamageType.FIRE), self.orc, False, "test")
         self.assertEqual(self.orc.hp, 0)
 
 

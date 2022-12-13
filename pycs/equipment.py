@@ -7,6 +7,7 @@ from pycs.attack import RangedAttack
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Stat
+from pycs.damageroll import DamageRoll
 from pycs.util import check_args
 
 if TYPE_CHECKING:
@@ -63,9 +64,9 @@ class Weapon(Equipment):
         return self.magic_bonus
 
     ##########################################################################
-    def hook_source_additional_damage(self) -> int:
+    def hook_source_additional_damage(self) -> DamageRoll:
         """Additional damage"""
-        return self.magic_bonus
+        return DamageRoll("", self.magic_bonus)
 
 
 ##############################################################################
@@ -84,8 +85,7 @@ class MeleeWeapon(Weapon):
         self.actions.append(
             MeleeAttack(
                 name,
-                dmg=kwargs.get("dmg"),
-                dmg_type=kwargs.get("dmg_type"),
+                dmgroll=kwargs.get("dmgroll"),
                 reach=kwargs.get("reach"),
                 side_effect=kwargs.get("side_effect"),
             )
@@ -109,8 +109,7 @@ class MeleeWeapon(Weapon):
     def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return super()._valid_args() | {
-            "dmg",
-            "dmg_type",
+            "dmgroll",
             "finesse",
             "magic_bonus",
             "reach",
@@ -133,8 +132,7 @@ class RangedWeapon(Weapon):
             RangedAttack(
                 name,
                 ammo=kwargs.get("ammo"),
-                dmg=kwargs.get("dmg"),
-                dmg_type=kwargs.get("dmg_type"),
+                dmgroll=kwargs.get("dmgroll"),
                 l_range=kwargs.get("l_range"),
                 side_effect=kwargs.get("side_effect"),
                 s_range=kwargs.get("s_range"),
@@ -149,8 +147,7 @@ class RangedWeapon(Weapon):
         return super()._valid_args() | {
             "ammo",
             "magic_bonus",
-            "dmg",
-            "dmg_type",
+            "dmgroll",
             "l_range",
             "s_range",
             "side_effect",

@@ -5,6 +5,7 @@ import colors
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import MonsterType, DamageType
+from pycs.damageroll import DamageRoll
 from pycs.gear import Leather, Spear, Longbow
 from pycs.monster import Monster
 
@@ -28,7 +29,7 @@ class GnollHunter(Monster):
                 "int": 8,
                 "wis": 12,
                 "cha": 8,
-                "actions": [MeleeAttack("Bite", reach=5, dmg=("1d4", 0), dmg_type=DamageType.PIERCING)],
+                "actions": [MeleeAttack("Bite", reach=5, dmgroll=DamageRoll("1d4", 0, DamageType.PIERCING))],
                 "gear": [Leather(), Spear(), Longbow()],
                 "challenge": 0.5,
                 "attacks_per_action": 2,

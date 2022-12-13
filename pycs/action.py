@@ -1,13 +1,13 @@
 """ Handle non-attack Actions """
-from typing import Any, Optional, TYPE_CHECKING
-import dice
+from typing import Any, Optional, TYPE_CHECKING, cast
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
-from pycs.constant import DamageType
+from pycs.damage import Damage
 from pycs.constant import Stat
 from pycs.constant import Statistics
 from pycs.util import check_args
+from pycs.damageroll import DamageRoll
 
 if TYPE_CHECKING:
     from pycs.creature import Creature
@@ -31,8 +31,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         self.attacks_per_action = kwargs.get("attacks_per_action", 1)
         self.action_cost = kwargs.get("action_cost", 1)
         self.finesse = kwargs.get("finesse", False)
-        self.dmg = kwargs.get("dmg", "")
-        self.dmg_type = kwargs.get("dmg_type", DamageType.PIERCING)
+        self.dmgroll: DamageRoll = cast(DamageRoll, kwargs.get("dmgroll"))
         self.attack_modifier = kwargs.get("attack_modifier", None)
         self.damage_modifier = kwargs.get("damage_modifier", None)
         self.heuristic = kwargs.get("heuristic", self.heuristic)  # type: ignore
@@ -52,8 +51,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             "attacks_per_action",
             "category",
             "damage_modifier",
-            "dmg",
-            "dmg_type",
+            "dmgroll",
             "heuristic",
             "owner",
             "side_effect",
@@ -101,11 +99,9 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         """Should be overwritten"""
 
     ########################################################################
-    def hook_predmg(
-        self, dmg: int, dmg_type: DamageType, source: "Creature", critical: bool  # pylint: disable=unused-argument
-    ) -> int:
+    def hook_predmg(self, dmg: Damage, source: "Creature", critical: bool) -> Damage:  # pylint: disable=unused-argument
         """Should be overwritten"""
-        return 0
+        return Damage()
 
     ########################################################################
     def get_heuristic(self) -> int:
@@ -223,23 +219,17 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     def buff_attack_damage(self, target: "Creature") -> None:
         """Calculate the attack damage from buffs"""
         for atkname, eff in self.owner.effects.copy().items():
-            dice_dmg, dmg, dmg_type = eff.hook_source_additional_damage(self, self.owner, target)
-            if dmg_type is None:
-                dmg_type = self.dmg_type
-            if dice_dmg:
-                dmg += int(dice.roll(dice_dmg))
+            o_dmgroll: DamageRoll = eff.hook_source_additional_damage(self, self.owner, target)
+            dmg = o_dmgroll.roll()
             if dmg:
-                target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
+                target.hit(dmg, self.owner, critical=False, atkname=atkname)
 
         # If the target of the damage has a buff
         for atkname, eff in target.effects.copy().items():
-            dice_dmg, dmg, dmg_type = eff.hook_target_additional_damage(self, self.owner, target)
-            if dmg_type is None:
-                dmg_type = self.dmg_type
-            if dice_dmg:
-                dmg += int(dice.roll(dice_dmg))
+            t_dmgroll: DamageRoll = eff.hook_target_additional_damage(self, self.owner, target)
+            dmg = t_dmgroll.roll()
             if dmg:
-                target.hit(dmg, dmg_type, self.owner, critical=False, atkname=atkname)
+                target.hit(dmg, self.owner, critical=False, atkname=atkname)
 
     ########################################################################
     def did_we_hit(self, target: "Creature") -> tuple[bool, bool]:
@@ -263,20 +253,17 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         did_hit, crit_hit = self.did_we_hit(target)
         if did_hit:
             dmg = self.roll_dmg(target, crit_hit)
-            if dmg == 0:
+            if not dmg:
                 return True
-            target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
+            target.hit(dmg, self.owner, crit_hit, self.name)
             if self.side_effect:
                 self.side_effect(source=self.owner, target=target, dmg=dmg)
 
             # If the target or source of the damage has a buff
             self.buff_attack_damage(target)
-
-            print(
-                f"{self.owner} hit {target} (AC: {target.ac})" f" with {self} for {dmg} hp {self.dmg_type.value} damage"
-            )
+            print(f"{self.owner} hit {target} (AC: {target.ac})" f" with {self} for {dmg} damage")
         else:
-            self.owner.statistics.append(Statistics(self.name, 0, None, False))
+            self.owner.statistics.append(Statistics(self.name, 0, False))
             print(f"{self.owner} missed {target} (AC: {target.ac}) with {self}")
         for name, eff in target.effects.copy().items():
             if eff.removal_after_being_attacked():
@@ -285,15 +272,11 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return True
 
     ########################################################################
-    def max_dmg(self) -> int:
+    def max_dmg(self) -> Damage:
         """Return the max possible damage of the attack - used to calculate desirable action"""
-        dmg = int(dice.roll_max(self.dmg[0]))
-        if self.dmg[1]:
-            dmg += self.dmg[1]
-        dmg_bon = self.dmg_modifier(self.owner)
-        if dmg_bon:
-            dmg += dmg_bon
-        return max(dmg, 0)
+        dmg = self.dmgroll.roll_max()
+        dmg += self.dmg_modifier(self.owner)
+        return dmg
 
     ########################################################################
     def dmg_bonus(self) -> list:
@@ -313,23 +296,18 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return bonus
 
     ########################################################################
-    def roll_dmg(self, _: Any, critical: bool = False) -> int:
+    def roll_dmg(self, _: Any, critical: bool = False) -> Damage:
         """Roll the damage of the attack"""
         msg = ""
         if critical:
-            dmg = int(dice.roll_max(self.dmg[0])) + int(dice.roll(self.dmg[0]))
+            dmg = self.dmgroll.roll_max() + self.dmgroll.roll()
         else:
-            dmg = int(dice.roll(self.dmg[0]))
-        rolled = dmg
-        if self.dmg[1]:
-            dmg += self.dmg[1]
-            msg += f"{self.dmg[1]} "
+            dmg = self.dmgroll.roll()
         dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
             dmg += bonus
             msg += f"+{bonus} ({cause}) "
-        dmg = max(dmg, 0)
-        print(f"{self.owner} got {dmg} damage (Rolled {rolled} on {self.dmg[0]}; {msg.strip()})")
+        print(f"{self.owner} got {dmg} damage (Rolled {dmg} on {self.dmgroll}; {msg.strip()})")
         return dmg
 
     ########################################################################
