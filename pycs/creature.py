@@ -497,7 +497,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 tmp[name]["misses"] += 1
             else:
                 tmp[name]["hits"] += 1
-                tmp[name]["dmg"] += dmg
+                tmp[name]["dmg"] += dmg.hp
                 if crit:
                     tmp[name]["crits"] += 1
         return tmp

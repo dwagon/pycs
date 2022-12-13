@@ -6,6 +6,7 @@ from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
+from pycs.damageroll import DamageRoll
 from pycs.gear import ChainShirt
 from pycs.gear import Longbow
 from pycs.gear import Glaive
@@ -32,7 +33,7 @@ class GnollPackLord(Monster):
                 "wis": 11,
                 "cha": 9,
                 "gear": [ChainShirt(), Glaive(), Longbow()],
-                "actions": [MeleeAttack("Bite", reach=5, dmgroll=("1d4", 0, DamageType.PIERCING))],
+                "actions": [MeleeAttack("Bite", reach=5, dmgroll=DamageRoll("1d4", 0, DamageType.PIERCING))],
             }
         )
         super().__init__(**kwargs)
