@@ -8,6 +8,8 @@ import unittest
 from unittest.mock import patch, call
 from pycs.action import Action
 from pycs.arena import Arena
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
@@ -105,8 +107,7 @@ class TestAction(unittest.TestCase):
             self.assertEqual(
                 mock.call_args_list[0],
                 call(
-                    2,
-                    DamageType.FIRE,
+                    Damage(2, DamageType.FIRE),
                     self.beta,
                     critical=False,
                     atkname="Dummy Effect",
@@ -115,8 +116,7 @@ class TestAction(unittest.TestCase):
             self.assertEqual(
                 mock.call_args_list[1],
                 call(
-                    4,
-                    DamageType.ACID,
+                    Damage(4, DamageType.ACID),
                     self.beta,
                     critical=False,
                     atkname="Dummy Effect",
@@ -131,15 +131,11 @@ class DummyEffect(Effect):
     def __init__(self, **kwargs: Any):
         super().__init__("Dummy Effect", **kwargs)
 
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
-        return ("", 2, DamageType.FIRE)
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
+        return DamageRoll("", 2, DamageType.FIRE)
 
-    def hook_target_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
-        return ("", 4, DamageType.ACID)
+    def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
+        return DamageRoll("", 4, DamageType.ACID)
 
     def hook_attack_to_hit(self, **kwargs: Any) -> int:
         return 3

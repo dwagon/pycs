@@ -7,7 +7,9 @@ import dice
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.character import Character
-from pycs.constant import ActionCategory, DamageType
+from pycs.constant import ActionCategory
+from pycs.damageroll import DamageRoll
+from pycs.damage import Damage
 from pycs.constant import Condition
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -88,10 +90,11 @@ class UncannyDodge(Action):
         return 1
 
     ##########################################################################
-    def hook_predmg(self, dmg: int, dmg_type: DamageType, source: Creature, critical: bool) -> int:
+    def hook_predmg(self, dmg: Damage, source: Creature, critical: bool) -> Damage:
         """Half damage"""
         print("Using uncanny dodge to reduce damage")
-        return dmg // 2
+        dmg //= 2
+        return dmg
 
     ##########################################################################
     def perform_action(self) -> bool:
@@ -152,15 +155,13 @@ class SneakAttack(Effect):
         self._used_this_turn = False
 
     ########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """Do the sneak attack"""
         if self._used_this_turn:
-            return ("", 0, None)
+            return DamageRoll()
 
         if not target.has_condition(Condition.OK):
-            return ("", 0, None)
+            return DamageRoll()
 
         allies_adjacent = False
         allies = [_ for _ in target.pick_closest_enemy() if _ != source]
@@ -176,10 +177,10 @@ class SneakAttack(Effect):
 
         if not allies_adjacent:
             if not attack.has_advantage(target, rnge):
-                return ("", 0, None)
+                return DamageRoll()
             print("We have advantage on attack")
         self._used_this_turn = True
-        return self.owner.sneak_attack_dmg, 0, None  # type: ignore
+        return DamageRoll(self.owner.sneak_attack_dmg, 0)  # type: ignore
 
 
 ##############################################################################

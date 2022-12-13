@@ -1,6 +1,7 @@
 """ https://www.dndbeyond.com/spells/sacred-flame"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import Stat
@@ -26,8 +27,7 @@ class SacredFlame(AttackSpell):
                 "reach": 60,
                 "style": SpellType.SAVE_NONE,
                 "save_stat": Stat.DEX,
-                "dmg": ("1d8", 0),
-                "dmg_type": DamageType.RADIANT,
+                "dmgroll": DamageRoll("1d8", 0, DamageType.RADIANT),
                 "level": 0,
             }
         )

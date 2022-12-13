@@ -6,6 +6,8 @@ import colors
 import dice
 from pycs.action import Action
 from pycs.arena import Arena
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
 from pycs.constant import DamageType
@@ -73,8 +75,7 @@ class YetiMultiAttack(Action):
         claw = MeleeAttack(
             "Claw",
             reach=5,
-            dmg=("1d6", 0),
-            dmg_type=DamageType.SLASHING,
+            dmgroll=DamageRoll("1d6", 0, DamageType.SLASHING),
             side_effect=self.cold_claw,
             owner=self.owner,
         )
@@ -84,10 +85,10 @@ class YetiMultiAttack(Action):
         return True
 
     ##########################################################################
-    def cold_claw(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
+    def cold_claw(self, source: Creature, target: Creature) -> None:  # pylint: disable=unused-argument
         """Additional 1d6 Cold damage to claw"""
-        cold_dmg = int(dice.roll("1d6"))
-        target.hit(cold_dmg, DamageType.COLD, source, False, "Yeti Cold Claws")
+        dmg = DamageRoll("1d6", 0, DamageType.COLD).roll()
+        target.hit(dmg, source, False, "Yeti Cold Claws")
 
     ##########################################################################
     def chill_glaze(self) -> None:
@@ -104,12 +105,12 @@ class YetiMultiAttack(Action):
         target = self.pick_chill_target()
         if not target:
             return
-        dmg = int(dice.roll("3d6"))
+        dmg = DamageRoll("3d6", 0, DamageType.COLD).roll()
         svth = target.saving_throw(Stat.CON, 13)
         if not svth:
             print(f"{self.owner} doing Chilling Glaze at {target}")
             target.add_effect(ChillGlazeEffect(cause=self))
-            target.hit(dmg, DamageType.COLD, self.owner, False, "Chilling Glaze")
+            target.hit(dmg, self.owner, False, "Chilling Glaze")
         else:
             print(f"{target} saved against Chilling Glaze - no effect")
 

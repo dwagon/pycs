@@ -5,10 +5,10 @@ import colors
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
-from pycs.constant import Damage
 from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
+from pycs.damage import Damage
 from pycs.monster import Monster
 
 

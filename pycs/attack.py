@@ -98,7 +98,7 @@ class MeleeAttack(Attack):
         if not enemy:
             return 0
         if self.owner.distance(enemy[0]) <= 1:
-            return self.max_dmg()
+            return int(self.max_dmg())
         return 0
 
 
@@ -134,7 +134,7 @@ class RangedAttack(Attack):
         dist = self.owner.distance(enemy[0])
         if dist <= 1:
             return 0
-        return self.max_dmg()
+        return int(self.max_dmg())
 
     ########################################################################
     def range(self) -> tuple[int, int]:

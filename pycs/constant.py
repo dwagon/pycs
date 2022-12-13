@@ -22,6 +22,7 @@ class DamageType(Enum):
     RADIANT = "radiant"
     SLASHING = "slashing"
     THUNDER = "thunder"
+    NONE = "none"
 
 
 ##############################################################################
@@ -143,7 +144,6 @@ class MonsterSize(Enum):
 ##############################################################################
 ##############################################################################
 ##############################################################################
-Damage = namedtuple("Damage", "hp type")
-Statistics = namedtuple("Statistics", "name damage damagetype critical")
+Statistics = namedtuple("Statistics", "name damage critical")
 
 # EOF

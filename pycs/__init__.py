@@ -6,9 +6,9 @@ __email__ = "dougal.scott@gmail.com"
 from collections import defaultdict
 from prettytable import PrettyTable
 import colors
-import dice
 
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.monsters import AdultGoldDragon, YoungWhiteDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
 from pycs.monsters import BarbedDevil
@@ -128,10 +128,10 @@ def win_report(stats: dict[str, int], rounds: int) -> None:
 
 
 ##############################################################################
-def flaming_weapon(source: Creature, target: Creature, dmg: int) -> None:
+def flaming_weapon(source: Creature, target: Creature) -> None:
     """Add some extra spice"""
-    dmg = int(dice.roll("1d6"))
-    target.hit(dmg, DamageType.FIRE, source, False, "Flaming Weapon")
+    dmg = DamageRoll("1d6", 0, DamageType.FIRE).roll()
+    target.hit(dmg, source, False, "Flaming Weapon")
 
 
 ##############################################################################

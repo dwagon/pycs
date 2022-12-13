@@ -2,7 +2,9 @@
 from typing import Any, Optional
 from pycs.action import Action
 from pycs.creature import Creature
+from pycs.damage import Damage
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.constant import Stat
 
 
@@ -30,7 +32,7 @@ class Effect:
         return 0
 
     ##########################################################################
-    def hook_being_hit(self, dmg: int, dmgtype: DamageType) -> int:  # pylint: disable=unused-argument
+    def hook_being_hit(self, dmg: Damage) -> Damage:  # pylint: disable=unused-argument
         """We've been hit by an attack; return the new dmg"""
         return dmg
 
@@ -94,14 +96,14 @@ class Effect:
     ##########################################################################
     def hook_source_additional_damage(
         self, attack: Action, source: Creature, target: Creature  # pylint: disable=unused-argument
-    ) -> tuple[str, int, Optional[DamageType]]:
+    ) -> DamageRoll:
         """Addition damage from melee weapons based on the owner of the effect
         Return:
         * Dice Damage
         * Damage Bonus
         * Damage Type. If DamageType is None, use the existing damage type of the attack
         """
-        return ("", 0, None)
+        return DamageRoll("", 0, DamageType.NONE)
 
     ##########################################################################
     def hook_start_in_range(self, creat: Creature) -> None:  # pylint: disable=unused-argument
@@ -111,19 +113,17 @@ class Effect:
     ##########################################################################
     def hook_target_additional_damage(
         self, attack: Action, source: Creature, target: Creature  # pylint: disable=unused-argument
-    ) -> tuple[str, int, Optional[DamageType]]:
+    ) -> DamageRoll:
         """Addition damage from melee weapons based on the target of the effect
         Return:
         * Dice Damage
         * Damage Bonus
         * Damage Type. If DamageType is None, use the existing damage type of the attack
         """
-        return ("", 0, None)
+        return DamageRoll("", 0, DamageType.NONE)
 
     ##########################################################################
-    def hook_fallen_unconscious(
-        self, dmg: int, dmg_type: DamageType, critical: bool  # pylint: disable=unused-argument
-    ) -> bool:
+    def hook_fallen_unconscious(self, dmg: Damage, critical: bool) -> bool:  # pylint: disable=unused-argument
         """The owner of the effect has fallen unconscious
         Return True is creature still falls unconscious after hook
         """

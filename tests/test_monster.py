@@ -7,6 +7,7 @@ import unittest
 from unittest.mock import Mock
 from pycs.arena import Arena
 from pycs.constant import Condition, Stat
+from pycs.damage import Damage
 from pycs.monster import Monster
 from pycs.creature import DamageType
 
@@ -47,8 +48,7 @@ class TestMonster(unittest.TestCase):
         self.creat.hp = 10
         self.assertTrue(self.creat.is_alive())
         self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
+            Damage(15, DamageType.ACID),
             source=Mock(),
             critical=False,
             atkname="attack",
@@ -60,8 +60,7 @@ class TestMonster(unittest.TestCase):
         """Test death"""
         self.creat.hp = 10
         self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
+            Damage(15, DamageType.ACID),
             source=Mock(),
             critical=False,
             atkname="attack",

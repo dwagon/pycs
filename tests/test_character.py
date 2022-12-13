@@ -12,6 +12,7 @@ from pycs.constant import Stat
 from pycs.character import Character
 from pycs.creature import Creature
 from pycs.creature import DamageType
+from pycs.damage import Damage
 
 
 ##############################################################################
@@ -76,8 +77,7 @@ class TestCharacter(unittest.TestCase):
         """Test death saving throws"""
         self.creat.hp = 10
         self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
+            Damage(15, DamageType.ACID),
             source=Mock(),
             critical=False,
             atkname="attack",
@@ -94,8 +94,7 @@ class TestCharacter(unittest.TestCase):
         self.assertTrue(self.creat.has_condition(Condition.OK))
 
         self.creat.hit(
-            15,
-            dmg_type=DamageType.ACID,
+            Damage(15, DamageType.ACID),
             source=Mock(),
             critical=False,
             atkname="attack",

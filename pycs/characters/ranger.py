@@ -10,6 +10,7 @@ from pycs.arena import Arena
 from pycs.attack import RangedAttack
 from pycs.character import Character
 from pycs.constant import ActionType, DamageType
+from pycs.damageroll import DamageRoll
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.creature import Creature
@@ -147,7 +148,7 @@ class RangersRangedAttack(RangedAttack):
         dist = self.owner.distance(enemies[0])
         if dist <= 1:
             return 0
-        return self.max_dmg() + len(hmark)
+        return int(self.max_dmg()) + len(hmark)
 
     ########################################################################
     def pick_target(self) -> Optional[Creature]:
@@ -185,14 +186,12 @@ class ColossusSlayer(Effect):
         self.used = False
 
     ########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """+1d8 damage"""
         if not self.used:
             self.used = True
-            return ("1d8", 0, None)
-        return ("", 0, None)
+            return DamageRoll("1d8", 0)
+        return DamageRoll("", 0)
 
 
 ##############################################################################

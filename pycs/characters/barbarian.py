@@ -6,6 +6,8 @@ import colors
 import dice
 from pycs.action import Action
 from pycs.arena import Arena
+from pycs.damageroll import DamageRoll
+from pycs.damage import Damage
 from pycs.attack import MeleeAttack
 from pycs.character import Character
 from pycs.constant import ActionCategory
@@ -138,24 +140,22 @@ class BarbarianRageEffect(Effect):
         super().__init__("Rage", **kwargs)
 
     ########################################################################
-    def hook_being_hit(self, dmg: int, dmgtype: DamageType) -> int:
+    def hook_being_hit(self, dmg: Damage) -> Damage:
         """Mod damage"""
-        if dmgtype in (
+        if dmg.type in (
             DamageType.BLUDGEONING,
             DamageType.PIERCING,
             DamageType.SLASHING,
         ):
-            return int(dmg / 2)
+            dmg //= 2
         return dmg
 
     ########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """Rage causes dangerous things"""
         if issubclass(attack.__class__, MeleeAttack):
-            return ("", 2, None)
-        return ("", 0, None)
+            return DamageRoll("", 2)
+        return DamageRoll("", 0)
 
     ########################################################################
     def hook_saving_throw(self, stat: Stat, **kwargs: Any) -> dict:
@@ -216,11 +216,11 @@ class TestBarbarianRage(unittest.TestCase):
         assert rage is not None
         rage.perform_action()
         self.assertTrue(self.barb.has_effect("Rage"))
-        self.barb.hit(10, DamageType.PIERCING, self.orc, False, "Test")
+        self.barb.hit(Damage(10, DamageType.PIERCING), self.orc, False, "Test")
         # Take half damage from piercing etc.
         self.assertEqual(self.barb.hp, self.barb.max_hp - 5)
 
-        self.barb.hit(10, DamageType.NECROTIC, self.orc, False, "Test")
+        self.barb.hit(Damage(10, DamageType.NECROTIC), self.orc, False, "Test")
         # Take full damage from non-piercing etc.
         self.assertEqual(self.barb.hp, self.barb.max_hp - 5 - 10)
 

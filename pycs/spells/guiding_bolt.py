@@ -1,6 +1,7 @@
 """ https://www.dndbeyond.com/spells/guiding-bolt"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.constant import DamageType
 from pycs.constant import SpellType
@@ -25,8 +26,7 @@ class GuidingBolt(AttackSpell):
             {
                 "type": SpellType.RANGED,
                 "reach": 120,
-                "dmg": ("4d6", 0),
-                "dmg_type": DamageType.RADIANT,
+                "dmgroll": DamageRoll("4d6", 0, DamageType.RADIANT),
                 "style": SpellType.TOHIT,
                 "level": 1,
             }

@@ -6,6 +6,7 @@ from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import MonsterType, DamageType, Condition, Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -31,8 +32,7 @@ class Ankylosaurus(Monster):
                     MeleeAttack(
                         "Tail",
                         reach=10,
-                        dmg=("4d6", 0),
-                        dmg_type=DamageType.BLUDGEONING,
+                        dmgroll=DamageRoll("4d6", 0, DamageType.BLUDGEONING),
                         side_effect=self.anktail,
                     ),
                 ],

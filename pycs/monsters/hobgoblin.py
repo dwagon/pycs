@@ -8,6 +8,7 @@ from pycs.action import Action
 from pycs.arena import Arena
 from pycs.effect import Effect
 from pycs.gear import Longbow
+from pycs.damageroll import DamageRoll
 from pycs.gear import Longsword
 from pycs.gear import Chainmail
 from pycs.gear import Shield
@@ -69,17 +70,15 @@ class MartialAdvantage(Effect):
         self.used_this_turn = False
 
     ##########################################################################
-    def hook_source_additional_damage(
-        self, attack: Action, source: Creature, target: Creature
-    ) -> tuple[str, int, Optional[DamageType]]:
+    def hook_source_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """Additional damage?"""
         if self.used_this_turn:
-            return ("", 0, None)
+            return DamageRoll()
         allies = [_ for _ in source.pick_closest_friends() if _ != source and _.distance(target) <= 1]
         if allies:
             self.used_this_turn = True
-            return ("2d6", 0, None)
-        return ("", 0, None)
+            return DamageRoll("2d6")
+        return DamageRoll()
 
 
 ##############################################################################

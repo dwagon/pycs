@@ -3,6 +3,7 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
+from pycs.damage import Damage
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
@@ -10,6 +11,7 @@ from pycs.constant import MonsterType
 from pycs.constant import Condition
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -59,8 +61,7 @@ class Wraith(Monster):
                         "Life Drain",
                         finesse=True,
                         reach=5,
-                        dmg=("4d8", 0),
-                        dmg_type=DamageType.NECROTIC,
+                        dmgroll=DamageRoll("4d8", 0, DamageType.NECROTIC),
                         side_effect=self.life_drain,
                     )
                 ],
@@ -69,7 +70,7 @@ class Wraith(Monster):
         super().__init__(**kwargs)
 
     ##########################################################################
-    def life_drain(self, source: Creature, target: Creature, dmg: int) -> None:  # pylint: disable=unused-argument
+    def life_drain(self, source: Creature, target: Creature, dmg: Damage) -> None:  # pylint: disable=unused-argument
         """The target must succeed on a DC 14 Constitution saving throw
         or its hit point maximum is reduced by an amount equal to the damage
         taken. This reduction lasts until the target finishes a long rest.
@@ -79,7 +80,7 @@ class Wraith(Monster):
             print(f"{target} resisted Wraith life drain")
         else:
             print(f"Wraith life drain's {target} of {dmg} hit points")
-            target.max_hp = max(target.max_hp - dmg, 0)
+            target.max_hp = max(target.max_hp - dmg.hp, 0)
 
     ##########################################################################
     def shortrepr(self) -> str:  # pragma: no cover

@@ -7,6 +7,8 @@ from pycs.constant import DamageType
 from pycs.constant import SpellType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 from pycs.spell import AttackSpell
 from .spelltest import SpellTest
@@ -35,8 +37,7 @@ class Frostbite(AttackSpell):
                 "style": SpellType.SAVE_NONE,
                 "type": SpellType.RANGED,
                 "save_stat": Stat.CON,
-                "dmg": ("1d6", 0),
-                "dmg_type": DamageType.COLD,
+                "dmgroll": DamageRoll("1d6", 0, DamageType.COLD),
             }
         )
         super().__init__(name, **kwargs)
@@ -47,7 +48,7 @@ class Frostbite(AttackSpell):
         return super().heuristic() + 2
 
     ##########################################################################
-    def failed_save(self, source: Creature, target: Creature, dmg: int) -> None:
+    def failed_save(self, source: Creature, target: Creature, dmg: Damage) -> None:
         """What to when we target fails save"""
         self.owner.target.add_effect(FrostbiteEffect(cause=source))
 

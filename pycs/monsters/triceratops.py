@@ -6,6 +6,7 @@ from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import MonsterType
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -28,12 +29,11 @@ class Triceratops(Monster):
                 "wis": 11,
                 "cha": 5,
                 "actions": [
-                    MeleeAttack("Gore", reach=5, dmg=("4d8", 0), dmg_type=DamageType.PIERCING),
+                    MeleeAttack("Gore", reach=5, dmgroll=DamageRoll("4d8", 0, DamageType.PIERCING)),
                     MeleeAttack(
                         "Stomp",
                         reach=5,
-                        dmg=("3d10", 0),
-                        dmg_type=DamageType.BLUDGEONING,
+                        dmgroll=DamageRoll("3d10", 0, DamageType.BLUDGEONING),
                     ),
                 ],
             }

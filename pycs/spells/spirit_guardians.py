@@ -4,6 +4,7 @@ from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.creature import Creature
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
@@ -101,10 +102,10 @@ class SpiritGuardianEffect(Effect):
         if creat in self._victims:
             return
         self._victims.add(creat)
-        dmg = int(dice.roll("3d8"))
+        dmg = DamageRoll("3d8", 0, DamageType.RADIANT).roll()
         if creat.saving_throw(Stat.WIS, self.caster.spellcast_save):
             dmg //= 2
-        creat.hit(dmg, DamageType.RADIANT, self.caster, False, "Spirit Guardian")
+        creat.hit(dmg, self.caster, False, "Spirit Guardian")
 
 
 ##############################################################################

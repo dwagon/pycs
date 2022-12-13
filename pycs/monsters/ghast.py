@@ -11,6 +11,7 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.constant import Stat
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.effect import Effect
 from pycs.monster import Monster
 
@@ -47,14 +48,12 @@ class Ghast(Monster):
                     MeleeAttack(
                         "Bite",
                         reach=5,
-                        dmg=("2d8", 0),
-                        dmg_type=DamageType.PIERCING,
+                        dmgroll=DamageRoll("2d8", 0, DamageType.PIERCING),
                     ),
                     MeleeAttack(
                         "Claw",
                         reach=5,
-                        dmg=("2d6", 0),
-                        dmg_type=DamageType.SLASHING,
+                        dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING),
                         side_effect=self.ghast_claws,
                     ),
                 ],

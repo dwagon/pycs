@@ -3,6 +3,8 @@ from typing import Any, NamedTuple, Optional, TYPE_CHECKING, cast
 import dice
 from pycs.action import Action
 from pycs.constant import SpellType, Stat
+from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.util import check_args
 
 if TYPE_CHECKING:
@@ -43,11 +45,11 @@ class SpellAction(Action):
         return self.owner.spell_available(self)
 
     ########################################################################
-    def failed_save(self, source: "Creature", target: "Creature", dmg: int) -> None:
+    def failed_save(self, source: "Creature", target: "Creature", dmg: Damage) -> None:
         """Called when the target failed save"""
 
     ########################################################################
-    def made_save(self, source: "Creature", target: "Creature", dmg: int) -> None:
+    def made_save(self, source: "Creature", target: "Creature", dmg: Damage) -> None:
         """Called when the target made save"""
 
     ########################################################################
@@ -172,28 +174,25 @@ class AttackSpell(SpellAction):
         return attacker.stat_bonus(attacker.spellcast_bonus_stat)
 
     ########################################################################
-    def roll_dmg(self, victim: "Creature", critical: bool = False) -> int:
+    def roll_dmg(self, victim: "Creature", critical: bool = False) -> Damage:
         """Special spell damage"""
         if self.style == SpellType.TOHIT:
             return super().roll_dmg(victim, critical)
-        dmg = int(dice.roll(self.dmg[0]))
-        print(f"{self.owner} rolled {dmg} on {self.dmg[0]} for damage")
-        if self.dmg[1]:
-            dmg += self.dmg[1]
-            print(f"Adding bonus of {self.dmg[1]} -> {dmg}")
+        dmg = self.dmgroll.roll()
+        print(f"{self.owner} rolled {dmg} on {self.dmgroll} for damage")
         spell_dc = self.save_dc
         if not spell_dc:
             spell_dc = self.owner.spellcast_save
         saved = victim.saving_throw(stat=self.save_stat, dc=spell_dc, effect="unknown")
         if saved:
             if self.style == SpellType.SAVE_HALF:
-                dmg = int(dmg / 2)
+                dmg //= 2
             if self.style == SpellType.SAVE_NONE:
-                dmg = 0
+                dmg = Damage()
             self.made_save(source=self.owner, target=victim, dmg=dmg)
         else:
             self.failed_save(source=self.owner, target=victim, dmg=dmg)
-        return max(dmg, 0)
+        return dmg
 
     ########################################################################
     def heuristic(self) -> int:
@@ -205,7 +204,7 @@ class AttackSpell(SpellAction):
             return 0
         if self.owner.distance(pot_target[0]) > self.range()[1]:
             return 0
-        return self.max_dmg()
+        return int(self.max_dmg())
 
     ########################################################################
     def roll_to_hit(self, target: "Creature") -> tuple[int, bool, bool]:

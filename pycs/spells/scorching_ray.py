@@ -4,6 +4,7 @@ from typing import Any, Optional
 from unittest.mock import patch
 from pycs.constant import ActionCategory
 from pycs.constant import DamageType
+from pycs.damageroll import DamageRoll
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.spell import AttackSpell
@@ -30,8 +31,7 @@ class ScorchingRay(AttackSpell):
                 "category": ActionCategory.ACTION,
                 "reach": 120,
                 "level": 2,
-                "dmg": ("2d6", 0),
-                "dmg_type": DamageType.FIRE,
+                "dmgroll": DamageRoll("2d6", 0, DamageType.FIRE),
                 "style": SpellType.TOHIT,
                 "type": SpellType.RANGED,
             }
@@ -54,7 +54,7 @@ class ScorchingRay(AttackSpell):
             to_hit, crit_hit, crit_miss = self.roll_to_hit(target)
             if to_hit >= target.ac and not crit_miss:
                 dmg = self.roll_dmg(self.owner, target)
-                target.hit(dmg, self.dmg_type, self.owner, crit_hit, self.name)
+                target.hit(dmg, self.owner, crit_hit, self.name)
             else:
                 print(f"Scorching Ray missed {target} (Rolled {to_hit} < AC: {target.ac})")
         return True
