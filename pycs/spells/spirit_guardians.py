@@ -2,7 +2,6 @@
 
 from typing import Any, Optional
 from unittest.mock import patch
-import dice
 from pycs.constant import DamageType
 from pycs.damageroll import DamageRoll
 from pycs.creature import Creature

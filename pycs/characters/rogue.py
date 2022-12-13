@@ -1,5 +1,5 @@
 """ https://www.dndbeyond.com/classes/rogue """
-from typing import Any, Optional
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors

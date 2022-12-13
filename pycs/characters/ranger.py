@@ -9,7 +9,7 @@ from pycs.action import Action
 from pycs.arena import Arena
 from pycs.attack import RangedAttack
 from pycs.character import Character
-from pycs.constant import ActionType, DamageType
+from pycs.constant import ActionType
 from pycs.damageroll import DamageRoll
 from pycs.constant import SpellType
 from pycs.constant import Stat

@@ -3,7 +3,6 @@ from typing import Any, Optional, TYPE_CHECKING, cast
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition
-from pycs.constant import DamageType
 from pycs.damage import Damage
 from pycs.constant import Stat
 from pycs.constant import Statistics

@@ -7,7 +7,6 @@ from pycs.action import Action
 from pycs.attack import Attack
 from pycs.attack import MeleeAttack
 from pycs.constant import DamageType
-from pycs.damage import Damage
 from pycs.damageroll import DamageRoll
 from pycs.constant import MonsterType
 from pycs.constant import Stat

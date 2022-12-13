@@ -4,7 +4,7 @@ from typing import Any, Optional
 from unittest.mock import patch
 import dice
 from pycs.action import Action
-from pycs.constant import ActionCategory, DamageType
+from pycs.constant import ActionCategory
 from pycs.constant import SpellType
 from pycs.creature import Creature
 from pycs.effect import Effect
