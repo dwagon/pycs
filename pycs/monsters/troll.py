@@ -9,6 +9,7 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.damage import Damage
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -89,9 +90,9 @@ class TrollMultiAttack(Action):
     ##########################################################################
     def perform_action(self) -> bool:
         """Do the attack"""
-        bite = MeleeAttack("Bite", dmg=("1d6", 0), dmg_type=DamageType.PIERCING, owner=self.owner)
-        claw1 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner)
-        claw2 = MeleeAttack("Claw", dmg=("2d6", 0), dmg_type=DamageType.SLASHING, owner=self.owner)
+        bite = MeleeAttack("Bite", dmgroll=DamageRoll("1d6", 0, DamageType.PIERCING), owner=self.owner)
+        claw1 = MeleeAttack("Claw", dmgroll=DamageRoll("2d6", 0, DamageType.SLASHING), owner=self.owner)
+        claw2 = MeleeAttack("Claw", dmgroll=DamageRoll("2d6", 0, DamageType.SLASHING), owner=self.owner)
         bite.do_attack()
         claw1.do_attack()
         claw2.do_attack()

@@ -218,15 +218,13 @@ class DragonMultiAttack(Action):
         bite = MeleeAttack(
             "Bite",
             reach=10,
-            dmg=("2d10", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d10", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         claw = MeleeAttack(
             "Claw",
             reach=10,
-            dmg=("2d6", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("2d6", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         fright = FrightfulPresenceAttack(owner=self.owner)

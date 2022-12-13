@@ -3,7 +3,6 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
-import dice
 from pycs.attack import Action
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack

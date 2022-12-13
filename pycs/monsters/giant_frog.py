@@ -3,7 +3,6 @@ from typing import Any, Optional
 import unittest
 from unittest.mock import patch
 import colors
-import dice
 from pycs.arena import Arena
 from pycs.attack import MeleeAttack
 from pycs.constant import Condition
@@ -125,11 +124,10 @@ class GiantFrogSwallowEffect(Effect):
 
     ##########################################################################
     def hook_start_turn(self) -> None:
-        dmg = int(dice.roll("2d4"))
+        dmg = DamageRoll("2d4", 0, DamageType.ACID).roll()
         assert self.target is not None
         self.target.hit(
             dmg=dmg,
-            dmg_type=DamageType.ACID,
             source=self.owner,
             critical=False,
             atkname="Frog Acid",

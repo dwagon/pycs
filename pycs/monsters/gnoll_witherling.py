@@ -10,6 +10,7 @@ from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
 from pycs.creature import Creature
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -91,8 +92,7 @@ class VengefulStrike(Action):
         bite = MeleeAttack(
             "Bite",
             reach=5,
-            dmg=("1d4", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("1d4", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         bite.do_attack()
@@ -115,15 +115,13 @@ class WitherlingMultiAttack(Action):
         bite = MeleeAttack(
             "Bite",
             reach=5,
-            dmg=("1d4", 0),
-            dmg_type=DamageType.PIERCING,
+            dmgroll=DamageRoll("1d4", 0, DamageType.PIERCING),
             owner=self.owner,
         )
         club = MeleeAttack(
             "Club",
             reach=5,
-            dmg=("1d4", 0),
-            dmg_type=DamageType.BLUDGEONING,
+            dmgroll=DamageRoll("1d4", 0, DamageType.BLUDGEONING),
             owner=self.owner,
         )
         bite.do_attack()

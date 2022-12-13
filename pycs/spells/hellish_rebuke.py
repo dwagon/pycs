@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/spells/hellish-rebuke"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import ActionCategory
@@ -27,8 +28,7 @@ class HellishRebuke(AttackSpell):
                 "category": ActionCategory.REACTION,
                 "reach": 60,
                 "level": 1,
-                "dmg": ("2d10", 0),
-                "dmg_type": DamageType.FIRE,
+                "dmgroll": DamageRoll("2d10", 0, DamageType.FIRE),
                 "save_stat": Stat.DEX,
                 "style": SpellType.SAVE_HALF,
                 "type": SpellType.RANGED,

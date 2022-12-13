@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 import colors
 
 from pycs.creature import Creature
+from pycs.damage import Damage
 from pycs.damageroll import DamageRoll
 from pycs.monsters import AdultGoldDragon, YoungWhiteDragon
 from pycs.monsters import Allosaurus, Ankylosaurus, Triceratops
@@ -57,10 +58,10 @@ from pycs.gear import (
 )
 
 
-DRAGON_ARMY = False
-UNDEAD_ARMY = False
+DRAGON_ARMY = True
+UNDEAD_ARMY = True
 MONSTER_ARMY = True
-GNOLL_ARMY = False
+GNOLL_ARMY = True
 HUMAN_ARMY = True
 
 
@@ -128,7 +129,7 @@ def win_report(stats: dict[str, int], rounds: int) -> None:
 
 
 ##############################################################################
-def flaming_weapon(source: Creature, target: Creature) -> None:
+def flaming_weapon(source: Creature, target: Creature, dmg: Damage) -> None:
     """Add some extra spice"""
     dmg = DamageRoll("1d6", 0, DamageType.FIRE).roll()
     target.hit(dmg, source, False, "Flaming Weapon")

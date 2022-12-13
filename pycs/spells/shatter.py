@@ -1,6 +1,7 @@
 """https://www.dndbeyond.com/spells/shatter"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
 from pycs.constant import SpellType
 from pycs.constant import DamageType
@@ -25,8 +26,7 @@ class Shatter(AttackSpell):
                 "reach": 60,
                 "level": 2,
                 "style": SpellType.SAVE_HALF,
-                "dmg": ("3d8", 0),
-                "dmg_type": DamageType.THUNDER,
+                "dmgroll": DamageRoll("3d8", 0, DamageType.THUNDER),
                 "save_stat": Stat.CON,
                 "type": SpellType.BUFF,
             }

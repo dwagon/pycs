@@ -1,6 +1,5 @@
 """ Handle non-attack Actions """
 from typing import Any, Optional, TYPE_CHECKING, cast
-import dice
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
 from pycs.constant import Condition

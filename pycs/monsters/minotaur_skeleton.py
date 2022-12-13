@@ -5,6 +5,7 @@ from pycs.attack import MeleeAttack
 from pycs.constant import Condition
 from pycs.constant import DamageType
 from pycs.constant import MonsterType
+from pycs.damageroll import DamageRoll
 from pycs.monster import Monster
 
 
@@ -34,10 +35,9 @@ class MinotaurSkeleton(Monster):
                     MeleeAttack(
                         "Greataxe",
                         reach=5,
-                        dmg=("2d12", 0),
-                        dmg_type=DamageType.SLASHING,
+                        dmgroll=DamageRoll("2d12", 0, DamageType.SLASHING),
                     ),
-                    MeleeAttack("Gore", reach=5, dmg=("2d8", 0), dmg_type=DamageType.PIERCING),
+                    MeleeAttack("Gore", reach=5, dmgroll=DamageRoll("2d8", 0, DamageType.PIERCING)),
                 ],
             }
         )

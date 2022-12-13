@@ -1,6 +1,5 @@
 """ Damage Roll"""
 
-from typing import Optional
 import dice
 from pycs.constant import DamageType
 from pycs.damage import Damage

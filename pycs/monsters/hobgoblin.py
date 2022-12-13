@@ -1,5 +1,5 @@
 """ https://www.dndbeyond.com/monsters/hobgoblin"""
-from typing import Any, Optional
+from typing import Any
 import unittest
 from unittest.mock import patch
 import colors
@@ -12,7 +12,7 @@ from pycs.damageroll import DamageRoll
 from pycs.gear import Longsword
 from pycs.gear import Chainmail
 from pycs.gear import Shield
-from pycs.constant import DamageType, MonsterType
+from pycs.constant import MonsterType
 from pycs.creature import Creature
 from pycs.monster import Monster
 

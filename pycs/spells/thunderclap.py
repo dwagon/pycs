@@ -1,8 +1,9 @@
 """https://www.dndbeyond.com/spells/thunderclap"""
 
 from typing import Any
+from pycs.damageroll import DamageRoll
 from pycs.spell import AttackSpell
-from pycs.constant import SpellType
+from pycs.constant import DamageType, SpellType
 from pycs.constant import Stat
 
 
@@ -12,7 +13,7 @@ class Thunderclap(AttackSpell):
     100 feet away. Each creature within range, other than you, must
     succeed on a Constitution saving throw or take 1d6 thunder damage.
 
-    The spell’s damage increases by 1d6 when you reach 5th level (2d6),
+    The spell's damage increases by 1d6 when you reach 5th level (2d6),
     11th level (3d6), and 17th level (4d6)."""
 
     ##########################################################################
@@ -24,7 +25,7 @@ class Thunderclap(AttackSpell):
                 "level": 0,
                 "style": SpellType.SAVE_NONE,
                 "save_stat": Stat.CON,
-                "dmg": ("1d6", 0),
+                "dmgroll": DamageRoll("1d6", 0, DamageType.THUNDER),
                 "type": SpellType.MELEE,
             }
         )

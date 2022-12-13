@@ -4,6 +4,8 @@ from pycs.constant import DamageType
 
 
 class Damage:
+    """Represents damage"""
+
     def __init__(self, hp: int = 0, type_: DamageType = DamageType.NONE):
         self.hp = hp
         self.type = type_

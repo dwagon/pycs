@@ -36,7 +36,7 @@ class TestDamage(unittest.TestCase):
     def test_sub(self) -> None:
         d1 = Damage(12, DamageType.PSYCHIC)
         d1 -= 5
-        self.assertEqual(d1, Damage(12-5, DamageType.PSYCHIC))
+        self.assertEqual(d1, Damage(12 - 5, DamageType.PSYCHIC))
 
 
 # EOF

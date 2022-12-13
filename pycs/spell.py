@@ -1,10 +1,8 @@
 """ Handle non-attack Actions """
 from typing import Any, NamedTuple, Optional, TYPE_CHECKING, cast
-import dice
 from pycs.action import Action
 from pycs.constant import SpellType, Stat
 from pycs.damage import Damage
-from pycs.damageroll import DamageRoll
 from pycs.util import check_args
 
 if TYPE_CHECKING:
