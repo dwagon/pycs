@@ -75,7 +75,7 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
-        if self.owner.target:
+        if self.owner.target and self.owner.target.has_effect("Hunters Mark"):
             print(f"Removing Hunters Mark from {self.owner.target}")
             self.owner.target.remove_effect("Hunters Mark")
             self.owner.target = None

@@ -148,5 +148,4 @@ class TestSpiritGuardians(SpellTest):
             self.friend.start_turn()
             self.assertEqual(self.friend.hp, self.friend.max_hp)
 
-
 # EOF

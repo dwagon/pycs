@@ -104,10 +104,11 @@ class TestCreature(unittest.TestCase):
     def test_ac(self) -> None:
         """Test AC calculations"""
         self.assertEqual(self.creat.ac, 11)
-        self.creat.add_effect(MockACEffect("AC Effect"))
+        eff = MockACEffect("AC Effect")
+        self.creat.add_effect(eff)
         self.assertTrue(self.creat.has_effect("AC Effect"))
         self.assertEqual(self.creat.ac, 9)
-        self.creat.remove_effect("AC Effect")
+        self.creat.remove_effect(eff)
         self.assertFalse(self.creat.has_effect("AC Effect"))
 
     ########################################################################
@@ -238,7 +239,7 @@ class TestCreature(unittest.TestCase):
 class MockACEffect(Effect):
     """Test AC modification"""
 
-    def hook_ac_modifier(self, target: Creature) -> int:
+    def hook_ac_modifier(self) -> int:
         return -2
 
 
