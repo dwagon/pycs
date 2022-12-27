@@ -27,15 +27,29 @@ class Effects:
         return ", ".join(output)
 
     ##########################################################################
+    def __iter__(self) -> "Effects":
+        self._iter_index: list[str] = list(self._effects.keys())
+        return self
+
+    ##########################################################################
+    def __next__(self) -> Effect:
+        try:
+            return self._effects[self._iter_index.pop()]
+        except IndexError:
+            raise StopIteration
+
+    ##########################################################################
     def add_effect(self, source: "Creature", effect: Effect) -> None:
-        """ Add an effect """
+        """Add an effect"""
+        assert isinstance(effect, Effect)
         self._effects[effect.name] = effect
         print(f"{effect.name} added to {self._owner}")
+        effect.owner = self._owner
         effect.initial(self._owner)
 
     ##########################################################################
-    def remove_effect(self, effect: Effect|str) -> None:
-        """ Add an effect """
+    def remove_effect(self, effect: Effect | str) -> None:
+        """Add an effect"""
         if isinstance(effect, str):
             effect = self._effects[effect]
         self._effects[effect.name].finish(self._owner)
@@ -57,7 +71,7 @@ class Effects:
 
     ##########################################################################
     def hook_ac_modifier(self) -> int:
-        """ Modification of AC"""
+        """Modification of AC"""
         tmp = 0
         for _, eff in self._effects.items():
             mod = eff.hook_ac_modifier()
@@ -73,13 +87,21 @@ class Effects:
 
     ##########################################################################
     def hook_fallen_unconscious(self, dmg: Damage, critical: bool) -> bool:
+        """The owner of the effect has fallen unconscious
+        Return True is creature still falls unconscious after hook
+        """
+        result = True
         for _, eff in self._effects.items():
-            if eff.hook_fallen_unconscious(dmg, critical):
-                return False
-        return True
+            if not eff.hook_fallen_unconscious(dmg, critical):
+                result = False
+        print(f"hfu {result=}")
+        return result
 
     ##########################################################################
     def hook_being_hit(self, dmg: Damage) -> Damage:
+        """Owner of effect has suffered damage
+        The order here is important but unimplemented!
+        """
         for _, eff in self._effects.items():
             dmg = eff.hook_being_hit(dmg)
         return dmg
@@ -107,7 +129,7 @@ class Effects:
             if eff.hook_gives_advantage(target):
                 return True
         return False
-    
+
     ##########################################################################
     def hook_gives_disadvantage(self, target: "Creature") -> bool:
         """Gives disadvantage for creature doing the attack"""
@@ -125,7 +147,7 @@ class Effects:
             tmp += mod
         return tmp
 
-   ##########################################################################
+    ##########################################################################
     def removal_after_being_attacked(self) -> None:
         """Do we remove the effect after being turned"""
         for _, eff in self._effects.copy().items():
@@ -153,7 +175,7 @@ class Effects:
     ##########################################################################
     def hook_attack_to_hit(self, target: "Creature", range: int, action: Action) -> tuple[int, list[str]]:
         """Modify the roll to hit on attacks"""
-        msg : list[str]= []
+        msg: list[str] = []
         to_hit: int = 0
         for name, eff in self._effects.items():
             mod = eff.hook_attack_to_hit(target=target, range=range, action=action)
@@ -188,5 +210,6 @@ class Effects:
         for _, eff in self._effects.items():
             newval = eff.hook_d20(newval, reason)
         return newval
+
 
 # EOF

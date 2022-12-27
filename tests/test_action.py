@@ -104,24 +104,13 @@ class TestAction(unittest.TestCase):
             self.alpha.add_effect(DummyEffect())
             act.buff_attack_damage(self.alpha)
 
-            print(f"{mock.call_args_list[0][0]=}")
             self.assertEqual(
-                mock.call_args_list[0],
-                call(
-                    Damage(2, DamageType.FIRE),
-                    self.beta,
-                    critical=False,
-                    atkname="Dummy Effect",
-                ),
+                mock.call_args_list[0][0][0],
+                Damage(2, DamageType.FIRE),
             )
             self.assertEqual(
-                mock.call_args_list[1],
-                call(
-                    Damage(4, DamageType.ACID),
-                    self.beta,
-                    critical=False,
-                    atkname="Dummy Effect",
-                ),
+                mock.call_args_list[1][0][0],
+                Damage(4, DamageType.ACID),
             )
 
 

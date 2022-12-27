@@ -68,7 +68,7 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        self.owner.target.add_effect(HuntersMarkEffect(caster=self.owner))
+        self.owner.target.add_effect(HuntersMarkEffect(cause=self.owner))
         print(f"Cast Hunters Mark on {self.owner.target}")
         return True
 
@@ -95,7 +95,7 @@ class HuntersMarkEffect(Effect):
     ##########################################################################
     def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
         """More damage"""
-        if source == self.caster:
+        if source == self.cause:
             return DamageRoll("1d6")
         return DamageRoll()
 

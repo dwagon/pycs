@@ -4,6 +4,8 @@ import unittest
 from pycs.creature import Creature
 from pycs.effect import Effect
 from pycs.effects import Effects
+from pycs.constant import DamageType
+from pycs.damage import Damage
 
 ##############################################################################
 ##############################################################################
@@ -21,8 +23,8 @@ class TestEffects(unittest.TestCase):
             "side": "a",
             "hp": 30,
             "ac": 11}
-        owner = Creature(**self.kwargs)
-        self.eff = Effects(owner=owner)
+        self.owner = Creature(**self.kwargs)
+        self.eff = Effects(owner=self.owner)
 
     def test_add_effect(self) -> None:
         eff = FauxEffect(name="faux")
@@ -34,9 +36,18 @@ class TestEffects(unittest.TestCase):
         neweff = self.eff["faux"]
         self.assertEqual(neweff, eff)
 
+    def test_hook_being_hit(self) -> None:
+        attacker = Creature(**self.kwargs)
+        eff = FauxEffect(name="faux")
+        self.owner.add_effect(effect=eff)
+
+        self.owner.hit(Damage(5, DamageType.FIRE), source=attacker, critical=False, atkname="Demo")
+        self.assertEqual(self.owner.damage_this_turn[0], Damage(1, DamageType.ACID))
+
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
 class FauxEffect(Effect):
-    pass
+    def hook_being_hit(self, dmg: Damage) -> Damage:
+        return Damage(1, DamageType.ACID)

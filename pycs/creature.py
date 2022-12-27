@@ -100,15 +100,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return hash(self.name + self.__class__.__name__)
 
     ##########################################################################
-    def __eq__(self, other: Any) -> bool:
-        """ Creature Equality"""
-        if self.__class__.__name__ != other.__class__.__name__:
-            return False
-        if self.hp != other.hp:
-            return False
-        return True
-
-    ##########################################################################
     def _valid_args(self) -> set[str]:
         """What is valid in this class for kwargs"""
         return {
@@ -322,9 +313,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return None
 
     ##########################################################################
-    def hit(  # pylint: disable=too-many-arguments
-        self, dmg: Damage, source: Creature, critical: bool, atkname: str
-    ) -> None:
+    def hit(self, dmg: Damage, source: Creature, critical: bool, atkname: str) -> None:
         """We've been hit by source- take damage"""
         dmg = self._react_predmg(dmg, source, critical)
         if dmg.type in self.vulnerable:
@@ -352,6 +341,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.damage_this_turn.append(dmg)
 
         if self.hp <= 0:
+            print(f"DBG {self.hp=}")
             self.fallen_unconscious(dmg, critical)
         else:
             self._react_postdmg(source)
@@ -471,7 +461,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(self.arena)
 
     ##########################################################################
-    def remove_effect(self, effect: Effect|str) -> None:
+    def remove_effect(self, effect: Effect | str) -> None:
         """Remove an effect"""
         self.effects.remove_effect(effect)
 
@@ -512,7 +502,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
-            print(f"|  Effects: {', '.join(str(self.effects))}")
+            print(f"|  Effects: {str(self.effects)}")
         if self.has_grappled:
             print(f"|  Grappling {self.has_grappled}")
         if self.grappled_by:
@@ -788,7 +778,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def flee(self) -> bool:
         """Forced to flee?"""
-        return False    # DBG Remove when implemented
+        return False  # DBG Remove when implemented
         for name, eff in self.effects.items():
             if (flee_from := eff.flee()) is not None:
                 print(f"{name} is causing {self} to flee ({flee_from})")

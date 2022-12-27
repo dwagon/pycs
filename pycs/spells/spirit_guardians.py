@@ -64,7 +64,7 @@ class SpiritGuardians(SpellAction):
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        self.owner.add_effect(SpiritGuardianEffect(caster=self.owner))
+        self.owner.add_effect(SpiritGuardianEffect(cause=self.owner))
         return True
 
     ##########################################################################
@@ -93,18 +93,18 @@ class SpiritGuardianEffect(Effect):
     ##########################################################################
     def hook_start_in_range(self, creat: Creature) -> None:
         """Are we in range of the effect"""
-        assert self.caster is not None
-        if creat.side == self.caster.side:
+        assert self.cause is not None
+        if creat.side == self.cause.side:
             return
-        if self.caster.distance(creat) > 15 / 5:
+        if self.cause.distance(creat) > 15 / 5:
             return
         if creat in self._victims:
             return
         self._victims.add(creat)
         dmg = DamageRoll("3d8", 0, DamageType.RADIANT).roll()
-        if creat.saving_throw(Stat.WIS, self.caster.spellcast_save):
+        if creat.saving_throw(Stat.WIS, self.cause.spellcast_save):
             dmg //= 2
-        creat.hit(dmg, self.caster, False, "Spirit Guardian")
+        creat.hit(dmg, self.cause, False, "Spirit Guardian")
 
 
 ##############################################################################
@@ -147,5 +147,6 @@ class TestSpiritGuardians(SpellTest):
             self.assertNotEqual(self.enemy.hp, self.enemy.max_hp)
             self.friend.start_turn()
             self.assertEqual(self.friend.hp, self.friend.max_hp)
+
 
 # EOF

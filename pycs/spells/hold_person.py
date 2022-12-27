@@ -99,8 +99,8 @@ class HoldPersonEffect(Effect):
     ###########################################################################
     def removal_end_of_its_turn(self, victim: Creature) -> bool:
         """Do we save"""
-        assert self.caster is not None
-        svth = victim.saving_throw(Stat.WIS, self.caster.spellcast_save, effect=Condition.PARALYZED)
+        assert self.cause is not None
+        svth = victim.saving_throw(Stat.WIS, self.cause.spellcast_save, effect=Condition.PARALYZED)
         if svth:
             victim.remove_condition(Condition.PARALYZED)
             return True
