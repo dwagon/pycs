@@ -61,7 +61,7 @@ class HoldPerson(SpellAction):
         svth = self.owner.target.saving_throw(Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED)
         # TO DO: If the saving throw is made the spell should end
         if not svth:
-            self.owner.target.add_effect(HoldPersonEffect(caster=self.owner))
+            self.owner.target.add_effect(HoldPersonEffect(cause=self.owner))
             self._victim = self.owner.target
         return True
 

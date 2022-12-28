@@ -167,7 +167,7 @@ class Effects:
     def hook_target_additional_damage(self, attack: Action, source: "Creature", target: "Creature") -> None:
         """Addition damage from melee weapons based on the owner of the effect"""
         for atkname, eff in self._effects.items():
-            t_dmgroll: DamageRoll = eff.hook_target_additional_damage(attack, self._owner, target)
+            t_dmgroll: DamageRoll = eff.hook_target_additional_damage(attack, source, target)
             dmg = t_dmgroll.roll()
             if dmg:
                 target.hit(dmg, self._owner, critical=False, atkname=atkname)
