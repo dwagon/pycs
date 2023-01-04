@@ -1,4 +1,5 @@
 """ All the effects on a creature"""
+# pylint: disable=too-many-public-methods
 from typing import Any, TYPE_CHECKING
 from pycs.effect import Effect
 from pycs.constant import Stat
@@ -15,9 +16,12 @@ if TYPE_CHECKING:
 ##############################################################################
 ##############################################################################
 class Effects:
+    """All of Effects on a creature"""
+
     def __init__(self, owner: "Creature"):
         self._owner = owner
         self._effects: dict[str, Effect] = {}
+        self._iter_index: list[str] = []
 
     ##########################################################################
     def __str__(self) -> str:
@@ -28,15 +32,15 @@ class Effects:
 
     ##########################################################################
     def __iter__(self) -> "Effects":
-        self._iter_index: list[str] = list(self._effects.keys())
+        self._iter_index = list(self._effects.keys())
         return self
 
     ##########################################################################
     def __next__(self) -> Effect:
         try:
             return self._effects[self._iter_index.pop()]
-        except IndexError:
-            raise StopIteration
+        except IndexError as exc:
+            raise StopIteration from exc
 
     ##########################################################################
     def add_effect(self, source: "Creature", effect: Effect) -> None:
@@ -45,6 +49,7 @@ class Effects:
         self._effects[effect.name] = effect
         print(f"{effect.name} added to {self._owner}")
         effect.owner = self._owner
+        effect.cause = source
         effect.initial(self._owner)
 
     ##########################################################################
@@ -58,6 +63,7 @@ class Effects:
 
     ##########################################################################
     def remove_all_effects(self) -> None:
+        """Remove all of the effects"""
         for _, eff in self._effects.copy().items():
             self.remove_effect(eff)
 
@@ -67,6 +73,7 @@ class Effects:
 
     ##########################################################################
     def has_effect(self, name: str) -> bool:
+        """Does the creature have the named effect"""
         return name in self._effects
 
     ##########################################################################
@@ -80,6 +87,7 @@ class Effects:
 
     ##########################################################################
     def hook_saving_throw(self, stat: Stat, **kwargs: Any) -> dict[str, int]:
+        """Saving throw been made"""
         result = {}
         for _, eff in self._effects.items():
             result.update(eff.hook_saving_throw(stat, **kwargs))
@@ -155,7 +163,7 @@ class Effects:
                 self.remove_effect(eff)
 
     ##########################################################################
-    def hook_source_additional_damage(self, attack: Action, source: "Creature", target: "Creature") -> None:
+    def hook_source_additional_damage(self, attack: Action, target: "Creature") -> None:
         """Addition damage from melee weapons based on the owner of the effect"""
         for atkname, eff in self._effects.items():
             o_dmgroll: DamageRoll = eff.hook_source_additional_damage(attack, self._owner, target)
@@ -173,12 +181,12 @@ class Effects:
                 target.hit(dmg, self._owner, critical=False, atkname=atkname)
 
     ##########################################################################
-    def hook_attack_to_hit(self, target: "Creature", range: int, action: Action) -> tuple[int, list[str]]:
+    def hook_attack_to_hit(self, target: "Creature", range_: int, action: Action) -> tuple[int, list[str]]:
         """Modify the roll to hit on attacks"""
         msg: list[str] = []
         to_hit: int = 0
         for name, eff in self._effects.items():
-            mod = eff.hook_attack_to_hit(target=target, range=range, action=action)
+            mod = eff.hook_attack_to_hit(target=target, range=range_, action=action)
             if mod:
                 to_hit += mod
                 msg.append(f"+{mod} from {name}")

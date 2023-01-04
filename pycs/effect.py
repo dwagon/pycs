@@ -97,8 +97,8 @@ class Effect:
     ##########################################################################
     def hook_source_additional_damage(
         self,
-        attack: Action,
-        source: "Creature",
+        attack: Action,  # pylint: disable=unused-argument
+        source: "Creature",  # pylint: disable=unused-argument
         target: "Creature",  # pylint: disable=unused-argument
     ) -> DamageRoll:
         """Addition damage from melee weapons based on the owner of the effect"""
@@ -112,8 +112,8 @@ class Effect:
     ##########################################################################
     def hook_target_additional_damage(
         self,
-        attack: Action,
-        source: "Creature",
+        attack: Action,  # pylint: disable=unused-argument
+        source: "Creature",  # pylint: disable=unused-argument
         target: "Creature",  # pylint: disable=unused-argument
     ) -> DamageRoll:
         """Addition damage from melee weapons based on the target of the effect"""

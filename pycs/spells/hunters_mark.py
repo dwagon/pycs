@@ -135,7 +135,6 @@ class TestHuntersMark(SpellTest):
             with patch.object(dice, "roll") as mock_dice:
                 mock_dice.return_value = 5
                 self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
-        print(f"{self.enemy.damage_this_turn=}")
         self.assertEqual(len(self.enemy.damage_this_turn), 2)
 
     ##########################################################################

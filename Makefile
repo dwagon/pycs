@@ -57,6 +57,12 @@ test:
 	coverage run -m pytest tests pycs/*/*.py
 	coverage report -m
 
+pylint:
+	pylint -d C0103,R0903,R0801 pycs
+
+black:
+	black -l 120 pycs tests
+
 test-all: ## run tests on every Python version with tox
 	tox
 

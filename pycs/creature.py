@@ -778,12 +778,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def flee(self) -> bool:
         """Forced to flee?"""
-        return False  # DBG Remove when implemented
-        for name, eff in self.effects.items():
-            if (flee_from := eff.flee()) is not None:
-                print(f"{name} is causing {self} to flee ({flee_from})")
-                self.move_away(flee_from)
-                return True
+        # Not implemented yet
         return False
 
     ##########################################################################
