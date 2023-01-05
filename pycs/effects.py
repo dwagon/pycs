@@ -163,10 +163,10 @@ class Effects:
                 self.remove_effect(eff)
 
     ##########################################################################
-    def hook_source_additional_damage(self, attack: Action, target: "Creature") -> None:
+    def hook_source_additional_damage(self, attack: Action, source: "Creature", target: "Creature") -> None:
         """Addition damage from melee weapons based on the owner of the effect"""
         for atkname, eff in self._effects.items():
-            o_dmgroll: DamageRoll = eff.hook_source_additional_damage(attack, self._owner, target)
+            o_dmgroll: DamageRoll = eff.hook_source_additional_damage(attack, source, target)
             dmg = o_dmgroll.roll()
             if dmg:
                 target.hit(dmg, self._owner, critical=False, atkname=atkname)

@@ -201,7 +201,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         profbon = self.owner.prof_bonus
         msg.append(f"+{profbon} (prof bonus)")
         to_hit = to_hit_roll + modifier + profbon
-        to_hit_mod, msg_mod = self.owner.effects.hook_attack_to_hit(target=target, range=rnge, action=self)
+        to_hit_mod, msg_mod = self.owner.effects.hook_attack_to_hit(target=target, range_=rnge, action=self)
         to_hit += to_hit_mod
         msg.extend(msg_mod)
         if self.gear:
