@@ -13,6 +13,9 @@ class DamageRoll:
         self.bonus: int = bonus
         self.type: DamageType = type_
 
+    def __repr__(self) -> str:
+        return f"<DamageRoll {self.diceroll}+{self.bonus} of {self.type}>"
+
     def roll(self) -> Damage:
         """Roll for damage"""
         dmg: int = 0

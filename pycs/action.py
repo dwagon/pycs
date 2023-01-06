@@ -106,9 +106,8 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     ########################################################################
     def get_heuristic(self) -> int:
         """How much we should do this action"""
-        heur = 0
-        for _, eff in self.owner.effects.items():
-            heur += eff.hook_heuristic_mod(self, self.owner)
+        heur: int = 0
+        heur += self.owner.effects.hook_heuristic_mod(self, self.owner)
         heur += self.heuristic()
         return heur
 
@@ -202,11 +201,9 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         profbon = self.owner.prof_bonus
         msg.append(f"+{profbon} (prof bonus)")
         to_hit = to_hit_roll + modifier + profbon
-        for name, eff in self.owner.effects.items():
-            mod = eff.hook_attack_to_hit(target=target, range=rnge, action=self)
-            if mod:
-                to_hit += mod
-                msg.append(f"+{mod} from {name}")
+        to_hit_mod, msg_mod = self.owner.effects.hook_attack_to_hit(target=target, range_=rnge, action=self)
+        to_hit += to_hit_mod
+        msg.extend(msg_mod)
         if self.gear:
             if hasattr(self.gear, "hook_attack_to_hit"):
                 mod = self.gear.hook_attack_to_hit(target=target)
@@ -218,18 +215,8 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     ########################################################################
     def buff_attack_damage(self, target: "Creature") -> None:
         """Calculate the attack damage from buffs"""
-        for atkname, eff in self.owner.effects.copy().items():
-            o_dmgroll: DamageRoll = eff.hook_source_additional_damage(self, self.owner, target)
-            dmg = o_dmgroll.roll()
-            if dmg:
-                target.hit(dmg, self.owner, critical=False, atkname=atkname)
-
-        # If the target of the damage has a buff
-        for atkname, eff in target.effects.copy().items():
-            t_dmgroll: DamageRoll = eff.hook_target_additional_damage(self, self.owner, target)
-            dmg = t_dmgroll.roll()
-            if dmg:
-                target.hit(dmg, self.owner, critical=False, atkname=atkname)
+        self.owner.effects.hook_source_additional_damage(attack=self, source=self.owner, target=target)
+        target.effects.hook_target_additional_damage(attack=self, source=self.owner, target=target)
 
     ########################################################################
     def did_we_hit(self, target: "Creature") -> tuple[bool, bool]:
@@ -265,10 +252,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         else:
             self.owner.statistics.append(Statistics(self.name, 0, False))
             print(f"{self.owner} missed {target} (AC: {target.ac}) with {self}")
-        for name, eff in target.effects.copy().items():
-            if eff.removal_after_being_attacked():
-                print(f"{name} removed from {target}")
-                target.remove_effect(name)
+        target.effects.removal_after_being_attacked()
         return True
 
     ########################################################################
@@ -322,12 +306,10 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             return True
         if target.has_condition(Condition.PRONE) and rnge > 1:
             return True
-        for _, eff in target.effects.items():
-            if eff.hook_gives_disadvantage_against():
-                return True
-        for _, eff in self.owner.effects.items():
-            if eff.hook_gives_disadvantage(target):
-                return True
+        if target.effects.hook_gives_disadvantage_against():
+            return True
+        if self.owner.effects.hook_gives_disadvantage(target):
+            return True
         return False
 
     ########################################################################
@@ -339,12 +321,10 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             return True
         if target.has_condition(Condition.PRONE) and rnge <= 1:
             return True
-        for _, eff in target.effects.items():
-            if eff.hook_gives_advantage_against():
-                return True
-        for _, eff in self.owner.effects.items():
-            if eff.hook_gives_advantage(target):
-                return True
+        if target.effects.hook_gives_advantage_against():
+            return True
+        if self.owner.effects.hook_gives_advantage(target):
+            return True
         return False
 
 

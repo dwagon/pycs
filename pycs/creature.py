@@ -21,6 +21,7 @@ from pycs.constant import Statistics
 from pycs.util import check_args
 from pycs.equipment import Armour, Equipment
 from pycs.attack import Attack
+from pycs.effects import Effects
 from pycs.spell import SpellAction
 
 
@@ -78,10 +79,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         self.conditions = set([Condition.OK])
 
-        self.effects = {}
+        self.effects = Effects(self)
         for effect in kwargs.get("effects", []):
-            effect.owner = self
-            self.effects[effect.name] = effect
+            self.effects.add_effect(self, effect)
 
         self.target: Optional[Creature] = None
         self.coords: tuple[int, int]
@@ -94,6 +94,10 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.gear: list[Equipment] = []
         for gear in kwargs.get("gear", []):
             self.add_gear(gear)
+
+    ##########################################################################
+    def __hash__(self) -> int:
+        return hash(self.name + self.__class__.__name__)
 
     ##########################################################################
     def _valid_args(self) -> set[str]:
@@ -156,9 +160,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 tmp += dexbonus
         else:
             tmp = self._ac
-        for _, eff in self.effects.items():
-            mod = eff.hook_ac_modifier(self)
-            tmp += mod
+        tmp += self.effects.hook_ac_modifier()
         return tmp
 
     ##########################################################################
@@ -237,8 +239,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             print(f"{self} automatically failed {stat.value} saving throw as unconscious")
             return False
         effct = {"bonus": 0}
-        for _, eff in self.effects.items():
-            effct.update(eff.hook_saving_throw(stat, **kwargs))
+        effct.update(self.effects.hook_saving_throw(stat, **kwargs))
 
         if "advantage" in effct and effct["advantage"]:
             save = max(self.rolld20("save"), self.rolld20("save"))
@@ -285,10 +286,9 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 return
 
             # Have to check every move if we are in any effect area
-            for part in self.arena.pick_alive():
-                for eff in part.effects.values():
-                    for comb in self.arena.pick_alive():
-                        eff.hook_start_in_range(comb)
+            for partic in self.arena.pick_alive():
+                for comb in self.arena.pick_alive():
+                    partic.effects.hook_start_in_range(comb)
 
             old_coords = self.coords
             self.coords = self.arena.move_towards(self, target.coords)
@@ -313,9 +313,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         return None
 
     ##########################################################################
-    def hit(  # pylint: disable=too-many-arguments
-        self, dmg: Damage, source: Creature, critical: bool, atkname: str
-    ) -> None:
+    def hit(self, dmg: Damage, source: Creature, critical: bool, atkname: str) -> None:
         """We've been hit by source- take damage"""
         dmg = self._react_predmg(dmg, source, critical)
         if dmg.type in self.vulnerable:
@@ -327,8 +325,8 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if dmg.type in self.resistant:
             print(f"{self} is resistant to {dmg.type.value}")
             dmg.hp //= 2
-        for eff in self.effects.values():
-            dmg = eff.hook_being_hit(dmg)
+        dmg = self.effects.hook_being_hit(dmg)
+
         print(f"{self} has taken {dmg} from {atkname}")
         self.hp -= dmg.hp
         print(f"{self} now has {self.hp} HP")
@@ -343,6 +341,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.damage_this_turn.append(dmg)
 
         if self.hp <= 0:
+            print(f"DBG {self.hp=}")
             self.fallen_unconscious(dmg, critical)
         else:
             self._react_postdmg(source)
@@ -429,11 +428,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def fallen_unconscious(self, dmg: Damage, critical: bool) -> None:
         """Creature has fallen unconscious"""
-        keep_going = True
-        for _, eff in self.effects.items():
-            if not eff.hook_fallen_unconscious(dmg, critical):
-                keep_going = False
-        if not keep_going:
+        if not self.effects.hook_fallen_unconscious(dmg, critical):
             return
         self.hp = 0
         if self.has_grappled:
@@ -461,30 +456,24 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     ##########################################################################
     def end_turn(self, draw: bool = True) -> None:
         """Are the any effects for the end of the turn"""
-        for name, effect in self.effects.copy().items():
-            remove = effect.removal_end_of_its_turn(self)
-            if remove:
-                self.remove_effect(name)
+        self.effects.removal_end_of_its_turn(self)
         if draw and self.has_condition(Condition.OK):
             print(self.arena)
 
     ##########################################################################
-    def remove_effect(self, name: str) -> None:
+    def remove_effect(self, effect: Effect | str) -> None:
         """Remove an effect"""
-        self.effects[name].finish(self)
-        del self.effects[name]
+        self.effects.remove_effect(effect)
 
     ##########################################################################
     def has_effect(self, name: str) -> bool:
         """Do we have an effect"""
-        return name in self.effects
+        return self.effects.has_effect(name)
 
     ##########################################################################
     def add_effect(self, effect: "Effect") -> None:
         """Add an effect"""
-        self.effects[effect.name] = effect
-        effect.owner = self
-        effect.initial(self)
+        self.effects.add_effect(self, effect)
 
     ##########################################################################
     def dump_statistics(self) -> dict[str, dict[str, int]]:
@@ -497,7 +486,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 tmp[name]["misses"] += 1
             else:
                 tmp[name]["hits"] += 1
-                tmp[name]["dmg"] += dmg
+                tmp[name]["dmg"] += dmg.hp
                 if crit:
                     tmp[name]["crits"] += 1
         return tmp
@@ -513,7 +502,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.conditions:
             print(f"|  Conditions: {', '.join([_.value for _ in self.conditions])}")
         if self.effects:
-            print(f"|  Effects: {', '.join(self.effects)}")
+            print(f"|  Effects: {str(self.effects)}")
         if self.has_grappled:
             print(f"|  Grappling {self.has_grappled}")
         if self.grappled_by:
@@ -638,8 +627,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         self.hp = 0
         if self.has_condition(Condition.GRAPPLED) and self.grappled_by is not None:
             self.grappled_by.ungrapple()
-        for eff in self.effects.copy():
-            self.remove_effect(eff)
+        self.effects.remove_all_effects()
         self.add_condition(Condition.DEAD)
         self.remove_condition(Condition.UNCONSCIOUS)
         self.remove_condition(Condition.OK)
@@ -670,13 +658,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.remove_condition(Condition.PRONE)
         else:
             self.moves = self.speed
-        for eff in self.effects.copy().values():
-            eff.hook_start_turn()
+        self.effects.hook_start_turn()
 
         for part in self.arena.pick_alive():
-            for eff in part.effects.copy().values():
-                for comb in self.arena.pick_alive():
-                    eff.hook_start_in_range(comb)
+            for comb in self.arena.pick_alive():
+                part.effects.hook_start_in_range(comb)
 
         for creat in self.arena.pick_alive():
             if creat == self:
@@ -786,18 +772,13 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def rolld20(self, reason: str) -> int:
         """Roll a d20"""
         d20 = int(dice.roll("d20"))
-        for _, eff in self.effects.items():
-            d20 = eff.hook_d20(d20, reason)
+        d20 = self.effects.hook_d20(d20, reason)
         return d20
 
     ##########################################################################
     def flee(self) -> bool:
         """Forced to flee?"""
-        for name, eff in self.effects.items():
-            if (flee_from := eff.flee()) is not None:
-                print(f"{name} is causing {self} to flee ({flee_from})")
-                self.move_away(flee_from)
-                return True
+        # Not implemented yet
         return False
 
     ##########################################################################

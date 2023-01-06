@@ -61,7 +61,7 @@ class HoldPerson(SpellAction):
         svth = self.owner.target.saving_throw(Stat.WIS, self.owner.spellcast_save, effect=Condition.PARALYZED)
         # TO DO: If the saving throw is made the spell should end
         if not svth:
-            self.owner.target.add_effect(HoldPersonEffect(caster=self.owner))
+            self.owner.target.add_effect(HoldPersonEffect(cause=self.owner))
             self._victim = self.owner.target
         return True
 
@@ -99,8 +99,8 @@ class HoldPersonEffect(Effect):
     ###########################################################################
     def removal_end_of_its_turn(self, victim: Creature) -> bool:
         """Do we save"""
-        assert self.caster is not None
-        svth = victim.saving_throw(Stat.WIS, self.caster.spellcast_save, effect=Condition.PARALYZED)
+        assert self.cause is not None
+        svth = victim.saving_throw(Stat.WIS, self.cause.spellcast_save, effect=Condition.PARALYZED)
         if svth:
             victim.remove_condition(Condition.PARALYZED)
             return True

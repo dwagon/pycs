@@ -85,10 +85,8 @@ class ShieldOfFaithEffect(Effect):
         super().__init__("Shield of Faith", **kwargs)
 
     ###########################################################################
-    def hook_ac_modifier(self, target: Creature) -> int:
-        eff = super().hook_ac_modifier(target)
-        eff += 2
-        return eff
+    def hook_ac_modifier(self) -> int:
+        return 2
 
 
 ##############################################################################

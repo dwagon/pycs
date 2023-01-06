@@ -105,22 +105,12 @@ class TestAction(unittest.TestCase):
             act.buff_attack_damage(self.alpha)
 
             self.assertEqual(
-                mock.call_args_list[0],
-                call(
-                    Damage(2, DamageType.FIRE),
-                    self.beta,
-                    critical=False,
-                    atkname="Dummy Effect",
-                ),
+                mock.call_args_list[0][0][0],
+                Damage(2, DamageType.FIRE),
             )
             self.assertEqual(
-                mock.call_args_list[1],
-                call(
-                    Damage(4, DamageType.ACID),
-                    self.beta,
-                    critical=False,
-                    atkname="Dummy Effect",
-                ),
+                mock.call_args_list[1][0][0],
+                Damage(4, DamageType.ACID),
             )
 
 

@@ -68,14 +68,14 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def cast(self) -> bool:
         """Do the spell"""
-        self.owner.target.add_effect(HuntersMarkEffect(caster=self.owner))
+        self.owner.target.add_effect(HuntersMarkEffect(cause=self.owner))
         print(f"Cast Hunters Mark on {self.owner.target}")
         return True
 
     ##########################################################################
     def end_concentration(self) -> None:
         """What happens when we stop concentrating"""
-        if self.owner.target:
+        if self.owner.target and self.owner.target.has_effect("Hunters Mark"):
             print(f"Removing Hunters Mark from {self.owner.target}")
             self.owner.target.remove_effect("Hunters Mark")
             self.owner.target = None
@@ -94,8 +94,8 @@ class HuntersMarkEffect(Effect):
 
     ##########################################################################
     def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
-        """More damage"""
-        if source == self.caster:
+        """More damage if the attack comes from the owner"""
+        if source == attack.owner:
             return DamageRoll("1d6")
         return DamageRoll()
 
@@ -135,7 +135,6 @@ class TestHuntersMark(SpellTest):
             with patch.object(dice, "roll") as mock_dice:
                 mock_dice.return_value = 5
                 self.caster.do_stuff(categ=ActionCategory.ACTION, moveto=True)
-        print(f"{self.enemy.damage_this_turn=}")
         self.assertEqual(len(self.enemy.damage_this_turn), 2)
 
     ##########################################################################
