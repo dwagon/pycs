@@ -215,8 +215,8 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
     ########################################################################
     def buff_attack_damage(self, target: "Creature") -> None:
         """Calculate the attack damage from buffs"""
-        self.owner.effects.hook_source_additional_damage(self, self.owner, target)
-        target.effects.hook_target_additional_damage(self, self.owner, target)
+        self.owner.effects.hook_source_additional_damage(attack=self, source=self.owner, target=target)
+        target.effects.hook_target_additional_damage(attack=self, source=self.owner, target=target)
 
     ########################################################################
     def did_we_hit(self, target: "Creature") -> tuple[bool, bool]:

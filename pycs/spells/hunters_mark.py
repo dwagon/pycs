@@ -94,8 +94,8 @@ class HuntersMarkEffect(Effect):
 
     ##########################################################################
     def hook_target_additional_damage(self, attack: Action, source: Creature, target: Creature) -> DamageRoll:
-        """More damage"""
-        if source == self.cause:
+        """More damage if the attack comes from the owner"""
+        if source == attack.owner:
             return DamageRoll("1d6")
         return DamageRoll()
 

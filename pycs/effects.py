@@ -167,8 +167,8 @@ class Effects:
         """Addition damage from melee weapons based on the owner of the effect"""
         for atkname, eff in self._effects.items():
             o_dmgroll: DamageRoll = eff.hook_source_additional_damage(attack, source, target)
-            dmg = o_dmgroll.roll()
-            if dmg:
+            if o_dmgroll:
+                dmg = o_dmgroll.roll()
                 target.hit(dmg, self._owner, critical=False, atkname=atkname)
 
     ##########################################################################
