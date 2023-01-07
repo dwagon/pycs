@@ -56,7 +56,11 @@ class Effects:
     def remove_effect(self, effect: Effect | str) -> None:
         """Add an effect"""
         if isinstance(effect, str):
-            effect = self._effects[effect]
+            try:
+                effect = self._effects[effect]
+            except KeyError:
+                print(f"Warning: Removal of non-existant effect {effect} from {str(self)}")
+                return
         self._effects[effect.name].finish(self._owner)
         print(f"{effect.name} removed from {self._owner}")
         del self._effects[effect.name]
@@ -165,7 +169,7 @@ class Effects:
     ##########################################################################
     def hook_source_additional_damage(self, attack: Action, source: "Creature", target: "Creature") -> None:
         """Addition damage from melee weapons based on the owner of the effect"""
-        for atkname, eff in self._effects.items():
+        for atkname, eff in self._effects.copy().items():
             o_dmgroll: DamageRoll = eff.hook_source_additional_damage(attack, source, target)
             if o_dmgroll:
                 dmg = o_dmgroll.roll()
@@ -174,7 +178,7 @@ class Effects:
     ##########################################################################
     def hook_target_additional_damage(self, attack: Action, source: "Creature", target: "Creature") -> None:
         """Addition damage from melee weapons based on the owner of the effect"""
-        for atkname, eff in self._effects.items():
+        for atkname, eff in self._effects.copy().items():
             t_dmgroll: DamageRoll = eff.hook_target_additional_damage(attack, source, target)
             dmg = t_dmgroll.roll()
             if dmg:
