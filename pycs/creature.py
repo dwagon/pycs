@@ -346,7 +346,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def miss(self, source: Creature, atkname: str) -> None:
-        """ Was attacked by source, but missed *spppt!*"""
+        """Was attacked by source, but missed *spppt!*"""
         self.arena.statistics.add(target=self, source=source, hit=False, atkname=atkname)
 
     ##########################################################################

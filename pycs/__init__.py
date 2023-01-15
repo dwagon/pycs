@@ -84,14 +84,7 @@ def print_overall_stats(stats: Statistics) -> None:
     """Do a dump of the global stats"""
     print("Overall Stats")
     tbl = PrettyTable()
-    tbl.field_names = [
-        "Name",
-        "Attack",
-        "Hits",
-        "Misses",
-        "Damage",
-        "Damage/Attack"
-    ]
+    tbl.field_names = ["Name", "Attack", "Hits", "Misses", "Damage", "Damage/Attack"]
     for typ_ in stats.all_types():
         for atk, details in stats.type_summary(typ_).items():
             dpa = details["damage"] / (details["hits"] + details["misses"])
@@ -99,7 +92,7 @@ def print_overall_stats(stats: Statistics) -> None:
     tbl.sortby = "Damage/Attack"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
-    tbl.float_format=".2"
+    tbl.float_format = ".2"
     print(tbl)
 
 
@@ -124,7 +117,7 @@ def flaming_weapon(source: Creature, target: Creature, dmg: Damage) -> None:
 
 ##############################################################################
 def damage_report(arena: Arena) -> None:
-    """ Report on the damage inflicted by participants """
+    """Report on the damage inflicted by participants"""
     tbl = PrettyTable()
     tbl.field_names = [
         "Name",
@@ -140,15 +133,15 @@ def damage_report(arena: Arena) -> None:
         stats = arena.statistics.creature_summary(creat)
         for atk, stat in stats.items():
             try:
-                crit_p = int(100.0 * stat["crits"]  / stat["hits"])
+                crit_p = int(100.0 * stat["crits"] / stat["hits"])
             except ZeroDivisionError:
                 crit_p = 0
             try:
-                hit_p = int(100.0 * stat["hits"] / (stat["hits"]+ stat["misses"]))
+                hit_p = int(100.0 * stat["hits"] / (stat["hits"] + stat["misses"]))
             except ZeroDivisionError:
                 hit_p = 0
             tbl.add_row([creat.name, atk, stat["hits"], stat["misses"], hit_p, stat["damage"], stat["crits"], crit_p])
-    
+
     tbl.sortby = "Damage"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
@@ -161,9 +154,10 @@ def statistics_report(arena: Arena) -> None:
     damage_report(arena)
     participant_report(arena)
 
+
 ##############################################################################
 def participant_report(arena: Arena) -> None:
-    """ Participant details """
+    """Participant details"""
     tbl = PrettyTable()
     tbl.field_names = ["Name", "HP", "State"]
     for creat in arena.pick_everyone():

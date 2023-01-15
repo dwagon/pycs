@@ -18,11 +18,11 @@ class TestEffects(unittest.TestCase):
         self.kwargs = {"str": 6, "int": 7, "dex": 8, "wis": 18, "con": 11, "cha": 15, "side": "a", "hp": 30, "ac": 11}
         self.arena = Arena()
         self.owner = Creature(**self.kwargs)
-        self.arena.add_combatant(self.owner, (0,0))
+        self.arena.add_combatant(self.owner, (0, 0))
         self.eff = Effects(owner=self.owner)
 
     def test_add_effect(self) -> None:
-        """ Test that adding an effect works"""
+        """Test that adding an effect works"""
         eff = FauxEffect(name="faux")
         someone = Creature(**self.kwargs)
 
@@ -33,7 +33,7 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(neweff, eff)
 
     def test_hook_being_hit(self) -> None:
-        """ Test that being hit hook """
+        """Test that being hit hook"""
         attacker = Creature(**self.kwargs)
         eff = FauxEffect(name="faux")
         self.owner.add_effect(effect=eff)
@@ -46,6 +46,7 @@ class TestEffects(unittest.TestCase):
 ##############################################################################
 ##############################################################################
 class FauxEffect(Effect):
-    """ Fake effect for testing """
+    """Fake effect for testing"""
+
     def hook_being_hit(self, dmg: Damage) -> Damage:
         return Damage(1, DamageType.ACID)

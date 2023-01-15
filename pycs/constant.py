@@ -140,4 +140,5 @@ class MonsterSize(Enum):
     HUGE = "huge"
     GARGANTUAN = "gargantuan"
 
+
 # EOF
