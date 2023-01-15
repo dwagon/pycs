@@ -36,14 +36,14 @@ class Statistics:
         """Dump the stats for a specific creature"""
         for stat in self._data:
             if stat["source"] == creature.name and stat["sourcetype"] == creature.__class__.__name__:
-                yield (stat)
+                yield stat
 
     ##########################################################################
     def _type_source(self, creaturetype: str) -> Iterator[dict]:
         """Dump the stats for a specific creature type"""
         for stat in self._data:
             if stat["sourcetype"] == stat["sourcetype"] == creaturetype:
-                yield (stat)
+                yield stat
 
     ##########################################################################
     def _summary(self, iterator: Iterator) -> dict[str, dict]:
@@ -69,9 +69,9 @@ class Statistics:
         return self._summary(self._creature_source(creature))
 
     ##########################################################################
-    def type_summary(self, type: str) -> dict:
+    def type_summary(self, type_: str) -> dict:
         """Return the stats for all the creatures of {type}"""
-        return self._summary(self._type_source(type))
+        return self._summary(self._type_source(type_))
 
     ##########################################################################
     def all_types(self) -> Iterator[str]:

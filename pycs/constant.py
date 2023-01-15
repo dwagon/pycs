@@ -1,6 +1,5 @@
 """ Constants used everywhere """
 from enum import Enum
-from collections import namedtuple
 
 
 ##############################################################################
