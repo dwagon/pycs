@@ -106,7 +106,6 @@ class Effects:
         for _, eff in self._effects.items():
             if not eff.hook_fallen_unconscious(dmg, critical):
                 result = False
-        print(f"hfu {result=}")
         return result
 
     ##########################################################################

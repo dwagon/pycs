@@ -1,5 +1,5 @@
 """ Damage"""
-from typing import Union
+from typing import Self, Union
 from pycs.constant import DamageType
 
 
@@ -23,6 +23,11 @@ class Damage:
             self.hp += other.hp
         self.hp = max(self.hp, 0)
         return self
+
+    def copy(self) -> Self:
+        """Copy a damage"""
+        newdmg = Damage(hp=self.hp, type_=self.type)
+        return newdmg
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Damage):
