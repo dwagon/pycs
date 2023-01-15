@@ -1,7 +1,7 @@
 """ Creature Statistics"""
 from typing import Any, Iterator, List, Self
-
 from pycs.creature import Creature
+
 
 ##############################################################################
 ##############################################################################
