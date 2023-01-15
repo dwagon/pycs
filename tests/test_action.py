@@ -3,9 +3,9 @@
 """Tests for `actions`"""
 
 
-from typing import Any, Optional
+from typing import Any
 import unittest
-from unittest.mock import patch, call
+from unittest.mock import patch
 from pycs.action import Action
 from pycs.arena import Arena
 from pycs.damage import Damage
@@ -113,6 +113,20 @@ class TestAction(unittest.TestCase):
                 Damage(4, DamageType.ACID),
             )
 
+    ########################################################################
+    def test_roll_dmg(self) -> None:
+        """Test roll_dmg()"""
+        act = DummyAction()
+        out = act.roll_dmg("dummy", critical=False)
+        self.assertEqual(out, Damage(8, DamageType.ACID))  # 5 for the action, 3 for the bonus
+
+    ########################################################################
+    def test_dmg_bonus(self) -> None:
+        """Test dmg_bonus()"""
+        act = DummyAction()
+        out = act.dmg_bonus()
+        self.assertEqual(out, [(3, "str")])
+
 
 ############################################################################
 class DummyEffect(Effect):
@@ -138,7 +152,7 @@ class DummyAction(Action):
     """Test action"""
 
     def __init__(self, **kwargs: Any):
-        super().__init__("Dummy Action", **kwargs)
+        super().__init__("Dummy Action", dmgroll=DamageRoll("", 5, DamageType.ACID), **kwargs)
 
     def perform_action(self) -> bool:
         """Required"""
@@ -149,6 +163,9 @@ class DummyAction(Action):
 
     def heuristic(self) -> int:
         return 1
+
+    def dmg_modifier(self, attacker: "Creature") -> int:
+        return 3
 
 
 ############################################################################

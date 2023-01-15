@@ -25,7 +25,7 @@ class Damage:
         return self
 
     def copy(self) -> Self:
-        """ Copy a damage"""
+        """Copy a damage"""
         newdmg = Damage(hp=self.hp, type_=self.type)
         return newdmg
 

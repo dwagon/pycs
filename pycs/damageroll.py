@@ -38,7 +38,7 @@ class DamageRoll:
         return f"{self.diceroll}"
 
     def __bool__(self) -> bool:
-        """ Boolean repr of damage roll"""
+        """Boolean repr of damage roll"""
         if self.diceroll == "" and self.bonus == 0:
             return False
         return True
