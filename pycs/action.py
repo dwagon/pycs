@@ -263,7 +263,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
 
     ########################################################################
     def dmg_bonus(self) -> list:
-        """All the damage bonuses"""
+        """All the damage bonuses - using the relevant stat and the gear"""
         bonus = []
         if self.damage_modifier is not None:
             bonus.append((self.damage_modifier, "DmgMod"))
@@ -283,14 +283,15 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         """Roll the damage of the attack"""
         msg = ""
         if critical:
-            dmg = self.dmgroll.roll_max() + self.dmgroll.roll()
+            dmg_roll = self.dmgroll.roll_max() + self.dmgroll.roll()
         else:
-            dmg = self.dmgroll.roll()
+            dmg_roll = self.dmgroll.roll()
+        dmg = dmg_roll.copy()
         dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
             dmg += bonus
             msg += f"+{bonus} ({cause}) "
-        print(f"{self.owner} got {dmg} damage (Rolled {dmg} on {self.dmgroll}; {msg.strip()})")
+        print(f"{self.owner} inflicted {dmg} damage (Rolled {dmg_roll} on {self.dmgroll}; {msg.strip()})")
         return dmg
 
     ########################################################################

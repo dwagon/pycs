@@ -33,4 +33,15 @@ class DamageRoll:
         return Damage(dmg, self.type)
 
     def __str__(self) -> str:
-        return f"{self.diceroll} + {self.bonus}"
+        if self.bonus:
+            return f"{self.diceroll}+{self.bonus}"
+        return f"{self.diceroll}"
+
+    def __bool__(self) -> bool:
+        """ Boolean repr of damage roll"""
+        if self.diceroll == "" and self.bonus == 0:
+            return False
+        return True
+
+
+# EOF
