@@ -17,7 +17,6 @@ from pycs.constant import DamageType
 from pycs.constant import MonsterSize
 from pycs.constant import MonsterType
 from pycs.constant import Stat
-from pycs.constant import Statistics
 from pycs.util import check_args
 from pycs.equipment import Armour, Equipment
 from pycs.attack import Attack
@@ -85,7 +84,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         self.target: Optional[Creature] = None
         self.coords: tuple[int, int]
-        self.statistics: list[Statistics] = []
         self.options_this_turn: list[ActionCategory] = []
         self.concentration: Optional["SpellAction"] = None
         self.damage_this_turn: list[Damage] = []
@@ -314,7 +312,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
     ##########################################################################
     def hit(self, dmg: Damage, source: Creature, critical: bool, atkname: str) -> None:
-        """We've been hit by source- take damage"""
+        """We've been hit by source - take damage"""
         dmg = self._react_predmg(dmg, source, critical)
         if dmg.type in self.vulnerable:
             print(f"{self} is vulnerable to {dmg.type.value}")
@@ -336,7 +334,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
                 print(f"{self} failed concentration save on {self.concentration}")
                 self.remove_concentration()
 
-        source.statistics.append(Statistics(atkname, dmg, critical))
+        self.arena.statistics.add(target=self, source=source, hit=True, atkname=atkname, dmg=dmg, critical=critical)
         if dmg:
             self.damage_this_turn.append(dmg)
 
@@ -345,6 +343,11 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.fallen_unconscious(dmg, critical)
         else:
             self._react_postdmg(source)
+
+    ##########################################################################
+    def miss(self, source: Creature, atkname: str) -> None:
+        """Was attacked by source, but missed *spppt!*"""
+        self.arena.statistics.add(target=self, source=source, hit=False, atkname=atkname)
 
     ##########################################################################
     def _react_predmg(self, dmg: Damage, source: Creature, critical: bool) -> Damage:
@@ -474,22 +477,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
     def add_effect(self, effect: "Effect") -> None:
         """Add an effect"""
         self.effects.add_effect(self, effect)
-
-    ##########################################################################
-    def dump_statistics(self) -> dict[str, dict[str, int]]:
-        """Dump out the attack statistics - make prettier"""
-        tmp = {}
-        for name, dmg, crit in self.statistics:
-            if name not in tmp:
-                tmp[name] = {"hits": 0, "misses": 0, "dmg": 0, "crits": 0}
-            if dmg == 0:
-                tmp[name]["misses"] += 1
-            else:
-                tmp[name]["hits"] += 1
-                tmp[name]["dmg"] += dmg.hp
-                if crit:
-                    tmp[name]["crits"] += 1
-        return tmp
 
     ##########################################################################
     def report(self) -> None:

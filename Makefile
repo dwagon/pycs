@@ -50,8 +50,7 @@ clean-test: ## remove test and coverage artifacts
 clean-venv:  ## Remove venv
 	rm -rf .venv
 
-lint: ## check style with flake8
-	flake8 pycs tests
+lint: pylint black flake8
 
 test:
 	coverage run -m pytest tests pycs/*/*.py
@@ -62,6 +61,9 @@ pylint:
 
 black:
 	black -l 120 pycs tests
+
+flake8:
+	flake8 pycs
 
 test-all: ## run tests on every Python version with tox
 	tox

@@ -5,7 +5,6 @@ from pycs.constant import ActionType
 from pycs.constant import Condition
 from pycs.damage import Damage
 from pycs.constant import Stat
-from pycs.constant import Statistics
 from pycs.util import check_args
 from pycs.damageroll import DamageRoll
 
@@ -242,7 +241,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             dmg = self.roll_dmg(target, crit_hit)
             if not dmg:
                 return True
-            target.hit(dmg, self.owner, crit_hit, self.name)
+            target.hit(dmg=dmg, source=self.owner, critical=crit_hit, atkname=self.name)
             if self.side_effect:
                 self.side_effect(source=self.owner, target=target, dmg=dmg)
 
@@ -250,7 +249,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             self.buff_attack_damage(target)
             print(f"{self.owner} hit {target} (AC: {target.ac})" f" with {self} for {dmg} damage")
         else:
-            self.owner.statistics.append(Statistics(self.name, 0, False))
+            target.miss(source=self.owner, atkname=self.name)
             print(f"{self.owner} missed {target} (AC: {target.ac}) with {self}")
         target.effects.removal_after_being_attacked()
         return True

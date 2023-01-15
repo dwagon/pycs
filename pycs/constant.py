@@ -1,6 +1,5 @@
 """ Constants used everywhere """
 from enum import Enum
-from collections import namedtuple
 
 
 ##############################################################################
@@ -140,10 +139,5 @@ class MonsterSize(Enum):
     HUGE = "huge"
     GARGANTUAN = "gargantuan"
 
-
-##############################################################################
-##############################################################################
-##############################################################################
-Statistics = namedtuple("Statistics", "name damage critical")
 
 # EOF

@@ -7,6 +7,7 @@ from collections import namedtuple
 from astar import AStar
 from pycs.constant import Stat, MonsterType
 from pycs.creature import Creature
+from pycs.statistics import Statistics
 
 
 ##############################################################################
@@ -20,6 +21,7 @@ class Arena(AStar):
         self.max_x: int = kwargs.get("max_x", 20)
         self.max_y: int = kwargs.get("max_y", 20)
         self.grid: dict = {}
+        self.statistics = Statistics()
         self._combatants: list = []
         for j in range(self.max_y):
             for i in range(self.max_x):

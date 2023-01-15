@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 import colors
 
 from pycs.creature import Creature
+from pycs.statistics import Statistics
 from pycs.damage import Damage
 from pycs.damageroll import DamageRoll
 from pycs.monsters import AdultGoldDragon, YoungWhiteDragon
@@ -58,9 +59,9 @@ from pycs.gear import (
 )
 
 
-DRAGON_ARMY = True
-UNDEAD_ARMY = True
-MONSTER_ARMY = True
+DRAGON_ARMY = False
+UNDEAD_ARMY = False
+MONSTER_ARMY = False
 GNOLL_ARMY = True
 HUMAN_ARMY = True
 
@@ -69,51 +70,30 @@ HUMAN_ARMY = True
 def start(rounds: int) -> None:
     """Main"""
     winning_stats: defaultdict[str, int] = defaultdict(int)
-    all_stats: dict[str, int] = {}
+    all_stats = Statistics()
     for _ in range(rounds):
         winner, stats = combat_test()
         winning_stats[winner] += 1
-        all_stats = update_stats(all_stats, stats)
+        all_stats += stats
     print_overall_stats(all_stats)
     win_report(winning_stats, rounds)
 
 
 ##############################################################################
-def print_overall_stats(stats: dict) -> None:
+def print_overall_stats(stats: Statistics) -> None:
     """Do a dump of the global stats"""
     print("Overall Stats")
     tbl = PrettyTable()
-    tbl.field_names = [
-        "Name",
-        "Attack",
-        "Hits",
-        "Misses",
-        "Damage",
-    ]
-    for key, val in stats.items():
-        for weap, details in val.items():
-            tbl.add_row([key, weap, details["hits"], details["misses"], details["dmg"]])
-    tbl.sortby = "Damage"
+    tbl.field_names = ["Name", "Attack", "Hits", "Misses", "Damage", "Damage/Attack"]
+    for typ_ in stats.all_types():
+        for atk, details in stats.type_summary(typ_).items():
+            dpa = details["damage"] / (details["hits"] + details["misses"])
+            tbl.add_row([typ_, atk, details["hits"], details["misses"], details["damage"], dpa])
+    tbl.sortby = "Damage/Attack"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
+    tbl.float_format = ".2"
     print(tbl)
-
-
-##############################################################################
-def update_stats(all_stats: dict, stats: dict) -> dict:
-    """Consolidate stats"""
-    for key, val in stats.items():
-        name = key.__class__.__name__
-        if name not in all_stats:
-            all_stats[name] = {}
-        for weap, hits in val.items():
-            if weap not in all_stats[name]:
-                all_stats[name][weap] = defaultdict(int)
-            all_stats[name][weap]["hits"] += hits["hits"]
-            all_stats[name][weap]["misses"] += hits["misses"]
-            all_stats[name][weap]["dmg"] += hits["dmg"]
-            all_stats[name][weap]["crits"] += hits["crits"]
-    return all_stats
 
 
 ##############################################################################
@@ -136,9 +116,8 @@ def flaming_weapon(source: Creature, target: Creature, dmg: Damage) -> None:
 
 
 ##############################################################################
-def statistics_report(arena: Arena) -> dict[str, dict[str, dict[str, int]]]:
-    """Dump the hit statistics at the end"""
-    # Damage Details
+def damage_report(arena: Arena) -> None:
+    """Report on the damage inflicted by participants"""
     tbl = PrettyTable()
     tbl.field_names = [
         "Name",
@@ -147,34 +126,38 @@ def statistics_report(arena: Arena) -> dict[str, dict[str, dict[str, int]]]:
         "Misses",
         "Hit %",
         "Damage",
+        "Criticals",
         "Crit %",
     ]
-    all_stats: dict[str, dict[str, dict[str, int]]] = {}
     for creat in arena.pick_everyone():
-        tmp = creat.dump_statistics()
-        all_stats[creat.name] = tmp
-        for key, val in tmp.items():
+        stats = arena.statistics.creature_summary(creat)
+        for atk, stat in stats.items():
             try:
-                crit_p = int(100.0 * val["crits"] / val["hits"])
+                crit_p = int(100.0 * stat["crits"] / stat["hits"])
             except ZeroDivisionError:
                 crit_p = 0
-            tbl.add_row(
-                [
-                    creat.name,
-                    key,
-                    val["hits"],
-                    val["misses"],
-                    int(100.0 * val["hits"] / (val["hits"] + val["misses"])),
-                    val["dmg"],
-                    crit_p,
-                ]
-            )
+            try:
+                hit_p = int(100.0 * stat["hits"] / (stat["hits"] + stat["misses"]))
+            except ZeroDivisionError:
+                hit_p = 0
+            tbl.add_row([creat.name, atk, stat["hits"], stat["misses"], hit_p, stat["damage"], stat["crits"], crit_p])
+
     tbl.sortby = "Damage"
     tbl.align["Name"] = "l"
     tbl.align["Attack"] = "l"
     print(tbl)
 
-    # Participant details
+
+##############################################################################
+def statistics_report(arena: Arena) -> None:
+    """Dump the hit statistics at the end"""
+    damage_report(arena)
+    participant_report(arena)
+
+
+##############################################################################
+def participant_report(arena: Arena) -> None:
+    """Participant details"""
     tbl = PrettyTable()
     tbl.field_names = ["Name", "HP", "State"]
     for creat in arena.pick_everyone():
@@ -188,11 +171,10 @@ def statistics_report(arena: Arena) -> dict[str, dict[str, dict[str, int]]]:
     tbl.sortby = "Name"
     tbl.align["Name"] = "l"
     print(tbl)
-    return all_stats
 
 
 ##############################################################################
-def participant_report(arena: Arena) -> None:
+def participant_state(arena: Arena) -> None:
     """Report on participants"""
     sides = defaultdict(list)
     for part in arena.pick_everyone():
@@ -259,13 +241,13 @@ def gnoll_army(arena: Arena) -> None:
     """The hunger"""
     for i in range(8):
         arena.add_combatant(Gnoll(name=f"Gnoll{i}", side="Gnoll"))
-    for i in range(2):
+    for i in range(1):
         arena.add_combatant(GnollHunter(name=f"GnollHunter{i}", side="Gnoll"))
-    for i in range(4):
+    for i in range(1):
         arena.add_combatant(GnollPackLord(name=f"GnollPackLord{i}", side="Gnoll"))
     for i in range(1):
         arena.add_combatant(GnollFangOfYeenoghu(name=f"GnollFang{i}", side="Gnoll"))
-    for i in range(15):
+    for i in range(5):
         arena.add_combatant(GnollWitherling(name=f"GnollWitherling{i}", side="Gnoll"))
 
 
@@ -275,7 +257,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Barbarian(
             name="Barbara",
-            level=5,
+            level=3,
             side="Humans",
             race=Elf,
             gear=[
@@ -289,7 +271,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Cleric(
             name="Charlise",
-            level=5,
+            level=3,
             side="Humans",
             gear=[
                 Shield(magic_bonus=1),
@@ -303,7 +285,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Fighter(
             name="Frank",
-            level=5,
+            level=3,
             side="Humans",
             race=Human,
             gear=[
@@ -317,7 +299,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Paladin(
             name="Patty",
-            level=5,
+            level=3,
             side="Humans",
             race=HalfOrc,
             gear=[
@@ -332,7 +314,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Ranger(
             name="Renee",
-            level=5,
+            level=3,
             side="Humans",
             race=Halfling,
             gear=[
@@ -346,7 +328,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Rogue(
             name="Rowena",
-            level=5,
+            level=3,
             side="Humans",
             race=Elf,
             gear=[
@@ -360,7 +342,7 @@ def human_army(arena: Arena) -> None:
     arena.add_combatant(
         Warlock(
             name="Wendy",
-            level=5,
+            level=3,
             side="Humans",
             race=HalfElf,
             gear=[
@@ -374,7 +356,7 @@ def human_army(arena: Arena) -> None:
 
 
 ##############################################################################
-def combat_test() -> tuple[str, dict[str, dict[str, dict[str, int]]]]:
+def combat_test() -> tuple[str, Statistics]:
     """Run through a combat"""
     turn = 0
     print("#" * 80)
@@ -399,13 +381,13 @@ def combat_test() -> tuple[str, dict[str, dict[str, dict[str, int]]]]:
     print(f"{arena}")
     while arena.still_going():
         print(f"##### Turn {turn}")
-        participant_report(arena)
+        participant_state(arena)
         arena.turn()
         turn += 1
         assert turn < 100
     print(f"{turn=}")
-    tmp = statistics_report(arena)
-    return arena.winning_side(), tmp
+    statistics_report(arena)
+    return arena.winning_side(), arena.statistics
 
 
 # EOF
