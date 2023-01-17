@@ -49,9 +49,10 @@ class HuntersMark(SpellAction):
     ##########################################################################
     def heuristic(self) -> int:
         """Should we do the spell"""
+        closest = self.owner.pick_closest_enemy()
         if self.pick_target():
             return 6
-        print("No enemy in range")
+        print("Hunter's Mark: No enemy in range")
         return 0
 
     ##########################################################################

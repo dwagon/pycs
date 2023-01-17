@@ -275,8 +275,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
         if self.has_grappled:
             print(f"{self} has grappled {self.has_grappled}- not moving")
             return
-        if self.moves:
-            print(f"{self} move to {target}")
         for _ in range(self.moves):
             # Within range - don't move
             dist = self.distance(target)
@@ -293,7 +291,7 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             if old_coords == self.coords:
                 break
             self.moves -= 1
-            print(f"{self} moved to {self.coords}: {self.moves} left")
+            print(f"{self} moving towards {target} - moved to {self.coords}: {self.moves} left")
 
     ##########################################################################
     def pick_action_by_name(self, name: str) -> Optional[Action]:
@@ -339,7 +337,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
             self.damage_this_turn.append(dmg)
 
         if self.hp <= 0:
-            print(f"DBG {self.hp=}")
             self.fallen_unconscious(dmg, critical)
         else:
             self._react_postdmg(source)
@@ -718,7 +715,6 @@ class Creature:  # pylint: disable=too-many-instance-attributes
 
         # What are we going to do this turn
         act = self._pick_action(categ)
-
         if act is None:
             victims = self.pick_closest_enemy()
             if victims:

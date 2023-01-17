@@ -2,6 +2,7 @@
 from typing import Any, Optional, TYPE_CHECKING, cast
 from pycs.constant import ActionCategory
 from pycs.constant import ActionType
+from pycs.constant import DamageType
 from pycs.constant import Condition
 from pycs.damage import Damage
 from pycs.constant import Stat
@@ -77,11 +78,11 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return 0
 
     ########################################################################
-    def dmg_modifier(self, attacker: "Creature") -> int:  # pylint: disable=unused-argument
+    def dmg_modifier(self, attacker: "Creature") -> Damage:  # pylint: disable=unused-argument
         """Modifier to the damage bonus"""
         # Don't use NotImplementedError as isn't required for every action
         print(f"{self.__class__.__name__} hasn't implemented dmg_modifier()")
-        return 0
+        return Damage(0, DamageType.NONE)
 
     ########################################################################
     def pick_target(self) -> Optional["Creature"]:
@@ -196,7 +197,7 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         msg = []
         rnge = self.owner.distance(target)
         modifier = self.atk_modifier(self.owner)
-        msg.append(f"+{modifier} (modifier)")
+        msg.append(f"+{modifier} (stat modifier)")
         profbon = self.owner.prof_bonus
         msg.append(f"+{profbon} (prof bonus)")
         to_hit = to_hit_roll + modifier + profbon
@@ -227,9 +228,11 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
 
     ########################################################################
     def do_attack(self) -> bool:
-        """Do the attack"""
+        """Do the attack - return wether we did the attack"""
         assert self.owner is not None
-        target = self.owner.target
+        target = self.pick_target()
+        if target is None:
+            return False
         rnge = self.owner.distance(target)
         if rnge > self.range()[1]:
             print(f"{target} is out of range")
@@ -262,11 +265,11 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         return dmg
 
     ########################################################################
-    def dmg_bonus(self) -> list:
+    def dmg_bonus(self) -> list[tuple[Damage, str]]:
         """All the damage bonuses - using the relevant stat and the gear"""
         bonus = []
         if self.damage_modifier is not None:
-            bonus.append((self.damage_modifier, "DmgMod"))
+            bonus.append((Damage(self.damage_modifier), "DmgMod"))
         elif self.use_stat:
             dmg_bon = self.dmg_modifier(self.owner)
             if dmg_bon:
@@ -289,9 +292,13 @@ class Action:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         dmg = dmg_roll.copy()
         dmg_bon = self.dmg_bonus()
         for bonus, cause in dmg_bon:
-            dmg += bonus
-            msg += f"+{bonus} ({cause}) "
-        print(f"{self.owner} inflicted {dmg} damage (Rolled {dmg_roll} on {self.dmgroll}; {msg.strip()})")
+            if isinstance(bonus, DamageRoll):
+                bonus_roll = bonus.roll()
+            else:
+                bonus_roll = bonus.copy()
+            dmg += bonus_roll
+            msg += f"+{bonus_roll.hp} ({cause}); "
+        print(f"{self.owner} inflicted {dmg} damage (Rolled {dmg_roll.hp} on {self.dmgroll}; {msg.strip()})")
         return dmg
 
     ########################################################################

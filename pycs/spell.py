@@ -1,7 +1,7 @@
 """ Handle non-attack Actions """
 from typing import Any, NamedTuple, Optional, TYPE_CHECKING, cast
 from pycs.action import Action
-from pycs.constant import SpellType, Stat
+from pycs.constant import SpellType, Stat, DamageType
 from pycs.damage import Damage
 from pycs.util import check_args
 
@@ -71,9 +71,9 @@ class SpellAction(Action):
         return self.spell_modifier(attacker)
 
     ########################################################################
-    def dmg_modifier(self, attacker: "Creature") -> int:
+    def dmg_modifier(self, attacker: "Creature") -> Damage:
         """Damage modifier"""
-        return 0
+        return Damage(0, DamageType.NONE)
 
     ########################################################################
     def perform_action(self) -> bool:

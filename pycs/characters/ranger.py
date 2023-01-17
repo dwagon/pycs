@@ -87,10 +87,17 @@ class Ranger(Character):
         combs = [
             result(_.hp, id(_), _)
             for _ in self.arena.pick_alive()
-            if _.side != self.side and self.distance(_) < s_range
+            if _.side != self.side and self.distance(_) <= s_range
         ]
         if not combs:
+            print(f"No targets with range ({s_range}) of {action.name}")
             return None
+
+        hmark = [_ for _ in combs if _.creature.has_effect("Hunters Mark")]
+        if hmark:
+            print(f"Picking on {hmark[0].creature} as has hunters mark")
+            return hmark[0].creature
+
         combs.sort()
         target = combs[0].creature
         print(f"Picking on {target} as has fewest hp")
@@ -148,7 +155,7 @@ class RangersRangedAttack(RangedAttack):
         dist = self.owner.distance(enemies[0])
         if dist <= 1:
             return 0
-        return int(self.max_dmg()) + len(hmark)
+        return int(self.max_dmg()) + 4 * len(hmark)
 
     ########################################################################
     def pick_target(self) -> Optional[Creature]:

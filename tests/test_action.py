@@ -164,8 +164,8 @@ class DummyAction(Action):
     def heuristic(self) -> int:
         return 1
 
-    def dmg_modifier(self, attacker: "Creature") -> int:
-        return 3
+    def dmg_modifier(self, attacker: "Creature") -> Damage:
+        return Damage(3, DamageType.ACID)
 
 
 ############################################################################
