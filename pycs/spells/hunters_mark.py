@@ -51,7 +51,7 @@ class HuntersMark(SpellAction):
         """Should we do the spell"""
         if self.pick_target():
             return 6
-        print("No enemy in range")
+        print("Hunter's Mark: No enemy in range")
         return 0
 
     ##########################################################################

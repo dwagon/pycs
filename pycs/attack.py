@@ -2,6 +2,7 @@
 from typing import Any, TYPE_CHECKING
 import dice
 from pycs.action import Action
+from pycs.damage import Damage
 from pycs.constant import ActionType
 from pycs.constant import Stat
 from pycs.util import check_args
@@ -53,9 +54,9 @@ class Attack(Action):
         return attacker.stat_bonus(self.use_stat)
 
     ########################################################################
-    def dmg_modifier(self, attacker: "Creature") -> int:
+    def dmg_modifier(self, attacker: "Creature") -> Damage:
         """The ranged damage modifier"""
-        return attacker.stat_bonus(self.use_stat)
+        return Damage(attacker.stat_bonus(self.use_stat))
 
     ########################################################################
     def heuristic(self) -> int:
