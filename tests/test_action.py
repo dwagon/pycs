@@ -91,7 +91,7 @@ class TestAction(unittest.TestCase):
         to_hit, msg = act.calculate_to_hit(10, self.alpha)
         # 5 for DummyAction atk_bonus, 2 for prof bonus, 3 for dummy effect
         self.assertEqual(to_hit, 10 + 5 + 2 + 3)
-        self.assertEqual(msg, "+5 (modifier), +2 (prof bonus), +3 from Dummy Effect")
+        self.assertEqual(msg, "+5 (stat modifier), +2 (prof bonus), +3 from Dummy Effect")
 
     ########################################################################
     def test_buff_attack_damage(self) -> None:
@@ -125,7 +125,7 @@ class TestAction(unittest.TestCase):
         """Test dmg_bonus()"""
         act = DummyAction()
         out = act.dmg_bonus()
-        self.assertEqual(out, [(3, "str")])
+        self.assertEqual(out, [(Damage(3, DamageType.ACID), "str")])
 
 
 ############################################################################
